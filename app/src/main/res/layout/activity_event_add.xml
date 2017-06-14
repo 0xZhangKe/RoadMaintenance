@@ -9,6 +9,10 @@
 
     <RelativeLayout style="@style/title_RelativeLayoutStyle">
 
+
+
+
+
         <LinearLayout
             android:id="@+id/eventadd_back"
             android:layout_width="50dp"
