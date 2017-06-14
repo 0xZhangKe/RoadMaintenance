@@ -1,0 +1,59 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!-- 标题栏的样式 -->
+    <style name="title_RelativeLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dip</item>
+        <item name="android:background">@color/main_blue</item>
+    </style>
+    <style name="title_text_Style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_marginLeft">55dp</item>
+        <item name="android:layout_marginRight">55dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+    <style name="title_arrow_Style">
+        <item name="android:layout_width">13sp</item>
+        <item name="android:layout_height">22sp</item>
+        <item name="android:layout_marginLeft">15dp</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:src">@drawable/arrow_left</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+    <!-- 灰色的分隔线，左右有间距 -->
+    <style name="SpacingLineMarginStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.5dp</item>
+        <item name="android:background">#e1e1e1</item>
+        <item name="android:layout_marginLeft">7dip</item>
+        <item name="android:layout_marginRight">7dip</item>
+    </style>
+    <!-- 灰色的分隔线，无间距 -->
+    <style name="SpacingLineStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.5dp</item>
+        <item name="android:background">#e1e1e1</item>
+    </style>
+    <!-- 自定义loading dialog -->
+    <style name="loading_dialog" parent="android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+</resources>

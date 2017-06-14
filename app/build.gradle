@@ -1,0 +1,41 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "com.jinjiang.roadmaintenance"
+        minSdkVersion 18
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
+    compile 'com.apkfuns.logutils:library:1.2.2'
+    compile 'cn.finalteam:okhttpfinal:2.0.7'
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.facebook.fresco:fresco:0.10.0'
+    compile files('libs/BaiduLBS_Android.jar')
+    compile 'cn.qqtheme.framework:WheelPicker:1.4.2'
+    compile 'com.zhy:base-adapter:3.0.3'
+}
