@@ -1,6 +1,7 @@
 package com.jinjiang.roadmaintenance.ui.activity;
 
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
@@ -16,6 +17,7 @@ import com.jinjiang.roadmaintenance.ui.fragment.MyFragment;
 import com.jinjiang.roadmaintenance.ui.fragment.RateFragment;
 import com.jinjiang.roadmaintenance.ui.fragment.TaskFragment;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
+import com.jinjiang.roadmaintenance.utils.PermissionUtil;
 
 import java.util.ArrayList;
 
@@ -49,6 +51,17 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initUI() {
         mTab = (CommonTabLayout) findViewById(R.id.act_main_tab);
+
+        if (PermissionUtil.isLacksOfPermission(PermissionUtil.PERMISSION[0]) ||
+                PermissionUtil.isLacksOfPermission(PermissionUtil.PERMISSION[1]) ||
+                PermissionUtil.isLacksOfPermission(PermissionUtil.PERMISSION[2]) ||
+                PermissionUtil.isLacksOfPermission(PermissionUtil.PERMISSION[3]) ||
+                PermissionUtil.isLacksOfPermission(PermissionUtil.PERMISSION[4]) ||
+                PermissionUtil.isLacksOfPermission(PermissionUtil.PERMISSION[5]) ||
+                PermissionUtil.isLacksOfPermission(PermissionUtil.PERMISSION[6])
+                ) {
+            ActivityCompat.requestPermissions(MainActivity.this, PermissionUtil.PERMISSION, 0x12);
+        }
 
     }
 
