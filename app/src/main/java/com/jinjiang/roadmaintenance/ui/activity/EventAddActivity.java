@@ -145,6 +145,8 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                 picker_Type.show();
                 break;
             case R.id.eventadd_location_ll:
+                Intent intent = new Intent(this, LocationSelectActivity.class);
+                startActivityForResult(intent,105);
                 break;
             case R.id.eventadd_eventType_ll:
                 break;
@@ -262,8 +264,10 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             if (requestCode == 102) {
                 try {
                     Uri uri = data.getData();
-                    final String absolutePath= getAbsolutePath(EventAddActivity.this, uri);
+                    LogUtils.d(uri);
+                    final String absolutePath= getRealFilePath(EventAddActivity.this, uri);
                     LogUtils.d("path=" + absolutePath);
+                    LogUtils.d("path=" + data);
                     File file = new File(absolutePath);
                     if (!mPhotoList.contains(file)){
                         mPhotoList.add(file);
@@ -275,25 +279,29 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                     e.printStackTrace();
                 }
             }
+
+        }
+        if (requestCode == 105) {
+//            LogUtils.d(data);
+            mRoadName_tv.setText(data.getStringExtra("roadname"));
+            mLocation_tv.setText(data.getStringExtra("location"));
         }
     }
-
-    public String getAbsolutePath(final Context context, final Uri uri) {
-        if (null == uri) return null;
+    public static String getRealFilePath( final Context context, final Uri uri ) {
+        if ( null == uri ) return null;
         final String scheme = uri.getScheme();
         String data = null;
-        if (scheme == null)
+        if ( scheme == null )
             data = uri.getPath();
-        else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
+        else if ( ContentResolver.SCHEME_FILE.equals( scheme ) ) {
             data = uri.getPath();
-        } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
-            Cursor cursor = context.getContentResolver().query(uri,
-                    new String[]{MediaStore.Images.ImageColumns.DATA}, null, null, null);
-            if (null != cursor) {
-                if (cursor.moveToFirst()) {
-                    int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-                    if (index > -1) {
-                        data = cursor.getString(index);
+        } else if ( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+            Cursor cursor = context.getContentResolver().query( uri, new String[] { MediaStore.Images.ImageColumns.DATA }, null, null, null );
+            if ( null != cursor ) {
+                if ( cursor.moveToFirst() ) {
+                    int index = cursor.getColumnIndex( MediaStore.Images.ImageColumns.DATA );
+                    if ( index > -1 ) {
+                        data = cursor.getString( index );
                     }
                 }
                 cursor.close();

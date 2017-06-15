@@ -24,7 +24,7 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="1HRQ0ywao1XDfHNCEHjGyck1y7C4Grh4" />
 
-        <activity android:name=".ui.activity.MainActivity"></activity>
+        <activity android:name=".ui.activity.MainActivity" />
         <activity android:name=".ui.activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +32,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.EventAddActivity"></activity>
+        <activity android:name=".ui.activity.EventAddActivity" />
+        <activity android:name=".ui.activity.EventDetailsActivity"></activity>
+        <activity android:name=".ui.activity.LocationSelectActivity"></activity>
     </application>
 
 </manifest>

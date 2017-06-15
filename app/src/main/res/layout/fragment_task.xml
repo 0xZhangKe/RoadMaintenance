@@ -71,7 +71,7 @@
                 android:background="@color/white"
                 android:paddingLeft="10dp"
                 android:scrollbars="none"
-                android:text="已记录，待提交"
+                android:text="全部"
                 android:textColor="@color/text_black"
                 android:textSize="14sp"
                 NiceSpinner:arrowTint="@color/blue" />
@@ -112,7 +112,6 @@
                 android:gravity="center_vertical"
                 android:minWidth="100dp"
                 android:padding="4dp"
-                android:text="时间"
                 android:textColor="@color/text_black"
                 android:textSize="14sp" />
 
@@ -133,7 +132,6 @@
                 android:gravity="center_vertical"
                 android:minWidth="100dp"
                 android:padding="4dp"
-                android:text="时间"
                 android:textColor="@color/text_black"
                 android:textSize="14sp" />
         </LinearLayout>

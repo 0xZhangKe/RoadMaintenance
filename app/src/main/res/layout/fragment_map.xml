@@ -13,9 +13,11 @@
             android:text="地图" />
     </RelativeLayout>
 
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
         <com.baidu.mapapi.map.TextureMapView
             android:id="@+id/map_bmapView"
@@ -26,54 +28,63 @@
             android:focusable="true"
             android:focusableInTouchMode="true" />
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/map_rl_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#11000000"
-            android:paddingBottom="8dp">
+            android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/chat_edit"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="10dp"
-                android:background="@drawable/gre_stroke_back"
-                android:hint="请输入地名"
-                android:maxLines="1"
-                android:paddingLeft="10dp"
-                android:paddingRight="25dp"
-                android:textSize="14sp" />
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp">
+
+                <EditText
+                    android:id="@+id/chat_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/gre_stroke_back"
+                    android:hint="请输入地名"
+                    android:maxLines="1"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="25dp"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/chat_search"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/search" />
+            </RelativeLayout>
 
             <ImageView
-                android:id="@+id/chat_search"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="20dp"
+                android:id="@+id/map_add"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/search" />
-        </RelativeLayout>
-        <ImageView
-            android:id="@+id/map_add"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/map_rl_search"
-            android:scaleType="fitXY"
-            android:src="@drawable/add" />
+                android:src="@drawable/camera" />
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:background="@drawable/gre_stroke_transparent_back"
             android:layout_below="@+id/map_rl_search"
-            android:padding="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
-            android:orientation="vertical">
+            android:background="@drawable/gre_stroke_transparent_back"
+            android:orientation="vertical"
+            android:padding="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -93,6 +104,7 @@
                     android:textColor="@color/text_gray"
                     android:textSize="14sp" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -112,6 +124,7 @@
                     android:textColor="@color/text_gray"
                     android:textSize="14sp" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

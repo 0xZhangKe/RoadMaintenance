@@ -1,13 +1,291 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:NiceSpinner="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ww.roadmaintenance.ui.fragment.RateFragment">
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context="com.jinjiang.roadmaintenance.ui.fragment.RateFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
+        android:id="@+id/rate_title"
+        style="@style/title_RelativeLayoutStyle">
+
+        <TextView
+            style="@style/title_text_Style"
+            android:text="任务" />
+
+        <ImageView
+            android:id="@+id/rate_search"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/search" />
+    </RelativeLayout>
+
+
+    <ListView
+        android:id="@+id/rate_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="222" />
+        android:layout_below="@+id/rate_title"
+        android:divider="@color/divide"
+        android:dividerHeight="0.5dp"
+        android:padding="10dp"
+        android:scrollbars="none" />
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/rate_search_down"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rate_title"
+        android:background="@drawable/gre_stroke_back"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:text="状态"
+            android:textColor="@color/text_black"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/gre_stroke_back"
+            android:orientation="horizontal"
+            android:padding="2dp">
+
+            <com.jinjiang.roadmaintenance.ui.view.nicespinner.NiceSpinner
+                android:id="@+id/rate_ns"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@color/white"
+                android:paddingLeft="10dp"
+                android:scrollbars="none"
+                android:text="全部"
+                android:textColor="@color/text_black"
+                android:textSize="14sp"
+                NiceSpinner:arrowTint="@color/blue" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:text="时间"
+            android:textColor="@color/text_black"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/rate_time1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="不限"
+                android:textColor="@color/text_gray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/rate_time2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/gre_stroke_back"
+                android:gravity="center_vertical"
+                android:minWidth="100dp"
+                android:padding="4dp"
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="至"
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/rate_time3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/gre_stroke_back"
+                android:gravity="center_vertical"
+                android:minWidth="100dp"
+                android:padding="4dp"
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:text="标段"
+            android:textColor="@color/text_black"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/rate_biao1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="标段A"
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+
+            <CheckBox
+                android:id="@+id/rate_biao2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="标段B"
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+
+            <CheckBox
+                android:id="@+id/rate_biao3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="标段C"
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:text="路面类型"
+            android:textColor="@color/text_black"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/rate_road1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="沥青路面"
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+
+            <CheckBox
+                android:id="@+id/rate_road2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="水泥路面"
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+
+            <CheckBox
+                android:id="@+id/rate_road3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="井盖"
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/rate_road4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="人行道"
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+
+            <CheckBox
+                android:id="@+id/rate_road5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="其他"
+                android:textColor="@color/text_black"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/rate_reset"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/select_blue_button_background_"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="重置"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/rate_confirm"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/select_blue_button_background_"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="确定"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>
