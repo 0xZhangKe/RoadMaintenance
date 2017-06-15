@@ -3,14 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/white"
+    android:orientation="vertical"
     tools:context=".ui.activity.EventAddActivity">
 
     <RelativeLayout style="@style/title_RelativeLayoutStyle">
-
-
-
 
 
         <LinearLayout
@@ -103,12 +100,14 @@
                     android:paddingRight="5dp"
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
+
                 <ImageView
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/arr_right" />
             </LinearLayout>
+
             <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
@@ -142,10 +141,12 @@
                     android:textSize="14sp" />
 
             </LinearLayout>
--
+            -
+
             <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
+                android:id="@+id/eventadd_driverwayType_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -166,6 +167,7 @@
                     android:orientation="horizontal">
 
                     <RadioButton
+                        android:id="@+id/eventadd_radio1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -175,6 +177,7 @@
                         android:textSize="14sp" />
 
                     <RadioButton
+                        android:id="@+id/eventadd_radio2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="15dp"
@@ -240,6 +243,114 @@
             <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
+                android:id="@+id/eventadd_property_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="长：          "
+                        android:textColor="@color/text_black"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/eventadd_long"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:ellipsize="end"
+                        android:hint="请输入长度（米）"
+                        android:inputType="number"
+                        android:maxLength="100"
+                        android:maxLines="1"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textColor="@color/text_black"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <View style="@style/SpacingLineStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="宽：          "
+                        android:textColor="@color/text_black"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/eventadd_wide"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:ellipsize="end"
+                        android:hint="请输入宽度（米）"
+                        android:inputType="number"
+                        android:maxLength="100"
+                        android:maxLines="1"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textColor="@color/text_black"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <View style="@style/SpacingLineStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="面积：       "
+                        android:textColor="@color/text_black"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/eventadd_area"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:ellipsize="end"
+                        android:hint="请输入面积（平米）"
+                        android:inputType="number"
+                        android:maxLength="100"
+                        android:maxLines="1"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textColor="@color/text_black"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <View style="@style/SpacingLineStyle" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/eventadd_plan_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -249,23 +360,18 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="长：          "
+                    android:text="预计施工方案："
                     android:textColor="@color/text_black"
                     android:textSize="15sp" />
 
-                <EditText
-                    android:id="@+id/eventadd_long"
+                <TextView
+                    android:id="@+id/eventadd_plan"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@null"
-                    android:ellipsize="end"
-                    android:hint="请输入长度（米）"
-                    android:inputType="number"
-                    android:maxLength="100"
-                    android:maxLines="1"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
+                    android:text=""
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -273,6 +379,7 @@
             <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
+                android:id="@+id/eventadd_time_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -282,56 +389,18 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="宽：          "
+                    android:text="预计修复时间："
                     android:textColor="@color/text_black"
                     android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/eventadd_wide"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:ellipsize="end"
-                    android:hint="请输入宽度（米）"
-                    android:inputType="number"
-                    android:maxLength="100"
-                    android:maxLines="1"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:textColor="@color/text_black"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <View style="@style/SpacingLineStyle" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="10dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="面积：       "
-                    android:textColor="@color/text_black"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/eventadd_area"
+                    android:id="@+id/eventadd_time"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@null"
-                    android:ellipsize="end"
-                    android:inputType="number"
-                    android:hint="请输入面积（平米）"
-                    android:maxLength="100"
-                    android:maxLines="1"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
+                    android:text=""
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -369,7 +438,7 @@
             <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
-                android:id="@+id/_tupian_ll"
+                android:id="@+id/eventadd_tupian_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -401,7 +470,7 @@
             </LinearLayout>
 
             <com.jinjiang.roadmaintenance.ui.view.MyGridView
-                android:id="@+id/_grid_tupian"
+                android:id="@+id/eventadd_grid_tupian"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
