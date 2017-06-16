@@ -33,8 +33,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.EventAddActivity" />
-        <activity android:name=".ui.activity.EventDetailsActivity"></activity>
-        <activity android:name=".ui.activity.LocationSelectActivity"></activity>
+        <activity android:name=".ui.activity.EventDetailsActivity" />
+        <activity android:name=".ui.activity.LocationSelectActivity" />
+        <activity android:name=".ui.activity.NavigationActivity"></activity>
     </application>
 
 </manifest>

@@ -246,7 +246,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             Intent pickIntent = new Intent(Intent.ACTION_PICK, null);
             pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     "image/*");
-            pickIntent.setAction(Intent.ACTION_GET_CONTENT);
+            pickIntent.setAction(Intent.ACTION_PICK );
             startActivityForResult(pickIntent, 102);
         }
     }
@@ -281,8 +281,9 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             }
 
         }
-        if (requestCode == 105) {
-//            LogUtils.d(data);
+        LogUtils.d(data);
+        if (requestCode == 105&&resultCode==106) {
+            LogUtils.d(data);
             mRoadName_tv.setText(data.getStringExtra("roadname"));
             mLocation_tv.setText(data.getStringExtra("location"));
         }
@@ -309,4 +310,5 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         }
         return data;
     }
+
 }
