@@ -1,41 +1,75 @@
 package com.jinjiang.roadmaintenance.ui.fragment;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 import com.jinjiang.roadmaintenance.R;
+import com.jinjiang.roadmaintenance.data.EventTypeGrid;
 import com.jinjiang.roadmaintenance.model.LoacationListener;
 import com.jinjiang.roadmaintenance.model.LoacationModel;
 import com.jinjiang.roadmaintenance.ui.activity.EventAddActivity;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
+import com.zhy.adapter.abslistview.CommonAdapter;
+import com.zhy.adapter.abslistview.ViewHolder;
+
+import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 
 
 /**
  * 桌面
  */
-public class MapFragment extends Fragment implements LoacationListener, View.OnClickListener {
+public class MapFragment extends Fragment implements LoacationListener {
     private static MapFragment fragment;
-    private TextureMapView mMapView = null;
+    @BindView(R.id.map_bmapView)
+    TextureMapView mMapView;
+    @BindView(R.id.map_add)
+    ImageView mAdd;
+    @BindView(R.id.map_mylocation)
+    ImageView mylocation;
+    @BindView(R.id.map_shadow)
+    View mShadow;
+    @BindView(R.id.map_EventType_grid)
+    GridView mGrid;
+    @BindView(R.id.map_eventType_ll)
+    LinearLayout mEventType_ll;
+    Unbinder unbinder;
     private BaiduMap mBaiduMap;
     private LoacationModel locationModel;
     private MyLocationData locData;
-    private ImageView mylocation;
     private LatLng myCenpt;
-    private ImageView mAdd;
+    private String[] items = new String[]{
+            "沥青路面", "水泥路面", "人行道", "井盖", "选择其他"
+    };
+    private AlertDialog mDialog;
+    private BitmapDescriptor bitmapDescriptor_location;
 
 
     public MapFragment() {
@@ -53,6 +87,7 @@ public class MapFragment extends Fragment implements LoacationListener, View.OnC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+        unbinder = ButterKnife.bind(this, view);
 
         initView(view);
         initData();
@@ -60,39 +95,94 @@ public class MapFragment extends Fragment implements LoacationListener, View.OnC
     }
 
     private void initView(View view) {
-        mMapView = (TextureMapView) view.findViewById(R.id.map_bmapView);
-        mylocation = (ImageView) view.findViewById(R.id.map_mylocation);
-        mAdd = (ImageView) view.findViewById(R.id.map_add);
 
-        mylocation.setOnClickListener(this);
-        mAdd.setOnClickListener(this);
+        ArrayList<EventTypeGrid> mGridlist = new ArrayList<>();
+        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found,"全部病害"));
+        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found,"等待维修"));
+        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found,"正在维修"));
+        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found,"维修完成"));
+        mGrid.setAdapter(new CommonAdapter<EventTypeGrid>(getActivity(),R.layout.item_map_grid,mGridlist) {
+            @Override
+            protected void convert(ViewHolder viewHolder, EventTypeGrid item, int position) {
+                viewHolder.setImageResource(R.id.item_mapgrid_img,item.getImg());
+                viewHolder.setText(R.id.item_mapgrid_text,item.getText());
+            }
+        });
+        mGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mShadow.setVisibility(View.GONE);
+                mEventType_ll.setVisibility(View.GONE);
+            }
+        });
+        initBaiduMap();
+    }
+
+    private void initData() {
+        locationModel = new LoacationModel(getActivity(), this, 3000);
+
+        creatDialog();
+    }
+
+    private void initBaiduMap() {
+
+        bitmapDescriptor_location = BitmapDescriptorFactory
+                .fromResource(R.drawable.location_icon);
 
         mBaiduMap = mMapView.getMap();
         mMapView.showZoomControls(false);
         mBaiduMap.setMyLocationEnabled(true);
         LatLng cenpt = new LatLng(30.616744, 110.313039);
         setbaiduCenter(cenpt, 8);
+        mBaiduMap.setOnMapLongClickListener(new BaiduMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                if (mBaiduMap != null)
+                    mBaiduMap.clear();
 
+                MarkerOptions option = new MarkerOptions()
+                        .position(latLng)
+                        .icon(bitmapDescriptor_location);
+                Marker marker = (Marker) mBaiduMap.addOverlay(option);
+                Bundle bundle = new Bundle();
+                bundle.putString("LatLng", "");
+                marker.setExtraInfo(bundle);
+            }
+        });
+        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (marker != null && marker.getExtraInfo() != null) {
+                    //从marker中获取info信息
+                    Bundle bundle = marker.getExtraInfo();
+                    if (bundle.containsKey("LatLng")) {
+                        mDialog.show();
+                    }
+                }
+                return true;
+            }
+        });
     }
 
-    /**
-     * 设置地图中心点
-     */
-    private void setbaiduCenter(LatLng cenpt, int zoom) {
-        MapStatus mMapStatus = new MapStatus.Builder()
-                .target(cenpt)
-                .zoom(zoom)
-                .build();
-        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-        mBaiduMap.setMapStatus(mMapStatusUpdate);
-    }
+    private void creatDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("选择病害");
+//        builder.setIcon(R.drawable.tools);
+        builder.setItems(items, new DialogInterface.OnClickListener() {
 
-    private void initData() {
-        locationModel = new LoacationModel(getActivity(), this, 3000);
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(getActivity(), EventAddActivity.class);
+                intent.putExtra("road", which);
+                startActivity(intent);
+            }
+        });
+        mDialog = builder.create();
     }
 
     /**
      * 获取定位数据
+     *
      * @param location
      */
     @Override
@@ -112,22 +202,41 @@ public class MapFragment extends Fragment implements LoacationListener, View.OnC
         }
     }
 
-    @Override
-    public void onClick(View view) {
+    @OnClick({R.id.map_add, R.id.map_mylocation, R.id.map_eventType_icon})
+    public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.map_mylocation://定位到我的位置
+            case R.id.map_add://新增
+                mDialog.show();
+                break;
+            case R.id.map_mylocation:
                 if (myCenpt != null) {
                     setbaiduCenter(myCenpt, 9);
                 } else {
                     myToast.toast(getActivity(), "正在定位中...");
                 }
                 break;
-            case R.id.map_add://新增
-                startActivity(new Intent(getActivity(), EventAddActivity.class));
-                break;
-            default:
+            case R.id.map_eventType_icon:
+                if (mShadow.getVisibility()==View.GONE){
+                    mShadow.setVisibility(View.VISIBLE);
+                    mEventType_ll.setVisibility(View.VISIBLE);
+                }else {
+                    mShadow.setVisibility(View.GONE);
+                    mEventType_ll.setVisibility(View.GONE);
+                }
                 break;
         }
+    }
+
+    /**
+     * 设置地图中心点
+     */
+    private void setbaiduCenter(LatLng cenpt, int zoom) {
+        MapStatus mMapStatus = new MapStatus.Builder()
+                .target(cenpt)
+                .zoom(zoom)
+                .build();
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+        mBaiduMap.setMapStatus(mMapStatusUpdate);
     }
 
     @Override
@@ -147,7 +256,13 @@ public class MapFragment extends Fragment implements LoacationListener, View.OnC
         super.onDestroy();
         locationModel.stopLoacation();
         mMapView.onDestroy();
+        bitmapDescriptor_location.recycle();
     }
 
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
 }
