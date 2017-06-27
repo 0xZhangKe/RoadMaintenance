@@ -8,6 +8,7 @@ import android.view.Window;
 import com.apkfuns.logutils.LogUtils;
 import com.jinjiang.roadmaintenance.R;
 
+import butterknife.ButterKnife;
 import cn.finalteam.okhttpfinal.HttpCycleContext;
 
 public abstract class BaseActivity extends AppCompatActivity implements HttpCycleContext,View.OnClickListener {
@@ -28,6 +29,7 @@ public abstract class BaseActivity extends AppCompatActivity implements HttpCycl
         //打印打开的activity的类名和所在的包
         LogUtils.i(getClass().getName());
         initUI();
+        ButterKnife.bind( this ) ;
         initData();
     }
 

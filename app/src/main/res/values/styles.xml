@@ -33,6 +33,13 @@
         <item name="android:src">@drawable/arrow_left</item>
         <item name="android:layout_centerVertical">true</item>
     </style>
+    <style name="title_arrow_Ll_Style">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/text_selector</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:clickable">true</item>
+    </style>
     <!-- 灰色的分隔线，左右有间距 -->
     <style name="SpacingLineMarginStyle">
         <item name="android:layout_width">match_parent</item>

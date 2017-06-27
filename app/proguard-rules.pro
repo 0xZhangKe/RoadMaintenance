@@ -32,3 +32,17 @@
 -keepclasseswithmembernames class * {
     @butterknife.* <methods>;
 }
+
+#--------------- BEGIN: okhttp ----------
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.squareup.okhttp.** { *; }
+-keep interface com.squareup.okhttp.** { *; }
+-dontwarn com.squareup.okhttp.**
+#--------------- END: okhttp ----------
+#--------------- BEGIN: okio ----------
+-keep class sun.misc.Unsafe { *; }
+-dontwarn java.nio.file.*
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn okio.**
+#--------------- END: okio ----------
