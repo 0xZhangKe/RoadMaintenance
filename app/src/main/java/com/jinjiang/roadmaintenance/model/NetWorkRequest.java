@@ -3,9 +3,11 @@ package com.jinjiang.roadmaintenance.model;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.apkfuns.logutils.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
@@ -62,14 +64,15 @@ public class NetWorkRequest<T> {
                 if (TextUtils.isEmpty(response)) {
                     return;
                 } else {
-                    JsonArray data = new JsonParser().parse(response).getAsJsonArray();
-                    Gson gson = new Gson();
-                    Type type = new TypeToken<T>() {
-                    }.getType();
-                    T result = gson.fromJson(data, type);
-                    if (result != null) {
-                        uiDataListener.loadDataFinish(flag, result);
-                    }
+                    LogUtils.d(response);
+//                    JsonArray data = new JsonParser().parse(response).getAsJsonArray();
+//                    Gson gson = new Gson();
+//                    Type type = new TypeToken<T>() {
+//                    }.getType();
+//                    T result = gson.fromJson(data, type);
+//                    if (result != null) {
+//                        uiDataListener.loadDataFinish(flag, result);
+//                    }
                 }
             }
 
@@ -92,16 +95,11 @@ public class NetWorkRequest<T> {
      *
      * @param map
      */
-    public void doPostRequest(final int flag, final boolean isShowDialog, String url, Map map, T t) {
+    public void doPostRequest(final int flag, final boolean isShowDialog, String url, Map map) {
         RequestParams params = new RequestParams((HttpCycleContext) context);//请求参数
-        Iterator it = map.keySet().iterator();
-        while (it.hasNext()) {
-            String key;
-            String value;
-            key = it.next().toString();
-            value = (String) map.get(key);
-            params.addFormDataPart(key, value);
-        }
+        Gson gson = new Gson();
+        String jsonStr = gson.toJson(map);
+        params.applicationJson(JSONObject.parseObject(jsonStr));
         currentUrl = url;
         LogUtils.d(currentUrl + params);
         HttpRequest.post(url, params, new BaseHttpRequestCallback<String>() {
@@ -118,14 +116,15 @@ public class NetWorkRequest<T> {
                 if (TextUtils.isEmpty(response)) {
                     return;
                 } else {
-                    JsonArray data = new JsonParser().parse(response).getAsJsonArray();
-                    Gson gson = new Gson();
-                    Type type = new TypeToken<T>() {
-                    }.getType();
-                    T result = gson.fromJson(data, type);
-                    if (result != null) {
-                        uiDataListener.loadDataFinish(flag, result);
-                    }
+                    LogUtils.d(response);
+//                    JsonArray data = new JsonParser().parse(response).getAsJsonArray();
+//                    Gson gson = new Gson();
+//                    Type type = new TypeToken<T>() {
+//                    }.getType();
+//                    T result = gson.fromJson(data, type);
+//                    if (result != null) {
+//                        uiDataListener.loadDataFinish(flag, result);
+//                    }
                 }
             }
 

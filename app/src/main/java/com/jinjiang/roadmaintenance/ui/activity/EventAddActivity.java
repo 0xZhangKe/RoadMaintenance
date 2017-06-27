@@ -113,9 +113,6 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         });
     }
 
-    @Override
-    public void onClick(View view) {
-    }
     @OnClick({R.id.eventadd_back, R.id.eventadd_save, R.id.eventadd_eventType_know, R.id.eventadd_eventType_add, R.id.eventadd_planAdd, R.id.eventadd_send})
     public void onViewClicked(View view) {
         switch (view.getId()) {

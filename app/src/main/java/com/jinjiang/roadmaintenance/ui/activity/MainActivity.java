@@ -141,11 +141,6 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public void onClick(View view) {
-
-    }
-
-    @Override
     public void onBackPressed() {
         if ((System.currentTimeMillis() - exitTime) > 2000) {
             myToast.toast(getApplicationContext(), "再按一次退出程序！");

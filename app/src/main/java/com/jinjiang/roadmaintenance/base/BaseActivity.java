@@ -11,7 +11,7 @@ import com.jinjiang.roadmaintenance.R;
 import butterknife.ButterKnife;
 import cn.finalteam.okhttpfinal.HttpCycleContext;
 
-public abstract class BaseActivity extends AppCompatActivity implements HttpCycleContext,View.OnClickListener {
+public abstract class BaseActivity extends AppCompatActivity implements HttpCycleContext{
 
     protected final String HTTP_TASK_KEY = "HttpTaskKey_" + hashCode();
     @Override

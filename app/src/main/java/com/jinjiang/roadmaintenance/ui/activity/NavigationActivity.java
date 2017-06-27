@@ -61,7 +61,6 @@ public class NavigationActivity extends BaseActivity implements LoacationListene
 
     @Override
     protected void initUI() {
-        findViewById(R.id.navigation_back).setOnClickListener(this);
 
         mMapView = (TextureMapView) findViewById(R.id.navigation_bmapView);
 
@@ -139,18 +138,6 @@ public class NavigationActivity extends BaseActivity implements LoacationListene
         mSearch.drivingSearch(new DrivingRoutePlanOption()
                 .from(stNode)
                 .to(enNode));
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.navigation_back:
-                finish();
-                overridePendingTransition(0, R.anim.base_slide_out);
-                break;
-            default:
-                break;
-        }
     }
 
     @Override

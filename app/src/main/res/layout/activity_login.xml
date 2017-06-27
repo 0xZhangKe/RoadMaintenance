@@ -77,6 +77,7 @@
                 android:textSize="18sp" />
 
             <CheckBox
+                android:visibility="gone"
                 android:id="@+id/login_keeppsw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

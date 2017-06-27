@@ -8,6 +8,9 @@ import java.io.Serializable;
 
 public class BaseBean<T> implements Serializable {
     private T data;
-    private int code;
+    private boolean success;
     private String msg;
+    private int code;
+
+
 }
