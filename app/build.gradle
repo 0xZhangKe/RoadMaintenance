@@ -14,7 +14,9 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled true      // 开启混淆
+            shrinkResources true    // 去除无效的资源文件(依赖于minifyEnabled 为true)
+            zipAlignEnabled true    // Zipalign优化
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -34,7 +36,7 @@ dependencies {
     compile 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
     compile 'com.apkfuns.logutils:library:1.2.2'
     compile 'cn.finalteam:okhttpfinal:2.0.7'
-    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.google.code.gson:gson:2.8.1'
     compile 'com.facebook.fresco:fresco:0.10.0'
     compile 'cn.qqtheme.framework:WheelPicker:1.4.2'
     compile 'com.zhy:base-adapter:3.0.3'
@@ -42,4 +44,5 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.4.0'
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'com.alibaba:fastjson:1.2.33'
 }

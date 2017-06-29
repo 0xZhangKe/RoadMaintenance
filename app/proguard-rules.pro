@@ -46,3 +46,16 @@
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -dontwarn okio.**
 #--------------- END: okio ----------
+
+##---------------Begin: proguard configuration for Gson  ----------
+-keepattributes Signature
+-keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.examples.android.model.** { *; }
+-keep class com.google.** { *; }
+-keep class sun.misc.** { *; }
+#gson
+-keepattributes *Annotation*
+-keep class com.google.gson.** { *; }
+-keep class com.jinjiang.roadmaintenance.data.** { *; }
+
+##---------------End: proguard configuration for Gson  ----------

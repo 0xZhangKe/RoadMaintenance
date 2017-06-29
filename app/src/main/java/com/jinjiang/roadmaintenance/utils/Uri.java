@@ -15,5 +15,5 @@ public class Uri {
      * 用户登录
      *
      */
-    public static String loginUrl = mainUrl+"loginCtrl/loginAppPass";
+    public static String loginUrl = mainUrl+"login/login";
 }

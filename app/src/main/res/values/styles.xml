@@ -68,4 +68,12 @@
         <item name="android:windowExitAnimation">@anim/push_up_out</item>
     </style>
 
+    <!--启动页样式-->
+    <style name="splashTheme" parent="AppTheme">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <!--<item name="android:background">@drawable/firstimg</item>-->
+    </style>
+
 </resources>

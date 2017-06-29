@@ -3,15 +3,11 @@ package com.jinjiang.roadmaintenance.model;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.apkfuns.logutils.LogUtils;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
+import com.jinjiang.roadmaintenance.data.BaseBean;
 
-import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -23,7 +19,7 @@ import cn.finalteam.okhttpfinal.RequestParams;
 /**
  * Created by Administrator on 2016/12/21.
  */
-public class NetWorkRequest<T> {
+public class NetWorkRequest {
     private Context context;
     private UIDataListener uiDataListener;
     private String currentUrl = "";
@@ -38,7 +34,7 @@ public class NetWorkRequest<T> {
      *
      * @param map
      */
-    public void doGetRequest(final int flag, final boolean isShowDialog, String url, Map map, T t) {
+    public void doGetRequest(final int flag, final boolean isShowDialog, String url, Map map) {
         RequestParams params = new RequestParams((HttpCycleContext) context);//请求参数
         Iterator it = map.keySet().iterator();
         while (it.hasNext()) {
@@ -65,14 +61,13 @@ public class NetWorkRequest<T> {
                     return;
                 } else {
                     LogUtils.d(response);
-//                    JsonArray data = new JsonParser().parse(response).getAsJsonArray();
-//                    Gson gson = new Gson();
-//                    Type type = new TypeToken<T>() {
-//                    }.getType();
-//                    T result = gson.fromJson(data, type);
-//                    if (result != null) {
-//                        uiDataListener.loadDataFinish(flag, result);
-//                    }
+                    BaseBean result = JSON.parseObject(response,new TypeReference<BaseBean>(){});
+
+                    if (result != null&&result.getCode()==0) {
+                        uiDataListener.loadDataFinish(flag, result.getResult());
+                    }else if (result!=null){
+                        uiDataListener.onError(result.getCode()+"",result.getMessage());
+                    }
                 }
             }
 
@@ -91,15 +86,20 @@ public class NetWorkRequest<T> {
         });
     }
     /**
-     * Get请求
+     * Post请求
      *
      * @param map
      */
     public void doPostRequest(final int flag, final boolean isShowDialog, String url, Map map) {
         RequestParams params = new RequestParams((HttpCycleContext) context);//请求参数
-        Gson gson = new Gson();
-        String jsonStr = gson.toJson(map);
-        params.applicationJson(JSONObject.parseObject(jsonStr));
+        Iterator it = map.keySet().iterator();
+        while (it.hasNext()) {
+            String key;
+            String value;
+            key = it.next().toString();
+            value = (String) map.get(key);
+            params.addFormDataPart(key, value);
+        }
         currentUrl = url;
         LogUtils.d(currentUrl + params);
         HttpRequest.post(url, params, new BaseHttpRequestCallback<String>() {
@@ -117,14 +117,13 @@ public class NetWorkRequest<T> {
                     return;
                 } else {
                     LogUtils.d(response);
-//                    JsonArray data = new JsonParser().parse(response).getAsJsonArray();
-//                    Gson gson = new Gson();
-//                    Type type = new TypeToken<T>() {
-//                    }.getType();
-//                    T result = gson.fromJson(data, type);
-//                    if (result != null) {
-//                        uiDataListener.loadDataFinish(flag, result);
-//                    }
+                    BaseBean result = JSON.parseObject(response,new TypeReference<BaseBean>(){});
+
+                    if (result != null&&result.getCode()==0) {
+                        uiDataListener.loadDataFinish(flag, result.getResult());
+                    }else if (result!=null){
+                        uiDataListener.onError(result.getCode()+"",result.getMessage());
+                    }
                 }
             }
 

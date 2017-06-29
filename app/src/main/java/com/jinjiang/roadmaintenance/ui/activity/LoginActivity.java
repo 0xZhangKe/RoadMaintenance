@@ -1,18 +1,23 @@
 package com.jinjiang.roadmaintenance.ui.activity;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.EditText;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.base.BaseActivity;
 import com.jinjiang.roadmaintenance.data.BaseBean;
-import com.jinjiang.roadmaintenance.data.userInfo;
+import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.model.NetWorkRequest;
 import com.jinjiang.roadmaintenance.model.UIDataListener;
 import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
+import com.jinjiang.roadmaintenance.utils.ACache;
 import com.jinjiang.roadmaintenance.utils.Uri;
 
 import java.util.HashMap;
@@ -27,8 +32,9 @@ public class LoginActivity extends BaseActivity implements UIDataListener {
     EditText mUserName;
     @BindView(R.id.login_psw)
     EditText mPsw;
-    private NetWorkRequest<BaseBean<userInfo>> request;
+    private NetWorkRequest request;
     private Dialog dialog;
+    private ACache mAcache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,14 +48,15 @@ public class LoginActivity extends BaseActivity implements UIDataListener {
 
     @Override
     protected void initUI() {
-
+        mAcache = ACache.get(LoginActivity.this);
+        dialog = DialogProgress.createLoadingDialog(LoginActivity.this,"",this);
     }
 
     @Override
     protected void initData() {
-        request = new NetWorkRequest<>(LoginActivity.this,this);
+        request = new NetWorkRequest(LoginActivity.this,this);
 
-        dialog = DialogProgress.createLoadingDialog(LoginActivity.this,"",this);
+
     }
 
     @OnClick(R.id.login_loginBt)
@@ -72,7 +79,13 @@ public class LoginActivity extends BaseActivity implements UIDataListener {
 
     @Override
     public void loadDataFinish(int code, Object data) {
-
+        if (data!=null){
+            UserInfo userInfo = JSON.parseObject(data.toString(),UserInfo.class);
+            mAcache.put("UserInfo",userInfo);
+            startActivity(new Intent(LoginActivity.this,MainActivity.class));
+        }else {
+            showToast("登录失败！");
+        }
     }
 
     @Override
@@ -94,7 +107,7 @@ public class LoginActivity extends BaseActivity implements UIDataListener {
 
     @Override
     public void onError(String errorCode, String errorMessage) {
-
+        showToast(errorMessage);
     }
 
     @Override
