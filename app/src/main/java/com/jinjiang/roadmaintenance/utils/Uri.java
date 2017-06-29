@@ -16,4 +16,9 @@ public class Uri {
      *
      */
     public static String loginUrl = mainUrl+"login/login";
+    /**
+     * 获取道路类型
+     *
+     */
+    public static String getDicByTypeKey = mainUrl+"dectionary/getDicByTypeKey";
 }

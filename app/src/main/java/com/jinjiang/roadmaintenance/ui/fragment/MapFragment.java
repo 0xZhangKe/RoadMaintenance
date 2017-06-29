@@ -1,11 +1,13 @@
 package com.jinjiang.roadmaintenance.ui.fragment;
 
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
@@ -28,14 +32,26 @@ import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.data.EventTypeGrid;
+import com.jinjiang.roadmaintenance.data.RoadType;
+import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.model.LoacationListener;
 import com.jinjiang.roadmaintenance.model.LoacationModel;
+import com.jinjiang.roadmaintenance.model.NetWorkRequest;
+import com.jinjiang.roadmaintenance.model.UIDataListener;
 import com.jinjiang.roadmaintenance.ui.activity.EventAddActivity;
+import com.jinjiang.roadmaintenance.ui.activity.LoginActivity;
+import com.jinjiang.roadmaintenance.ui.activity.MainActivity;
+import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
+import com.jinjiang.roadmaintenance.utils.ACache;
+import com.jinjiang.roadmaintenance.utils.Uri;
 import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,7 +62,7 @@ import butterknife.Unbinder;
 /**
  * 桌面
  */
-public class MapFragment extends Fragment implements LoacationListener {
+public class MapFragment extends Fragment implements LoacationListener ,UIDataListener{
     private static MapFragment fragment;
     @BindView(R.id.map_bmapView)
     TextureMapView mMapView;
@@ -65,11 +81,13 @@ public class MapFragment extends Fragment implements LoacationListener {
     private LoacationModel locationModel;
     private MyLocationData locData;
     private LatLng myCenpt;
-    private String[] items = new String[]{
-            "沥青路面", "水泥路面", "人行道", "井盖", "选择其他"
-    };
     private AlertDialog mDialog;
     private BitmapDescriptor bitmapDescriptor_location;
+    private ACache mAcache;
+    private Dialog dialog;
+    private NetWorkRequest request;
+    private UserInfo userInfo;
+    private ArrayList<RoadType> mRoadTypeList;
 
 
     public MapFragment() {
@@ -96,6 +114,27 @@ public class MapFragment extends Fragment implements LoacationListener {
 
     private void initView(View view) {
 
+        mAcache = ACache.get(getActivity());
+        dialog = DialogProgress.createLoadingDialog(getActivity(),"",this);
+        locationModel = new LoacationModel(getActivity(), this, 3000);
+        request = new NetWorkRequest(getActivity(),this);
+
+        userInfo = (UserInfo) mAcache.getAsObject("UserInfo");
+
+        if (userInfo ==null|| TextUtils.isEmpty(userInfo.getUserId())){
+            myToast.toast(getActivity(),"登录状态已过期，请重新登录！");
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+            getActivity().finish();
+        }
+
+        Map map = new HashMap();
+        map.put("userId",userInfo.getUserId());
+        map.put("appSid",userInfo.getAppSid());
+        map.put("body","{\"typeKey\":\"order_type\"}");
+        request.doPostRequest(0,true, Uri.getDicByTypeKey,map);
+    }
+
+    private void initData() {
         ArrayList<EventTypeGrid> mGridlist = new ArrayList<>();
         mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found,"全部病害"));
         mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found,"等待维修"));
@@ -116,12 +155,6 @@ public class MapFragment extends Fragment implements LoacationListener {
             }
         });
         initBaiduMap();
-    }
-
-    private void initData() {
-        locationModel = new LoacationModel(getActivity(), this, 3000);
-
-        creatDialog();
     }
 
     private void initBaiduMap() {
@@ -164,7 +197,10 @@ public class MapFragment extends Fragment implements LoacationListener {
         });
     }
 
-    private void creatDialog() {
+    /**
+     * 创建病害选择对话框
+     */
+    private void creatDialog(String[] items) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("选择病害");
 //        builder.setIcon(R.drawable.tools);
@@ -264,5 +300,48 @@ public class MapFragment extends Fragment implements LoacationListener {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void loadDataFinish(int code, Object data) {
+        if (code==0){
+            if (data!=null){
+                mRoadTypeList = JSON.parseObject(data.toString(), new TypeReference<ArrayList<RoadType>>(){});
+                if (mRoadTypeList!=null&&mRoadTypeList.size()>0){
+                    String[] item = new String[mRoadTypeList.size()];
+                    for (int i=0;i<mRoadTypeList.size();i++){
+                        item[i] = mRoadTypeList.get(i).getText();
+                    }
+                    creatDialog(item);
+                }
+            }
+        }
+
+    }
+    @Override
+    public void showToast(String message) {
+        myToast.toast(getActivity(),message);
+    }
+
+    @Override
+    public void showDialog() {
+        if (dialog !=null)
+            dialog.show();
+    }
+
+    @Override
+    public void dismissDialog() {
+        if (dialog !=null)
+            dialog.dismiss();
+    }
+
+    @Override
+    public void onError(String errorCode, String errorMessage) {
+        showToast(errorMessage);
+    }
+
+    @Override
+    public void cancelRequest() {
+        request.CancelPost();
     }
 }

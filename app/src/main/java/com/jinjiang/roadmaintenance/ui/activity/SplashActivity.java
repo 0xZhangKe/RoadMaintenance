@@ -74,7 +74,7 @@ public class SplashActivity extends BaseActivity {
     protected void initData() {
 
         userInfo = (UserInfo) mAcache.getAsObject("UserInfo");
-        if (userInfo != null && !TextUtils.isEmpty(userInfo.getAppSid())) {
+        if (userInfo != null && !TextUtils.isEmpty(userInfo.getUserId())) {
             isLogin = true;
         } else {
             isLogin = false;
