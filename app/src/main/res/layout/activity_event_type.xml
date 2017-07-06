@@ -35,9 +35,9 @@
                 android:id="@+id/eventType_tv_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:background="@color/white"
                 android:gravity="center_vertical"
-                android:layout_marginTop="15dp"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
@@ -67,9 +67,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:gravity="right"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
-                    android:gravity="right"
                     android:text=""
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
@@ -82,123 +82,117 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/eventtype_attr1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:background="@color/white"
-                android:orientation="vertical">
+                android:padding="10dp">
 
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/eventtype_name1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
+                    android:textColor="@color/text_black"
+                    android:textSize="15sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="病害长度："
-                        android:textColor="@color/text_black"
-                        android:textSize="15sp" />
-
-                    <EditText
-                        android:id="@+id/eventtype_long"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:ellipsize="end"
-                        android:hint="请输入长度（米）"
-                        android:gravity="right"
-                        android:inputType="number"
-                        android:maxLength="100"
-                        android:maxLines="1"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:textColor="@color/text_black"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <View style="@style/SpacingLineStyle" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <EditText
+                    android:id="@+id/eventtype_value1"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:gravity="right"
+                    android:hint="请输入属性值"
+                    android:inputType="number"
+                    android:maxLength="100"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="病害宽度："
-                        android:textColor="@color/text_black"
-                        android:textSize="15sp" />
+            <View style="@style/SpacingLineStyle"/>
 
-                    <EditText
-                        android:id="@+id/eventtype_wide"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:ellipsize="end"
-                        android:hint="请输入宽度（米）"
-                        android:gravity="right"
-                        android:inputType="number"
-                        android:maxLength="100"
-                        android:maxLines="1"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:textColor="@color/text_black"
-                        android:textSize="14sp" />
-                </LinearLayout>
+            <LinearLayout
+                android:id="@+id/eventtype_attr2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:padding="10dp">
 
-                <View style="@style/SpacingLineStyle" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/eventtype_name2"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
+                    android:textColor="@color/text_black"
+                    android:textSize="15sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="维修面积："
-                        android:textColor="@color/text_black"
-                        android:textSize="15sp" />
+                <EditText
+                    android:id="@+id/eventtype_value2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:gravity="right"
+                    android:hint="请输入属性值"
+                    android:inputType="number"
+                    android:maxLength="100"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+            </LinearLayout>
+            <View style="@style/SpacingLineStyle"/>
+            <LinearLayout
+                android:id="@+id/eventtype_attr3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:padding="10dp">
 
-                    <EditText
-                        android:id="@+id/eventtype_area"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:ellipsize="end"
-                        android:hint="请输入面积（平米）"
-                        android:gravity="right"
-                        android:inputType="number"
-                        android:maxLength="100"
-                        android:maxLines="1"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:textColor="@color/text_black"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/eventtype_name3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_black"
+                    android:textSize="15sp" />
 
-                <View style="@style/SpacingLineStyle" />
+                <EditText
+                    android:id="@+id/eventtype_value3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:gravity="right"
+                    android:hint="请输入属性值"
+                    android:inputType="number"
+                    android:maxLength="100"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
             </LinearLayout>
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@color/white"
                 android:layout_marginTop="15dp"
+                android:background="@color/white"
+                android:orientation="vertical"
                 android:padding="10dp">
 
                 <EditText
@@ -222,8 +216,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="120dp"
                 android:layout_gravity="bottom"
+                android:layout_marginTop="120dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -243,5 +237,4 @@
         </LinearLayout>
 
     </ScrollView>
-
 </LinearLayout>

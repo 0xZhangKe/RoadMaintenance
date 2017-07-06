@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.BaiduMap;
@@ -30,6 +31,12 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.data.EventTypeGrid;
 import com.jinjiang.roadmaintenance.data.RoadType;
@@ -40,7 +47,6 @@ import com.jinjiang.roadmaintenance.model.NetWorkRequest;
 import com.jinjiang.roadmaintenance.model.UIDataListener;
 import com.jinjiang.roadmaintenance.ui.activity.EventAddActivity;
 import com.jinjiang.roadmaintenance.ui.activity.LoginActivity;
-import com.jinjiang.roadmaintenance.ui.activity.MainActivity;
 import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
@@ -62,7 +68,7 @@ import butterknife.Unbinder;
 /**
  * 桌面
  */
-public class MapFragment extends Fragment implements LoacationListener ,UIDataListener{
+public class MapFragment extends Fragment implements LoacationListener, UIDataListener {
     private static MapFragment fragment;
     @BindView(R.id.map_bmapView)
     TextureMapView mMapView;
@@ -81,6 +87,7 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
     private LoacationModel locationModel;
     private MyLocationData locData;
     private LatLng myCenpt;
+    private LatLng mEventCenpt;
     private AlertDialog mDialog;
     private BitmapDescriptor bitmapDescriptor_location;
     private ACache mAcache;
@@ -88,7 +95,8 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
     private NetWorkRequest request;
     private UserInfo userInfo;
     private ArrayList<RoadType> mRoadTypeList;
-
+    private GeoCoder mSearch;
+    private String address;
 
     public MapFragment() {
     }
@@ -115,36 +123,38 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
     private void initView(View view) {
 
         mAcache = ACache.get(getActivity());
-        dialog = DialogProgress.createLoadingDialog(getActivity(),"",this);
+        dialog = DialogProgress.createLoadingDialog(getActivity(), "", this);
         locationModel = new LoacationModel(getActivity(), this, 3000);
-        request = new NetWorkRequest(getActivity(),this);
+        request = new NetWorkRequest(getActivity(), this);
 
         userInfo = (UserInfo) mAcache.getAsObject("UserInfo");
 
-        if (userInfo ==null|| TextUtils.isEmpty(userInfo.getUserId())){
-            myToast.toast(getActivity(),"登录状态已过期，请重新登录！");
+        if (userInfo == null || TextUtils.isEmpty(userInfo.getUserId())) {
+            myToast.toast(getActivity(), "登录状态已过期，请重新登录！");
             startActivity(new Intent(getActivity(), LoginActivity.class));
             getActivity().finish();
         }
 
         Map map = new HashMap();
-        map.put("userId",userInfo.getUserId());
-        map.put("appSid",userInfo.getAppSid());
-        map.put("body","{\"typeKey\":\"order_type\"}");
-        request.doPostRequest(0,true, Uri.getDicByTypeKey,map);
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        JSONObject object = new JSONObject();
+        object.put("typeKey", "order_type");
+        map.put("body", object.toJSONString());
+        request.doPostRequest(0, true, Uri.getDicByTypeKey, map);
     }
 
     private void initData() {
         ArrayList<EventTypeGrid> mGridlist = new ArrayList<>();
-        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found,"全部病害"));
-        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found,"等待维修"));
-        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found,"正在维修"));
-        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found,"维修完成"));
-        mGrid.setAdapter(new CommonAdapter<EventTypeGrid>(getActivity(),R.layout.item_map_grid,mGridlist) {
+        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found, "全部病害"));
+        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found, "等待维修"));
+        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found, "正在维修"));
+        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found, "维修完成"));
+        mGrid.setAdapter(new CommonAdapter<EventTypeGrid>(getActivity(), R.layout.item_map_grid, mGridlist) {
             @Override
             protected void convert(ViewHolder viewHolder, EventTypeGrid item, int position) {
-                viewHolder.setImageResource(R.id.item_mapgrid_img,item.getImg());
-                viewHolder.setText(R.id.item_mapgrid_text,item.getText());
+                viewHolder.setImageResource(R.id.item_mapgrid_img, item.getImg());
+                viewHolder.setText(R.id.item_mapgrid_text, item.getText());
             }
         });
         mGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -163,7 +173,7 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
                 .fromResource(R.drawable.location_icon);
 
         mBaiduMap = mMapView.getMap();
-        mMapView.showZoomControls(false);
+//        mMapView.showZoomControls(false);
         mBaiduMap.setMyLocationEnabled(true);
         LatLng cenpt = new LatLng(30.616744, 110.313039);
         setbaiduCenter(cenpt, 8);
@@ -189,12 +199,20 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
                     //从marker中获取info信息
                     Bundle bundle = marker.getExtraInfo();
                     if (bundle.containsKey("LatLng")) {
-                        mDialog.show();
+                        if (mDialog != null)
+                            mDialog.show();
+
+                        mEventCenpt=marker.getPosition();
                     }
+                    mSearch.reverseGeoCode(new ReverseGeoCodeOption()
+                            .location(marker.getPosition()));
                 }
                 return true;
             }
         });
+
+        mSearch = GeoCoder.newInstance();
+        mSearch.setOnGetGeoCodeResultListener(listener);
     }
 
     /**
@@ -209,11 +227,14 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(getActivity(), EventAddActivity.class);
-                intent.putExtra("road", which);
+                intent.putExtra("value", mRoadTypeList.get(which).getValue());
+                intent.putExtra("address", address);
+                intent.putExtra("Cenpt", mEventCenpt);
                 startActivity(intent);
             }
         });
         mDialog = builder.create();
+
     }
 
     /**
@@ -242,7 +263,15 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.map_add://新增
-                mDialog.show();
+                if (myCenpt!=null){
+                    if (mDialog != null)
+                        mDialog.show();
+                    mSearch.reverseGeoCode(new ReverseGeoCodeOption()
+                            .location(myCenpt));
+                    mEventCenpt=myCenpt;
+                }else {
+                    showToast("未能定位到当前位置！");
+                }
                 break;
             case R.id.map_mylocation:
                 if (myCenpt != null) {
@@ -252,10 +281,10 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
                 }
                 break;
             case R.id.map_eventType_icon:
-                if (mShadow.getVisibility()==View.GONE){
+                if (mShadow.getVisibility() == View.GONE) {
                     mShadow.setVisibility(View.VISIBLE);
                     mEventType_ll.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     mShadow.setVisibility(View.GONE);
                     mEventType_ll.setVisibility(View.GONE);
                 }
@@ -275,6 +304,28 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
         mBaiduMap.setMapStatus(mMapStatusUpdate);
     }
 
+    /**
+     * 地理位置反编译
+     */
+    OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {
+        public void onGetGeoCodeResult(GeoCodeResult result) {
+            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                //没有检索到结果
+            }
+            //获取地理编码结果
+        }
+
+        @Override
+        public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
+            if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                //没有找到检索结果
+                return;
+            }
+            //获取反向地理编码结果
+            address = result.getAddress();
+        }
+    };
+
     @Override
     public void onResume() {
         super.onResume();
@@ -291,8 +342,10 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
     public void onDestroy() {
         super.onDestroy();
         locationModel.stopLoacation();
-        mMapView.onDestroy();
+        if (mMapView != null)
+            mMapView.onDestroy();
         bitmapDescriptor_location.recycle();
+        mSearch.destroy();
     }
 
 
@@ -304,12 +357,13 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
 
     @Override
     public void loadDataFinish(int code, Object data) {
-        if (code==0){
-            if (data!=null){
-                mRoadTypeList = JSON.parseObject(data.toString(), new TypeReference<ArrayList<RoadType>>(){});
-                if (mRoadTypeList!=null&&mRoadTypeList.size()>0){
+        if (code == 0) {
+            if (data != null) {
+                mRoadTypeList = JSON.parseObject(data.toString(), new TypeReference<ArrayList<RoadType>>() {
+                });
+                if (mRoadTypeList != null && mRoadTypeList.size() > 0) {
                     String[] item = new String[mRoadTypeList.size()];
-                    for (int i=0;i<mRoadTypeList.size();i++){
+                    for (int i = 0; i < mRoadTypeList.size(); i++) {
                         item[i] = mRoadTypeList.get(i).getText();
                     }
                     creatDialog(item);
@@ -318,20 +372,21 @@ public class MapFragment extends Fragment implements LoacationListener ,UIDataLi
         }
 
     }
+
     @Override
     public void showToast(String message) {
-        myToast.toast(getActivity(),message);
+        myToast.toast(getActivity(), message);
     }
 
     @Override
     public void showDialog() {
-        if (dialog !=null)
+        if (dialog != null)
             dialog.show();
     }
 
     @Override
     public void dismissDialog() {
-        if (dialog !=null)
+        if (dialog != null)
             dialog.dismiss();
     }
 

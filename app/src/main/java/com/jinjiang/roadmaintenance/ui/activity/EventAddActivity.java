@@ -1,6 +1,7 @@
 package com.jinjiang.roadmaintenance.ui.activity;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,31 +12,47 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.IdRes;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.apkfuns.logutils.LogUtils;
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.baidu.mapapi.model.LatLng;
+import com.bumptech.glide.Glide;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.base.BaseActivity;
+import com.jinjiang.roadmaintenance.data.EventAttr;
+import com.jinjiang.roadmaintenance.data.EventTypeBase;
+import com.jinjiang.roadmaintenance.data.UserInfo;
+import com.jinjiang.roadmaintenance.model.NetWorkRequest;
+import com.jinjiang.roadmaintenance.model.UIDataListener;
 import com.jinjiang.roadmaintenance.ui.view.ActionSheetDialog;
+import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
 import com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView;
 import com.jinjiang.roadmaintenance.ui.view.MyGridView;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
+import com.jinjiang.roadmaintenance.utils.ACache;
 import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.qqtheme.framework.picker.OptionPicker;
 
-public class EventAddActivity extends BaseActivity implements ActionSheetDialog.OnActionSheetSelected, DialogInterface.OnCancelListener {
+public class EventAddActivity extends BaseActivity implements ActionSheetDialog.OnActionSheetSelected, DialogInterface.OnCancelListener ,UIDataListener{
 
     @BindView(R.id.eventadd_grid_tupian)
     MyGridView mTupianGrid;
@@ -64,6 +81,16 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                     + "/RM/camera/";// 拍照路径
     private String cameraPath;
     private ArrayList<File> mPhotoList;
+    private ArrayList<EventTypeBase> mEventTypeBaseList;
+    private int mRoadvalue;
+    private String mAddress;
+    private CommonAdapter<EventTypeBase> adapter_eventtype;
+    private ACache mAcache;
+    private Dialog dialog;
+    private NetWorkRequest request;
+    private UserInfo userInfo;
+    private int driverwayType = 1;
+    private LatLng mCenpt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,37 +105,102 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
     @Override
     protected void initUI() {
         ButterKnife.bind( this ) ;
+
+        Intent intent = getIntent();
+        if (intent.hasExtra("value")){
+            mRoadvalue = intent.getIntExtra("value",0);
+        }
+        if (intent.hasExtra("address")){
+            mAddress = intent.getStringExtra("address");
+        }
+        if (intent.hasExtra("Cenpt")){
+            mCenpt = intent.getParcelableExtra("Cenpt");
+        }
     }
 
     @Override
     protected void initData() {
         mPhotoList = new ArrayList<>();
+        mEventTypeBaseList = new ArrayList<>();
+        mPhotoList.add(new File(""));
+        setGridAdapter();
+        mRoadName.setText(mAddress);
 
-        initOptionPicker();
+        mAcache = ACache.get(EventAddActivity.this);
+        dialog = DialogProgress.createLoadingDialog(EventAddActivity.this, "", this);
+        request = new NetWorkRequest(EventAddActivity.this, this);
+
+        userInfo = (UserInfo) mAcache.getAsObject("UserInfo");
+
+        if (userInfo == null || TextUtils.isEmpty(userInfo.getUserId())) {
+            myToast.toast(EventAddActivity.this, "登录状态已过期，请重新登录！");
+            startActivity(new Intent(EventAddActivity.this, LoginActivity.class));
+            EventAddActivity.this.finish();
+        }
+
         mDriverwayType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
                 if (checkedId == R.id.eventadd_radio1) {
-
+                    driverwayType = 1;
                 } else {
-
+                    driverwayType = 2;
                 }
             }
         });
+
+        adapter_eventtype = new CommonAdapter<EventTypeBase>(EventAddActivity.this, R.layout.item_eventtype_add,mEventTypeBaseList) {
+            @Override
+            protected void convert(ViewHolder viewHolder, EventTypeBase item, final int position) {
+                viewHolder.setText(R.id.item_name,item.getEventType().getName());
+                ArrayList<EventAttr> list = item.getEventAttrsList();
+                if (list!=null&&list.size()>0){
+                    if (list.size()==1){
+                        viewHolder.setText(R.id.item_attr,list.get(0).getDefaultVal()+"m");
+                    }else {
+                        viewHolder.setText(R.id.item_attr,list.get(0).getDefaultVal()+"m"+"*"+list.get(1).getDefaultVal()+"m");
+                    }
+                }
+                viewHolder.setOnClickListener(R.id.item_del, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mEventTypeBaseList.remove(position);
+                        adapter_eventtype.notifyDataSetChanged();
+                        mAllArea.setText(getAllArea()+"m²");
+                    }
+                });
+            }
+        };
+        mEventtypeListview.setAdapter(adapter_eventtype);
     }
 
     private void setGridAdapter() {
+        LogUtils.d(mPhotoList);
         mTupianGrid.setAdapter(new CommonAdapter<File>(EventAddActivity.this, R.layout.item_addphoto_grid, mPhotoList) {
             @Override
             protected void convert(ViewHolder viewHolder, final File item, int position) {
-                ((SimpleDraweeView) viewHolder.getView(R.id.item_addphoto_grid_img)).setImageURI(Uri.parse("file://" + item.getAbsolutePath()));
-                viewHolder.setOnClickListener(R.id.item_addphoto_grid_del, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mPhotoList.remove(item);
-                        setGridAdapter();
-                    }
-                });
+                if (position!=mPhotoList.size()-1){
+                    Glide.with(EventAddActivity.this).load("file://" + item.getAbsolutePath()).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                    viewHolder.setOnClickListener(R.id.item_addphoto_grid_del, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mPhotoList.remove(item);
+                            setGridAdapter();
+                        }
+                    });
+                    viewHolder.setVisible(R.id.item_addphoto_grid_del,true);
+                }else {
+                    Glide.with(EventAddActivity.this).load(R.drawable.add3).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                    viewHolder.setVisible(R.id.item_addphoto_grid_del,false);
+                }
+            }
+        });
+        mTupianGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (position==mPhotoList.size()-1){
+                    ActionSheetDialog.showSheet(EventAddActivity.this, EventAddActivity.this, EventAddActivity.this);
+                }
             }
         });
     }
@@ -125,69 +217,69 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             case R.id.eventadd_eventType_know:
                 break;
             case R.id.eventadd_eventType_add:
-                ActionSheetDialog.showSheet(EventAddActivity.this, this, this);
+                Intent intent = new Intent(EventAddActivity.this,EventTypeActivity.class);
+                startActivityForResult(intent,105);
                 break;
             case R.id.eventadd_planAdd:
                 break;
             case R.id.eventadd_send:
+                if (IsNotNull()){
+                    Map map = new HashMap();
+                    map.put("userId", userInfo.getUserId());
+                    map.put("appSid", userInfo.getAppSid());
+                    JSONObject object = new JSONObject();
+                    object.put("orderType", mEventTypeBaseList.get(0).getEventType().getOrderType());
+                    object.put("lineType", driverwayType);
+                    object.put("longitude", mCenpt.longitude);
+                    object.put("latitude", mCenpt.latitude);
+                    object.put("locationDesc", mAddress);
+                    object.put("area", getAllArea());
+                    object.put("timePlan", mPlanTime.getText().toString());
+                    object.put("moneyPlan", mPlanCost.getText().toString());
+                    object.put("orderStatus", 2);
+                    object.put("detail", mContent.getText().toString());
+                    map.put("workOrder", object.toJSONString());
+                    JSONArray array = new JSONArray();
+                    for (EventTypeBase e:mEventTypeBaseList){
+                        JSONObject object2 = new JSONObject();
+                        object2.put("diseaseType", driverwayType);
+                        object2.put("detail", driverwayType);
+                        object2.put("planDetail", driverwayType);
+                        array.add(object2);
+                    }
+                    map.put("disease", array.toJSONString());
+                    request.doPostRequest(0, true, com.jinjiang.roadmaintenance.utils.Uri.addDisease, map);
+                }
                 break;
         }
     }
 
     /**
-     * 初始化类型选择器
+     * 非空判断
      */
-    private void initOptionPicker() {
-        ArrayList<String> type_list = new ArrayList<>();
-        type_list.add("沥青路面");
-        type_list.add("水泥路面");
-        type_list.add("人行道");
-        type_list.add("井盖");
-        type_list.add("其他");
-        picker_Type = null;
-        picker_Type = new OptionPicker(EventAddActivity.this, type_list);
-        picker_Type.setOffset(1);
-        picker_Type.setCycleDisable(true);
-        picker_Type.setSelectedIndex(1);
-        picker_Type.setTextSize(15);
-        picker_Type.setLineColor(EventAddActivity.this.getResources().getColor(R.color.blue));
-        picker_Type.setTextColor(EventAddActivity.this.getResources().getColor(R.color.text_black));
-        picker_Type.setCancelText("取消");
-        picker_Type.setCancelTextColor(EventAddActivity.this.getResources().getColor(R.color.gray_deep));
-        picker_Type.setSubmitText("确定");
-        picker_Type.setSubmitTextColor(EventAddActivity.this.getResources().getColor(R.color.blue));
-        picker_Type.setOnOptionPickListener(new OptionPicker.OnOptionPickListener() {
-            @Override
-            public void onOptionPicked(int position, String option) {
-                eventType = position;
-//                mRoadType_tv.setText(option);
-                if (position == 0) {
-//                    mDriverwayType_ll.setVisibility(View.VISIBLE);
-//                    mEventType_ll.setVisibility(View.VISIBLE);
-//                    mProperty_ll.setVisibility(View.VISIBLE);
-                } else if (position == 1) {
-//                    mDriverwayType_ll.setVisibility(View.VISIBLE);
-//                    mEventType_ll.setVisibility(View.VISIBLE);
-//                    mProperty_ll.setVisibility(View.VISIBLE);
-                } else if (position == 2) {
-//                    mDriverwayType_ll.setVisibility(View.GONE);
-//                    mEventType_ll.setVisibility(View.VISIBLE);
-//                    mProperty_ll.setVisibility(View.VISIBLE);
-
-                } else if (position == 3) {
-//                    mDriverwayType_ll.setVisibility(View.GONE);
-//                    mEventType_ll.setVisibility(View.VISIBLE);
-//                    mProperty_ll.setVisibility(View.VISIBLE);
-
-                } else {
-//                    mDriverwayType_ll.setVisibility(View.GONE);
-//                    mEventType_ll.setVisibility(View.GONE);
-//                    mProperty_ll.setVisibility(View.GONE);
-                }
-            }
-        });
+    private boolean IsNotNull(){
+        if (TextUtils.isEmpty(mRoadName.getText().toString())){
+            showToast("请输入道路名称！");
+            return true;
+        }
+        if (mEventTypeBaseList==null||mEventTypeBaseList.size()==0){
+            showToast("请选择病害类型！");
+            return true;
+        }
+        if (TextUtils.isEmpty(mPlanTime.getText().toString())){
+            showToast("请输入预计工期！");
+            return true;
+        }
+        if (TextUtils.isEmpty(mPlanCost.getText().toString())){
+            showToast("请输入预计维修费用！");
+            return true;
+        }
+        if (TextUtils.isEmpty(mContent.getText().toString())){
+            showToast("请输入备注！");
+            return true;
+        }
+        return false;
     }
-
 
     @Override
     public void onCancel(DialogInterface dialog) {
@@ -229,9 +321,9 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             if (requestCode == 100) {
                 LogUtils.d("path=" + cameraPath);
                 File file = new File(cameraPath);
-                mPhotoList.add(file);
+                mPhotoList.add(mPhotoList.size()-1,file);
                 setGridAdapter();
-            }
+            }else
             if (requestCode == 102) {
                 try {
                     Uri uri = data.getData();
@@ -241,7 +333,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                     LogUtils.d("path=" + data);
                     File file = new File(absolutePath);
                     if (!mPhotoList.contains(file)) {
-                        mPhotoList.add(file);
+                        mPhotoList.add(mPhotoList.size()-1,file);
                         setGridAdapter();
                     } else {
                         myToast.toast(EventAddActivity.this, "已选择该相片！");
@@ -249,15 +341,26 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }else
+            if (requestCode == 105) {
+                mEventTypeBaseList.add((EventTypeBase) data.getSerializableExtra("EventTypeBase"));
+                adapter_eventtype.notifyDataSetChanged();
+                mAllArea.setText(getAllArea()+"m²");
             }
-
         }
+        LogUtils.d(requestCode+"/"+resultCode);
         LogUtils.d(data);
-        if (requestCode == 105 && resultCode == 106) {
-            LogUtils.d(data);
-//            mRoadName_tv.setText(data.getStringExtra("roadname"));
-//            mLocation_tv.setText(data.getStringExtra("location"));
+    }
+
+    private String getAllArea(){
+        float Allarea = 0;
+        for (EventTypeBase e:mEventTypeBaseList){
+            if ( e.getEventAttrsList().size()>=3){
+                Allarea+= Float.parseFloat(e.getEventAttrsList().get(2).getDefaultVal());
+            }
         }
+        DecimalFormat fnum = new DecimalFormat("##0.00");
+        return fnum.format(Allarea);
     }
 
     public static String getRealFilePath(final Context context, final Uri uri) {
@@ -284,4 +387,34 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
     }
 
 
+    @Override
+    public void loadDataFinish(int code, Object data) {
+
+    }
+    @Override
+    public void showToast(String message) {
+        myToast.toast(EventAddActivity.this, message);
+    }
+
+    @Override
+    public void showDialog() {
+        if (dialog != null)
+            dialog.show();
+    }
+
+    @Override
+    public void dismissDialog() {
+        if (dialog != null)
+            dialog.dismiss();
+    }
+
+    @Override
+    public void onError(String errorCode, String errorMessage) {
+        showToast(errorMessage);
+    }
+
+    @Override
+    public void cancelRequest() {
+        request.CancelPost();
+    }
 }

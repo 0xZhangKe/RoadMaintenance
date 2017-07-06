@@ -21,4 +21,19 @@ public class Uri {
      *
      */
     public static String getDicByTypeKey = mainUrl+"dectionary/getDicByTypeKey";
+    /**
+     * 获取病害类型
+     *
+     */
+    public static String getDiseaseType = mainUrl+"disease/getDiseaseType";
+    /**
+     * 获取病害类型属性
+     *
+     */
+    public static String getDiseaseAttr = mainUrl+"disease/getDiseaseAttr";
+    /**
+     * 上传
+     *
+     */
+    public static String addDisease = mainUrl+"disease/addDisease";
 }

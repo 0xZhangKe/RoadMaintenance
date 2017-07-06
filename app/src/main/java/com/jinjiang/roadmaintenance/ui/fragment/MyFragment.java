@@ -8,14 +8,15 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.ui.activity.LoginActivity;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
+import com.jinjiang.roadmaintenance.utils.GlideImgManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,7 +30,7 @@ import butterknife.Unbinder;
 public class MyFragment extends Fragment {
     private static MyFragment fragment;
     @BindView(R.id.personalCenter_img)
-    SimpleDraweeView mImg;
+    ImageView mImg;
     @BindView(R.id.personalCenter_name)
     TextView mName;
     @BindView(R.id.personalCenter_job)
@@ -38,10 +39,11 @@ public class MyFragment extends Fragment {
     TextView mMobilephone;
     @BindView(R.id.personalCenter_mail)
     TextView mMail;
-    @BindView(R.id.personalCenter_company)
-    TextView mCompany;
+    @BindView(R.id.personalCenter_gender)
+    TextView mGender;
     Unbinder unbinder;
     private UserInfo userInfo;
+    private ACache mAcache;
 
     public MyFragment() {
     }
@@ -68,7 +70,7 @@ public class MyFragment extends Fragment {
 
     private void initView(View view) {
 
-        ACache mAcache = ACache.get(getActivity());
+        mAcache = ACache.get(getActivity());
         userInfo = (UserInfo) mAcache.getAsObject("UserInfo");
 
         if (userInfo == null || TextUtils.isEmpty(userInfo.getAppSid())) {
@@ -82,6 +84,9 @@ public class MyFragment extends Fragment {
         mName.setText(userInfo.getRealName());
         mMobilephone.setText(userInfo.getUserTel());
         mJob.setText(userInfo.getUserRoleName());
+        mMail.setText(userInfo.getUserEmail());
+        mGender.setText(userInfo.getGender() == 0 ? "女" : "男");
+        GlideImgManager.glideLoader(getActivity(), userInfo.getHeadPhoto(), R.drawable.pic_not_found, R.drawable.pic_not_found, mImg, 0);
     }
 
 
@@ -93,5 +98,9 @@ public class MyFragment extends Fragment {
 
     @OnClick(R.id.personalCenter_exit)
     public void onViewClicked() {
+        mAcache.remove("UserInfo");
+        startActivity(new Intent(getActivity(), LoginActivity.class));
+        getActivity().finish();
+
     }
 }

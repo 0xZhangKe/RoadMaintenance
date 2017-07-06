@@ -5,7 +5,6 @@ import android.app.Application;
 import com.apkfuns.logutils.LogLevel;
 import com.apkfuns.logutils.LogUtils;
 import com.baidu.mapapi.SDKInitializer;
-import com.facebook.drawee.backends.pipeline.Fresco;
 
 import cn.finalteam.okhttpfinal.OkHttpFinal;
 import cn.finalteam.okhttpfinal.OkHttpFinalConfiguration;
@@ -22,13 +21,9 @@ public class ClientApp extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        Fresco.initialize(this);
         initLogs();
 
         SDKInitializer.initialize(getApplicationContext());
-        //注册错误处理保存本地
-//        CrashHandler crashHandler = CrashHandler.getInstance();
-//        crashHandler.init(this);
 
         OkHttpFinalConfiguration.Builder builder = new OkHttpFinalConfiguration.Builder();
         OkHttpFinal.getInstance().init(builder.build());

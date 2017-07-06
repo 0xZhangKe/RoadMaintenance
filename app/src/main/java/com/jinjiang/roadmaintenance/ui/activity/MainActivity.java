@@ -66,6 +66,10 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void setAnim() {
+    }
+
+    @Override
     protected void initData() {
         initTab();
         mapFragment = MapFragment.newInstance();

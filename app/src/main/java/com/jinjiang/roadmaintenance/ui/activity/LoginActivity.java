@@ -47,6 +47,10 @@ public class LoginActivity extends BaseActivity implements UIDataListener {
     }
 
     @Override
+    protected void setAnim() {
+    }
+
+    @Override
     protected void initUI() {
         mAcache = ACache.get(LoginActivity.this);
         dialog = DialogProgress.createLoadingDialog(LoginActivity.this,"",this);
@@ -115,4 +119,8 @@ public class LoginActivity extends BaseActivity implements UIDataListener {
         request.CancelPost();
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }
