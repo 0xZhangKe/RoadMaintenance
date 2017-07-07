@@ -36,4 +36,19 @@ public class Uri {
      *
      */
     public static String addDisease = mainUrl+"disease/addDisease";
+    /**
+     * 获取任务状态
+     *
+     */
+    public static String getOrderWork = mainUrl+"task/getOrderWork";
+    /**
+     * 获取任务列表
+     *
+     */
+    public static String getMyTask = mainUrl+"task/getMyTask";
+    /**
+     * 获取任务列表
+     *
+     */
+    public static String getDiseaseInfos = mainUrl+"task/getDiseaseInfos";
 }

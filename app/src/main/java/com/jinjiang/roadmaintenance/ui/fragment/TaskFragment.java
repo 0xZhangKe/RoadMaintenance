@@ -1,9 +1,11 @@
 package com.jinjiang.roadmaintenance.ui.fragment;
 
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +17,24 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.apkfuns.logutils.LogUtils;
 import com.jinjiang.roadmaintenance.R;
+import com.jinjiang.roadmaintenance.data.RoadType;
+import com.jinjiang.roadmaintenance.data.Task;
+import com.jinjiang.roadmaintenance.data.TaskState;
+import com.jinjiang.roadmaintenance.data.UserInfo;
+import com.jinjiang.roadmaintenance.model.LoacationModel;
+import com.jinjiang.roadmaintenance.model.NetWorkRequest;
+import com.jinjiang.roadmaintenance.model.UIDataListener;
 import com.jinjiang.roadmaintenance.ui.activity.EventDetailsActivity;
+import com.jinjiang.roadmaintenance.ui.activity.LoginActivity;
+import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
+import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.ui.view.nicespinner.NiceSpinner;
+import com.jinjiang.roadmaintenance.utils.ACache;
+import com.jinjiang.roadmaintenance.utils.Uri;
 import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
 
@@ -27,6 +43,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import cn.qqtheme.framework.picker.DatePicker;
 import cn.qqtheme.framework.picker.DateTimePicker;
@@ -35,7 +53,7 @@ import cn.qqtheme.framework.picker.DateTimePicker;
 /**
  * 任务
  */
-public class TaskFragment extends Fragment implements View.OnClickListener{
+public class TaskFragment extends Fragment implements UIDataListener, View.OnClickListener {
     private static TaskFragment fragment;
     private ImageView mSearch;
     private LinearLayout mSearchdown;
@@ -56,12 +74,20 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
     private ListView mListView;
     private DatePicker picker_Time;
     private int timeType = 0;
-    private int eventType = 0;
+    private int mOrderStatus = 0;
     private String startTime = "";
     private String endTime = "";
+    private ACache mAcache;
+    private Dialog dialog;
+    private NetWorkRequest request;
+    private UserInfo userInfo;
+    private ArrayList<TaskState> mTaskStateList;
+    private ArrayList<Task> mTaskList;
+    private CommonAdapter<Task> adapter;
 
     public TaskFragment() {
     }
+
     public static TaskFragment newInstance() {
 
         if (fragment == null) {
@@ -115,8 +141,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
     /**
      * 重置
      */
-    private void reset(){
-        eventType = 0;
+    private void reset() {
         mNs.setSelectedIndex(0);
 
         mTime1.setChecked(false);
@@ -138,23 +163,22 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
     }
 
     private void initData() {
-        ArrayList typeList = new ArrayList();
-        typeList.add("全部");
-        typeList.add("已记录，待提交");
-        typeList.add("已提交，未施工");
-        typeList.add("已提交，待批复");
-        typeList.add("已批复，审核未通过");
-        typeList.add("已处理，待提交");
-        typeList.add("初验");
-        typeList.add("三方验收");
-        typeList.add("验收不合格");
-        typeList.add("待确认");
-        mNs.attachDataSource(typeList);
 
+        mTaskList = new ArrayList<>();
+
+        mAcache = ACache.get(getActivity());
+        dialog = DialogProgress.createLoadingDialog(getActivity(), "", this);
+        request = new NetWorkRequest(getActivity(), this);
+        userInfo = (UserInfo) mAcache.getAsObject("UserInfo");
+        if (userInfo == null || TextUtils.isEmpty(userInfo.getUserId())) {
+            myToast.toast(getActivity(), "登录状态已过期，请重新登录！");
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+            getActivity().finish();
+        }
         mNs.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    eventType = i;
+                mOrderStatus = mTaskStateList.get(i).getOrderStatus();
             }
 
             @Override
@@ -162,30 +186,18 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
             }
         });
 
-        ArrayList list = new ArrayList();
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-
-        mListView.setAdapter(new CommonAdapter<String>(getActivity(),R.layout.item_task_main,list) {
-            @Override
-            protected void convert(ViewHolder viewHolder, String item, int position) {
-            }
-        });
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(getActivity(), EventDetailsActivity.class));
+                Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
+                intent.putExtra("Task",mTaskList.get(position));
+                startActivity(intent);
             }
         });
         mTime1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
+                if (isChecked) {
                     startTime = "";
                     endTime = "";
                     mTime2.setText("");
@@ -194,7 +206,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
                     mTime3.setEnabled(false);
                     mTime2.setBackground(getResources().getDrawable(R.drawable.gre_stroke_back2));
                     mTime3.setBackground(getResources().getDrawable(R.drawable.gre_stroke_back2));
-                }else {
+                } else {
                     mTime2.setEnabled(true);
                     mTime3.setEnabled(true);
                     mTime2.setBackground(getResources().getDrawable(R.drawable.gre_stroke_back));
@@ -202,6 +214,11 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
                 }
             }
         });
+
+        Map map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        request.doPostRequest(0, true, Uri.getOrderWork, map);
 
     }
 
@@ -237,7 +254,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
         picker_Time.setTextColor(TaskFragment.this.getResources().getColor(R.color.text_black));
         picker_Time.setCancelTextColor(TaskFragment.this.getResources().getColor(R.color.gray_deep));
         picker_Time.setSubmitTextColor(TaskFragment.this.getResources().getColor(R.color.blue));
-        picker_Time.setSelectedItem(year,month,day);
+        picker_Time.setSelectedItem(year, month, day);
         //监听选择
         picker_Time.setOnDatePickListener(new DatePicker.OnYearMonthDayPickListener() {
             @Override
@@ -256,6 +273,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
             }
         });
     }
+
     /**
      * 比较当前选择的日期与今日日期大小
      *
@@ -284,20 +302,20 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.task_search:
-                if (mSearchdown.getVisibility()==View.GONE){
+                if (mSearchdown.getVisibility() == View.GONE) {
                     mSearchdown.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     mSearchdown.setVisibility(View.GONE);
                 }
                 break;
             case R.id.task_time2:
-                timeType=0;
+                timeType = 0;
                 picker_Time.show();
                 break;
             case R.id.task_time3:
-                timeType=1;
+                timeType = 1;
                 picker_Time.show();
                 break;
             case R.id.task_reset:
@@ -306,9 +324,78 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
             case R.id.task_confirm:
                 mSearchdown.setVisibility(View.GONE);
                 reset();
+                Map map2 = new HashMap();
+                map2.put("userId", userInfo.getUserId());
+                map2.put("appSid", userInfo.getAppSid());
+                map2.put("orderStatus", mOrderStatus+"");
+                request.doPostRequest(1, true, Uri.getMyTask, map2);
                 break;
             default:
                 break;
         }
+    }
+
+    @Override
+    public void loadDataFinish(int code, Object data) {
+        if (code == 0) {
+            if (data != null) {
+                mTaskStateList = JSON.parseObject(data.toString(), new TypeReference<ArrayList<TaskState>>() {
+                });
+                if (mTaskStateList != null && mTaskStateList.size() > 0) {
+                    ArrayList typeList = new ArrayList();
+                    for (int i = 0; i < mTaskStateList.size(); i++) {
+                        typeList.add(mTaskStateList.get(i).getOrderStatusName());
+                    }
+                    mNs.attachDataSource(typeList);
+                    mOrderStatus = mTaskStateList.get(0).getOrderStatus();
+                    Map map2 = new HashMap();
+                    map2.put("userId", userInfo.getUserId());
+                    map2.put("appSid", userInfo.getAppSid());
+                    map2.put("orderStatus", mOrderStatus+"");
+                    request.doPostRequest(1, true, Uri.getMyTask, map2);
+                }
+            }
+        }else if (code == 1) {
+            if (data != null) {
+                mTaskList = JSON.parseObject(data.toString(), new TypeReference<ArrayList<Task>>() {
+                });
+                if (mTaskList != null && mTaskList.size() > 0) {
+                    adapter = new CommonAdapter<Task>(getActivity(), R.layout.item_task_main, mTaskList) {
+                        @Override
+                        protected void convert(ViewHolder viewHolder, Task item, int position) {
+                            viewHolder.setText(R.id.tv,item.getLocationDesc()+"-"+item.getOrderTypeName()+"-"+item.getCreateDt());
+                        }
+                    };
+                    mListView.setAdapter(adapter);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void showToast(String message) {
+        myToast.toast(getActivity(), message);
+    }
+
+    @Override
+    public void showDialog() {
+        if (dialog != null)
+            dialog.show();
+    }
+
+    @Override
+    public void dismissDialog() {
+        if (dialog != null)
+            dialog.dismiss();
+    }
+
+    @Override
+    public void onError(String errorCode, String errorMessage) {
+        showToast(errorMessage);
+    }
+
+    @Override
+    public void cancelRequest() {
+        request.CancelPost();
     }
 }

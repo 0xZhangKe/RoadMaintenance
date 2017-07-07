@@ -95,9 +95,7 @@
                 android:id="@+id/eventadd_grid_tupian"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
+                android:layout_margin="10dp"
                 android:columnWidth="90dp"
                 android:gravity="center"
                 android:horizontalSpacing="5dp"
@@ -232,6 +230,7 @@
             <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
+                android:id="@+id/eventadd_eventType_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -282,14 +281,15 @@
                 android:id="@+id/eventadd_eventtype_listview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:divider="@null"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-                android:divider="@null"
                 android:scrollbars="none" />
 
             <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
+                android:id="@+id/eventadd_area_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -310,8 +310,8 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:ellipsize="end"
+                    android:gravity="right"
                     android:hint="请输入总面积"
-                    android:gravity="right"
                     android:inputType="number"
                     android:maxLength="50"
                     android:maxLines="1"
@@ -323,126 +323,121 @@
             </LinearLayout>
 
             <View
+                android:id="@+id/eventadd_space_ll"
                 android:layout_width="match_parent"
                 android:layout_height="15dp"
                 android:background="@color/tab_shade" />
 
             <LinearLayout
+                android:id="@+id/eventadd_time_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="10dp">
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/eventadd_fangan_ll"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="维修方案："
-                    android:textColor="@color/text_black"
-                    android:textSize="15sp" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
 
-                <TextView
-                    android:layout_width="0dp"
+                    <EditText
+                        android:id="@+id/eventadd_fangan"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:background="@null"
+                        android:ellipsize="end"
+                        android:gravity="left"
+                        android:hint="请输入维修方案"
+                        android:maxLength="1000"
+                        android:maxLines="5"
+                        android:padding="5dp"
+                        android:textColor="@color/text_black"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <View style="@style/SpacingLineStyle" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp"
+                    android:background="@color/tab_shade"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:text=""
-                    android:textColor="@color/text_black"
-                    android:textSize="14sp" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
 
-                <ImageView
-                    android:id="@+id/eventadd_planAdd"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/add1" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="预计修复时间："
+                        android:textColor="@color/text_black"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/eventadd_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:hint="请输入工期（天）"
+                        android:inputType="number"
+                        android:maxLength="50"
+                        android:maxLines="1"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textColor="@color/text_black"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <View style="@style/SpacingLineStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="预计维修费用："
+                        android:textColor="@color/text_black"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/eventadd_cost"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:hint="请输入维修费用（元）"
+                        android:inputType="number"
+                        android:maxLength="50"
+                        android:maxLines="1"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textColor="@color/text_black"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp"
+                    android:background="@color/tab_shade" />
             </LinearLayout>
 
-            <com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView
-                android:id="@+id/eventadd_plan_listview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:divider="@null"
-                android:scrollbars="none" />
-
-            <View style="@style/SpacingLineStyle" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="15dp"
-                android:background="@color/tab_shade" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="10dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="预计修复时间："
-                    android:textColor="@color/text_black"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/eventadd_time"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:ellipsize="end"
-                    android:hint="请输入工期（天）"
-                    android:gravity="right"
-                    android:inputType="number"
-                    android:maxLength="50"
-                    android:maxLines="1"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:textColor="@color/text_black"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <View style="@style/SpacingLineStyle" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="10dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="预计维修费用："
-                    android:textColor="@color/text_black"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/eventadd_cost"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:ellipsize="end"
-                    android:hint="请输入维修费用（元）"
-                    android:gravity="right"
-                    android:inputType="number"
-                    android:maxLength="50"
-                    android:maxLines="1"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:textColor="@color/text_black"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="15dp"
-                android:background="@color/tab_shade" />
 
             <View style="@style/SpacingLineStyle" />
 

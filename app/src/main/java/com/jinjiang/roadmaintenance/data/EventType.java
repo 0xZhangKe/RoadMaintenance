@@ -20,6 +20,7 @@ public class EventType implements Serializable {
     private String id;
     private String name;
     private int orderType;
+    private String desc;
 
     public String getDetail() {
         return detail;
@@ -51,5 +52,13 @@ public class EventType implements Serializable {
 
     public void setOrderType(int orderType) {
         this.orderType = orderType;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 }

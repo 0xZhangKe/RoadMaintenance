@@ -174,6 +174,7 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
                 }
                 LogUtils.d(mEventAttrList);
                 EventTypeBase base = new EventTypeBase();
+                mEventTypeList.get(eventTypeposition).setDesc(mContent.getText().toString());
                 base.setEventAttrsList(mEventAttrList);
                 base.setEventType(mEventTypeList.get(eventTypeposition));
                 Intent intent = new Intent();

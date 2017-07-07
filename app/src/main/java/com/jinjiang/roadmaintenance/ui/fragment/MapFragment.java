@@ -97,6 +97,7 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
     private ArrayList<RoadType> mRoadTypeList;
     private GeoCoder mSearch;
     private String address;
+    private int userRole;
 
     public MapFragment() {
     }
@@ -133,6 +134,13 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
             myToast.toast(getActivity(), "登录状态已过期，请重新登录！");
             startActivity(new Intent(getActivity(), LoginActivity.class));
             getActivity().finish();
+        }
+
+        userRole = userInfo.getUserRole();
+        if (userRole==5||userRole==6){
+            mAdd.setVisibility(View.VISIBLE);
+        }else {
+            mAdd.setVisibility(View.GONE);
         }
 
         Map map = new HashMap();
@@ -180,16 +188,18 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
         mBaiduMap.setOnMapLongClickListener(new BaiduMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                if (mBaiduMap != null)
-                    mBaiduMap.clear();
+                if (userRole==5||userRole==6){
+                    if (mBaiduMap != null)
+                        mBaiduMap.clear();
 
-                MarkerOptions option = new MarkerOptions()
-                        .position(latLng)
-                        .icon(bitmapDescriptor_location);
-                Marker marker = (Marker) mBaiduMap.addOverlay(option);
-                Bundle bundle = new Bundle();
-                bundle.putString("LatLng", "");
-                marker.setExtraInfo(bundle);
+                    MarkerOptions option = new MarkerOptions()
+                            .position(latLng)
+                            .icon(bitmapDescriptor_location);
+                    Marker marker = (Marker) mBaiduMap.addOverlay(option);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("LatLng", "");
+                    marker.setExtraInfo(bundle);
+                }
             }
         });
         mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
