@@ -10,11 +10,11 @@ import java.util.List;
 public class TaskDetails implements Serializable {
 
     /**
-     * diseaseMsgDtos : [{"detail":"","diseaseAttrMsgDtos":[{"diseaseAttrId":424,"diseaseAttrName":"长(m)","typeUnitId":1,"value":"12"},{"diseaseAttrId":433,"diseaseAttrName":"宽(m)","typeUnitId":111,"value":"0.2"},{"diseaseAttrId":434,"diseaseAttrName":"面积(㎡)","typeUnitId":112,"value":"2.4"}],"diseaseId":202,"diseaseType":1,"diseaseTypeName":"纵向裂缝","planArea":19,"planDetail":"","planTime":0,"practicalArea":0,"practicalTime":0,"workOrderId":0},{"detail":"","diseaseAttrMsgDtos":[{"diseaseAttrId":427,"diseaseAttrName":"长(m)","typeUnitId":1,"value":"12"}],"diseaseId":203,"diseaseType":2,"diseaseTypeName":"横向裂缝","planArea":100,"planDetail":"","planTime":0,"practicalArea":0,"practicalTime":0,"workOrderId":0},{"detail":"","diseaseAttrMsgDtos":[{"diseaseAttrId":430,"diseaseAttrName":"长(m)","typeUnitId":1,"value":"12"},{"diseaseAttrId":431,"diseaseAttrName":"长(m)","typeUnitId":2,"value":"12"},{"diseaseAttrId":432,"diseaseAttrName":"长(m)","typeUnitId":3,"value":"144"}],"diseaseId":204,"diseaseType":3,"diseaseTypeName":"块状裂缝","planArea":25,"planDetail":"","planTime":0,"practicalArea":0,"practicalTime":0,"workOrderId":0}]
-     * taskCreateTime : 2017-07-04 20:19:17
-     * taskId : 157521
-     * taskName : 确认病害信息
-     * workOrderMsgDto : {"area":144,"createDt":"2017-07-04 20:19:17","detail":"","latitude":234.33,"lineType":1,"lineTypeName":"机动车道","locationDesc":"","longitude":234.33,"moneyPlan":0,"moneyPractical":0,"orderStatus":2,"orderType":1,"orderTypeName":"沥青路面","picUrls":["http://192.168.199.124/road/upload/disease/lijw/A-LQLM-20170704-01-00.jpg","http://192.168.199.124/road/upload/disease/lijw/A-LQLM-20170704-01-01.jpg","http://192.168.199.124/road/upload/disease/lijw/A-LQLM-20170704-01-02.psd"],"sectiongId":1,"sn":"A-LQLM-20170704-01","timePlan":0,"timePractical":0,"userId":"lijw","workOrderId":76}
+     * diseaseMsgDtos : [{"detail":"111","diseaseAttrMsgDtos":[{"diseaseAttrId":473,"diseaseAttrName":"长(m)","typeUnitId":1,"value":"2"},{"diseaseAttrId":474,"diseaseAttrName":"宽(m)","typeUnitId":111,"value":"0.2"},{"diseaseAttrId":475,"diseaseAttrName":"面积(㎡)","typeUnitId":112,"value":"0.40"}],"diseaseId":223,"diseaseType":1,"diseaseTypeName":"纵向裂缝","planArea":0,"planDetail":"","planTime":0,"practicalArea":0,"practicalTime":0,"workOrderId":0},{"detail":"222","diseaseAttrMsgDtos":[{"diseaseAttrId":476,"diseaseAttrName":"长(m)","typeUnitId":3,"value":"3"},{"diseaseAttrId":477,"diseaseAttrName":"宽(m)","typeUnitId":4,"value":"1"},{"diseaseAttrId":478,"diseaseAttrName":"面积(㎡)","typeUnitId":5,"value":"3.00"}],"diseaseId":224,"diseaseType":3,"diseaseTypeName":"块状裂缝","planArea":0,"planDetail":"","planTime":0,"practicalArea":0,"practicalTime":0,"workOrderId":0}]
+     * taskCreateTime :
+     * taskId :
+     * taskName :
+     * workOrderMsgDto : {"area":3.4,"createDt":"2017-07-09 11:17:28","detail":"bbb","latitude":110.35052,"lineType":1,"lineTypeName":"机动车道","locationDesc":"湖北省神农架林区","longitude":110.35052,"moneyPlan":0,"moneyPractical":0,"orderStatus":1,"orderType":1,"orderTypeName":"沥青路面","picUrls":["http://192.168.199.124/road/upload/disease/lijw/A-LQLM-20170709-01-01.jpg","http://192.168.199.124/road/upload/disease/lijw/A-LQLM-20170709-01-00.jpg"],"sectiongId":1,"sn":"A-LQLM-20170709-01","timePlan":0,"timePractical":0,"userId":"lijw","workOrderId":88}
      */
 
     private String taskCreateTime;
@@ -65,29 +65,29 @@ public class TaskDetails implements Serializable {
 
     public static class WorkOrderMsgDtoBean {
         /**
-         * area : 144
-         * createDt : 2017-07-04 20:19:17
-         * detail :
-         * latitude : 234.33
+         * area : 3.4
+         * createDt : 2017-07-09 11:17:28
+         * detail : bbb
+         * latitude : 110.35052
          * lineType : 1
          * lineTypeName : 机动车道
-         * locationDesc :
-         * longitude : 234.33
+         * locationDesc : 湖北省神农架林区
+         * longitude : 110.35052
          * moneyPlan : 0
          * moneyPractical : 0
-         * orderStatus : 2
+         * orderStatus : 1
          * orderType : 1
          * orderTypeName : 沥青路面
-         * picUrls : ["http://192.168.199.124/road/upload/disease/lijw/A-LQLM-20170704-01-00.jpg","http://192.168.199.124/road/upload/disease/lijw/A-LQLM-20170704-01-01.jpg","http://192.168.199.124/road/upload/disease/lijw/A-LQLM-20170704-01-02.psd"]
+         * picUrls : ["http://192.168.199.124/road/upload/disease/lijw/A-LQLM-20170709-01-01.jpg","http://192.168.199.124/road/upload/disease/lijw/A-LQLM-20170709-01-00.jpg"]
          * sectiongId : 1
-         * sn : A-LQLM-20170704-01
+         * sn : A-LQLM-20170709-01
          * timePlan : 0
          * timePractical : 0
          * userId : lijw
-         * workOrderId : 76
+         * workOrderId : 88
          */
 
-        private int area;
+        private double area;
         private String createDt;
         private String detail;
         private double latitude;
@@ -108,11 +108,11 @@ public class TaskDetails implements Serializable {
         private int workOrderId;
         private List<String> picUrls;
 
-        public int getArea() {
+        public double getArea() {
             return area;
         }
 
-        public void setArea(int area) {
+        public void setArea(double area) {
             this.area = area;
         }
 
@@ -271,12 +271,12 @@ public class TaskDetails implements Serializable {
 
     public static class DiseaseMsgDtosBean {
         /**
-         * detail :
-         * diseaseAttrMsgDtos : [{"diseaseAttrId":424,"diseaseAttrName":"长(m)","typeUnitId":1,"value":"12"},{"diseaseAttrId":433,"diseaseAttrName":"宽(m)","typeUnitId":111,"value":"0.2"},{"diseaseAttrId":434,"diseaseAttrName":"面积(㎡)","typeUnitId":112,"value":"2.4"}]
-         * diseaseId : 202
+         * detail : 111
+         * diseaseAttrMsgDtos : [{"diseaseAttrId":473,"diseaseAttrName":"长(m)","typeUnitId":1,"value":"2"},{"diseaseAttrId":474,"diseaseAttrName":"宽(m)","typeUnitId":111,"value":"0.2"},{"diseaseAttrId":475,"diseaseAttrName":"面积(㎡)","typeUnitId":112,"value":"0.40"}]
+         * diseaseId : 223
          * diseaseType : 1
          * diseaseTypeName : 纵向裂缝
-         * planArea : 19
+         * planArea : 0
          * planDetail :
          * planTime : 0
          * practicalArea : 0
@@ -386,10 +386,10 @@ public class TaskDetails implements Serializable {
 
         public static class DiseaseAttrMsgDtosBean {
             /**
-             * diseaseAttrId : 424
+             * diseaseAttrId : 473
              * diseaseAttrName : 长(m)
              * typeUnitId : 1
-             * value : 12
+             * value : 2
              */
 
             private int diseaseAttrId;

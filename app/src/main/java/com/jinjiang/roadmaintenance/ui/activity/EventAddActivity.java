@@ -31,6 +31,7 @@ import com.jinjiang.roadmaintenance.base.BaseActivity;
 import com.jinjiang.roadmaintenance.data.EventAttr;
 import com.jinjiang.roadmaintenance.data.EventType;
 import com.jinjiang.roadmaintenance.data.EventTypeBase;
+import com.jinjiang.roadmaintenance.data.Task;
 import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.model.NetWorkRequest;
 import com.jinjiang.roadmaintenance.model.UIDataListener;
@@ -107,6 +108,8 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
     private LatLng mCenpt;
     private int userRole;
     private int orderStatus = 1;
+    private Task mTask;
+    private boolean IsModify = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +134,10 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         }
         if (intent.hasExtra("Cenpt")) {
             mCenpt = intent.getParcelableExtra("Cenpt");
+        }
+        if (intent.hasExtra("Task")) {
+            mTask = (Task) intent.getSerializableExtra("Task");
+            IsModify = true;
         }
     }
 

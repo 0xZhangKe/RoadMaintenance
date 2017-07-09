@@ -189,9 +189,15 @@ public class TaskFragment extends Fragment implements UIDataListener, View.OnCli
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
-                intent.putExtra("Task",mTaskList.get(position));
-                startActivity(intent);
+                if (mTaskList.get(position).getOrderStatus() == 1) {
+                    Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
+                    intent.putExtra("Task", mTaskList.get(position));
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
+                    intent.putExtra("Task", mTaskList.get(position));
+                    startActivity(intent);
+                }
             }
         });
         mTime1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -327,7 +333,7 @@ public class TaskFragment extends Fragment implements UIDataListener, View.OnCli
                 Map map2 = new HashMap();
                 map2.put("userId", userInfo.getUserId());
                 map2.put("appSid", userInfo.getAppSid());
-                map2.put("orderStatus", mOrderStatus+"");
+                map2.put("orderStatus", mOrderStatus + "");
                 request.doPostRequest(1, true, Uri.getMyTask, map2);
                 break;
             default:
@@ -351,11 +357,11 @@ public class TaskFragment extends Fragment implements UIDataListener, View.OnCli
                     Map map2 = new HashMap();
                     map2.put("userId", userInfo.getUserId());
                     map2.put("appSid", userInfo.getAppSid());
-                    map2.put("orderStatus", mOrderStatus+"");
+                    map2.put("orderStatus", mOrderStatus + "");
                     request.doPostRequest(1, true, Uri.getMyTask, map2);
                 }
             }
-        }else if (code == 1) {
+        } else if (code == 1) {
             if (data != null) {
                 mTaskList = JSON.parseObject(data.toString(), new TypeReference<ArrayList<Task>>() {
                 });
@@ -363,7 +369,7 @@ public class TaskFragment extends Fragment implements UIDataListener, View.OnCli
                     adapter = new CommonAdapter<Task>(getActivity(), R.layout.item_task_main, mTaskList) {
                         @Override
                         protected void convert(ViewHolder viewHolder, Task item, int position) {
-                            viewHolder.setText(R.id.tv,item.getLocationDesc()+"-"+item.getOrderTypeName()+"-"+item.getCreateDt());
+                            viewHolder.setText(R.id.tv, item.getLocationDesc() + "-" + item.getOrderTypeName() + "-" + item.getCreateDt());
                         }
                     };
                     mListView.setAdapter(adapter);

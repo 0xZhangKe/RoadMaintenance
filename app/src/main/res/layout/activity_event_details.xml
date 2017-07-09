@@ -9,6 +9,7 @@
 
     <RelativeLayout style="@style/title_RelativeLayoutStyle">
 
+
         <LinearLayout
             android:id="@+id/eventdetails_back"
             android:layout_width="50dp"
@@ -21,9 +22,26 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/_title"
+            android:id="@+id/eventdetails_title"
             style="@style/title_text_Style"
-            android:text="病害详情" />
+            android:text="添加病害" />
+
+        <TextView
+            android:id="@+id/eventdetails_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/select_blue_button_background_"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:text="保存"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
     </RelativeLayout>
 
     <ScrollView
@@ -36,6 +54,11 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:background="@color/tab_shade" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -46,28 +69,46 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="病害编号："
+                    android:text="病害图片"
                     android:textColor="@color/text_black"
                     android:textSize="15sp" />
 
                 <TextView
-                    android:id="@+id/eventdetails_num"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="5dp"
+                    android:paddingLeft="6dp"
                     android:paddingRight="5dp"
                     android:textColor="@color/text_black"
-                    android:textSize="14sp" />
+                    android:textSize="15sp" />
 
                 <ImageView
-                    android:layout_width="25dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="25dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/arr_right" />
             </LinearLayout>
 
             <View style="@style/SpacingLineStyle" />
+
+            <com.jinjiang.roadmaintenance.ui.view.MyGridView
+                android:id="@+id/eventdetails_grid_tupian"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:columnWidth="90dp"
+                android:gravity="center"
+                android:horizontalSpacing="5dp"
+                android:numColumns="4"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="5dp" />
+
+            <View style="@style/SpacingLineStyle" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:background="@color/tab_shade" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -79,12 +120,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="病害名称："
+                    android:text="工单编号："
                     android:textColor="@color/text_black"
                     android:textSize="15sp" />
 
                 <TextView
-                    android:id="@+id/eventdetails_name"
+                    android:id="@+id/eventdetails_eventId"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -97,48 +138,8 @@
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
 
-                <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/arr_right" />
             </LinearLayout>
 
-            <View style="@style/SpacingLineStyle" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="道路名称："
-                    android:textColor="@color/text_black"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:id="@+id/eventdetails_roadName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:ellipsize="end"
-                    android:maxLength="50"
-                    android:maxLines="1"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:textColor="@color/text_black"
-                    android:textSize="14sp" />
-                <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/arr_right" />
-            </LinearLayout>
             <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
@@ -156,7 +157,7 @@
                     android:textSize="15sp" />
 
                 <TextView
-                    android:id="@+id/eventdetails_date"
+                    android:id="@+id/eventdetails_saveDate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -168,128 +169,88 @@
                     android:paddingRight="5dp"
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
-                <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/arr_right" />
+
             </LinearLayout>
 
             <View style="@style/SpacingLineStyle" />
-
-            <LinearLayout
-                android:id="@+id/eventdetails_property_ll"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="长：          "
-                        android:textColor="@color/text_black"
-                        android:textSize="15sp" />
-
-                    <EditText
-                        android:id="@+id/eventdetails_long"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:ellipsize="end"
-                        android:hint="请输入长度（米）"
-                        android:inputType="number"
-                        android:maxLength="100"
-                        android:maxLines="1"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:textColor="@color/text_black"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <View style="@style/SpacingLineStyle" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="宽：          "
-                        android:textColor="@color/text_black"
-                        android:textSize="15sp" />
-
-                    <EditText
-                        android:id="@+id/eventdetails_wide"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:ellipsize="end"
-                        android:hint="请输入宽度（米）"
-                        android:inputType="number"
-                        android:maxLength="100"
-                        android:maxLines="1"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:textColor="@color/text_black"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <View style="@style/SpacingLineStyle" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="面积：       "
-                        android:textColor="@color/text_black"
-                        android:textSize="15sp" />
-
-                    <EditText
-                        android:id="@+id/eventdetails_area"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:ellipsize="end"
-                        android:hint="请输入面积（平米）"
-                        android:inputType="number"
-                        android:maxLength="100"
-                        android:maxLines="1"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:textColor="@color/text_black"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <View style="@style/SpacingLineStyle" />
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="10dp">
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="记录人："
+                    android:textColor="@color/text_black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/eventdetails_savePerson"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:maxLength="50"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:background="@color/tab_shade" />
+
+            <View style="@style/SpacingLineStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="道路名称："
+                    android:textColor="@color/text_black"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/eventdetails_roadName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:gravity="right"
+                    android:enabled="false"
+                    android:maxLength="50"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <View style="@style/SpacingLineStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -299,90 +260,58 @@
                     android:textSize="15sp" />
 
                 <TextView
-                    android:id="@+id/eventdetails_place"
+                    android:id="@+id/eventdetails_location"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:gravity="right"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:maxLength="50"
+                    android:maxLines="1"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
-                    android:text=""
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
-                <TextView
-                    android:id="@+id/eventdetails_map"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:background="@drawable/gre_stroke_back"
-                    android:text="地图查看"
-                    android:textColor="@color/text_black"
-                    android:textSize="14sp" />
-            </LinearLayout>
 
+            </LinearLayout>
 
             <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="10dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="状态："
+                    android:text="路面类型："
                     android:textColor="@color/text_black"
                     android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/eventdetails_state"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:background="@null"
-                    android:ellipsize="end"
-                    android:gravity="left"
-                    android:hint="请输入内容"
-                    android:maxLength="1000"
-                    android:maxLines="5"
-                    android:padding="5dp"
-                    android:textColor="@color/text_black"
-                    android:textSize="14sp" />
-            </LinearLayout>
-            <View style="@style/SpacingLineStyle" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="10dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/eventdetails_roadType"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="描述："
-                    android:textColor="@color/text_black"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/eventdetails_content"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:gravity="right"
+                    android:layout_weight="1"
                     android:background="@null"
                     android:ellipsize="end"
-                    android:gravity="left"
-                    android:hint="请输入内容"
-                    android:maxLength="1000"
-                    android:maxLines="5"
-                    android:padding="5dp"
+                    android:maxLength="50"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
+
             </LinearLayout>
 
             <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
-                android:id="@+id/eventdetails_tupian_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -392,80 +321,326 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="上传图片："
+                    android:text="车道类型："
                     android:textColor="@color/text_black"
                     android:textSize="15sp" />
 
                 <TextView
-                    android:id="@+id/_tupian_tv"
+                    android:id="@+id/eventdetails_driverwayType_tv"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="6dp"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:maxLength="50"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
                     android:paddingRight="5dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+
+                <RadioGroup
+                    android:visibility="gone"
+                    android:id="@+id/eventdetails_driverwayType_rg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/eventdetails_radio1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:text="机动车道"
+                        android:textColor="@color/text_black"
+                        android:textSize="14sp" />
+
+                    <RadioButton
+                        android:id="@+id/eventdetails_radio2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_weight="1"
+                        android:text="非机动车道"
+                        android:textColor="@color/text_black"
+                        android:textSize="14sp" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:background="@color/tab_shade" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="总面积："
                     android:textColor="@color/text_black"
                     android:textSize="15sp" />
 
+                <TextView
+                    android:id="@+id/eventdetails_allArea"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:maxLength="50"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+
                 <ImageView
+                    android:id="@+id/eventdetails_eventType_add"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
+                    android:visibility="gone"
                     android:scaleType="fitXY"
-                    android:src="@drawable/arr_right" />
+                    android:src="@drawable/add1" />
             </LinearLayout>
 
-            <com.jinjiang.roadmaintenance.ui.view.MyGridView
-                android:id="@+id/eventdetails_grid_tupian"
+            <View style="@style/SpacingLineStyle" />
+
+
+            <com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView
+                android:id="@+id/eventdetails_eventtype_listview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:columnWidth="90dp"
-                android:gravity="center"
-                android:horizontalSpacing="5dp"
-                android:numColumns="4"
-                android:stretchMode="columnWidth"
-                android:verticalSpacing="5dp" />
+                android:divider="@null"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:scrollbars="none" />
+
+            <View style="@style/SpacingLineStyle" />
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:background="@color/tab_shade" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="预计修复方案："
+                    android:textColor="@color/text_black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/eventdetails_plansTv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/eventdetails_plansAdd"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:visibility="gone"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/add1" />
+            </LinearLayout>
+
+            <com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView
+                android:id="@+id/eventdetails_plansAdd_listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@null"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:scrollbars="none" />
 
             <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
 
                 <TextView
-                    android:id="@+id/eventdetails_send"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="50dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="30dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/select_blue_button_background_"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:text="提交"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:text="预计修复时间："
+                    android:textColor="@color/text_black"
+                    android:textSize="15sp" />
 
-                <TextView
-                    android:id="@+id/eventdetails_save"
+                <EditText
+                    android:id="@+id/eventdetails_planTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="50dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="30dp"
                     android:layout_weight="1"
-                    android:background="@drawable/select_blue_button_background_"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:text="保存"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:gravity="right"
+                    android:enabled="false"
+                    android:hint="请输入工期（天）"
+                    android:inputType="number"
+                    android:maxLength="50"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
             </LinearLayout>
+
+            <View style="@style/SpacingLineStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="预计维修费用："
+                    android:textColor="@color/text_black"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/eventdetails_planCost"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:gravity="right"
+                    android:enabled="false"
+                    android:hint="请输入维修费用（元）"
+                    android:inputType="number"
+                    android:maxLength="50"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <View style="@style/SpacingLineStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="审批状态："
+                    android:textColor="@color/text_black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/eventdetails_approvalStateTv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="right"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:text="已通过"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <View style="@style/SpacingLineStyle" />
+
+            <com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView
+                android:id="@+id/eventdetails_approvalStateLv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@null"
+                android:scrollbars="none" />
+
+            <View style="@style/SpacingLineStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="备注："
+                    android:textColor="@color/text_black"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/eventdetails_remark"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:gravity="right"
+                    android:enabled="false"
+                    android:inputType="number"
+                    android:maxLength="50"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:background="@color/tab_shade" />
+
+            <View style="@style/SpacingLineStyle" />
+
+            <TextView
+                android:id="@+id/eventdetails_send"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="50dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/select_blue_button_background_"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="提交"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
         </LinearLayout>
 
     </ScrollView>
