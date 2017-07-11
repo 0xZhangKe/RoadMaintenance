@@ -26,12 +26,18 @@
             android:src="@drawable/search" />
     </RelativeLayout>
 
+    <View
+        android:id="@+id/rate_view"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_below="@id/rate_title"
+        android:background="@color/tab_shade" />
 
     <ListView
         android:id="@+id/rate_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/rate_title"
+        android:layout_below="@+id/rate_view"
         android:divider="@color/divide"
         android:dividerHeight="0.5dp"
         android:padding="10dp"

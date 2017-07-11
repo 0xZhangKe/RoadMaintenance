@@ -2,35 +2,33 @@ package com.jinjiang.roadmaintenance.ui.activity;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.apkfuns.logutils.LogUtils;
 import com.bumptech.glide.Glide;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.base.BaseActivity;
+import com.jinjiang.roadmaintenance.data.EventAttr;
+import com.jinjiang.roadmaintenance.data.EventTypeBase;
+import com.jinjiang.roadmaintenance.data.Plan;
 import com.jinjiang.roadmaintenance.data.Task;
 import com.jinjiang.roadmaintenance.data.TaskDetails;
 import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.model.NetWorkRequest;
 import com.jinjiang.roadmaintenance.model.UIDataListener;
-import com.jinjiang.roadmaintenance.ui.view.ActionSheetDialog;
 import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
 import com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView;
 import com.jinjiang.roadmaintenance.ui.view.MyGridView;
@@ -40,7 +38,6 @@ import com.jinjiang.roadmaintenance.utils.Uri;
 import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +49,7 @@ import butterknife.OnClick;
 /**
  * 病害详情
  */
-public class EventDetailsActivity extends BaseActivity implements UIDataListener, ActionSheetDialog.OnActionSheetSelected, DialogInterface.OnCancelListener {
+public class EventDetailsActivity extends BaseActivity implements UIDataListener {
 
 
     @BindView(R.id.eventdetails_title)
@@ -101,6 +98,18 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
     ImageView mEventTypeAdd;
     @BindView(R.id.eventdetails_plansAdd)
     ImageView mPlansAdd;
+    @BindView(R.id.eventdetails_approvalStateLl)
+    LinearLayout mApprovalStateLl;
+    @BindView(R.id.eventdetails_confirm1)
+    RadioButton mConfirm1;
+    @BindView(R.id.eventdetails_confirm2)
+    RadioButton mConfirm2;
+    @BindView(R.id.eventdetails_confirm_rg)
+    RadioGroup mConfirmRg;
+    @BindView(R.id.eventdetails_remark_ll)
+    LinearLayout mRemarkLl;
+    @BindView(R.id.eventdetails_send)
+    TextView mSend;
     private Task mTask;
     private ACache mAcache;
     private Dialog dialog;
@@ -108,14 +117,13 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
     private UserInfo userInfo;
     private TaskDetails mTaskDetails;
     private int userRole;
+    private int OrderStatus;
     private CommonAdapter<String> mGridTupianAdapter;
     private CommonAdapter<TaskDetails.DiseaseMsgDtosBean> adapter_eventtype;
-
-    public static String SAVED_IMAGE_DIR_PATH =
-            Environment.getExternalStorageDirectory().getPath()
-                    + "/RM/camera/";// 拍照路径
-    private String cameraPath;
-    private ArrayList<File> mPhotoList;
+    private CommonAdapter<Plan> adapter_plan;
+    private CommonAdapter<TaskDetails.TaskInfosBean> adapter_approval;
+    private int OrderType;
+    private double totalArea = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +152,10 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         }
         userRole = userInfo.getUserRole();
 
+    }
+
+    @Override
+    protected void initData() {
         if (mTask != null) {
 
             Map map = new HashMap();
@@ -157,11 +169,6 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         }
     }
 
-    @Override
-    protected void initData() {
-        mPhotoList = new ArrayList<>();
-    }
-
     /**
      * 设置界面数据
      */
@@ -169,16 +176,42 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
 
 
         TaskDetails.WorkOrderMsgDtoBean wm = td.getWorkOrderMsgDto();
-        if (wm.getOrderStatus() == 2) {
-            mDriverwayTypeRg.setVisibility(View.VISIBLE);
+        OrderStatus = wm.getOrderStatus();
+        OrderType = wm.getOrderType();
+        totalArea = wm.getArea();
+        if (OrderStatus == 2) {//待确认
             mPlansAdd.setVisibility(View.VISIBLE);
             mEventTypeAdd.setVisibility(View.VISIBLE);
-            mDriverwayTypeRg.setVisibility(View.VISIBLE);
-            mDriverwayTypeTv.setVisibility(View.GONE);
-            mPhotoList.add(new File(""));
             mPlanTime.setEnabled(true);
             mPlanCost.setEnabled(true);
-            mRemark.setEnabled(true);
+            mApprovalStateLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 3) {//技术员审批--不处理
+            mRemark.setEnabled(false);
+            mConfirmRg.setVisibility(View.GONE);
+            mSend.setVisibility(View.GONE);
+        }else if (OrderStatus==4){//需处理(不会出现4)
+            mRemark.setEnabled(false);
+            mConfirmRg.setVisibility(View.GONE);
+            mSend.setVisibility(View.GONE);
+        }else if (OrderStatus==5){//待批复
+            mRadio1.setText("情况属实");
+            mRadio2.setText("情况不属实");
+        }else if (OrderStatus==6){// <20m未施工
+
+        }else if (OrderStatus==7){//监理审核否--重新下单
+        }else if (OrderStatus==8){//监理审核属实--一级业主批复
+            mRadio1.setText("情况属实");
+            mRadio2.setText("情况不属实");
+        }else if (OrderStatus==9){//一级业主审核否--重新下单
+        }else if (OrderStatus==10){//一级业主审核属实--二级业主批复
+            mRadio1.setText("情况属实");
+            mRadio2.setText("情况不属实");
+        }else if (OrderStatus==11){//二级业主审核否--重新下单
+        }else if (OrderStatus==12){//二级业主审核属实--三级业主批复
+            mRadio1.setText("情况属实");
+            mRadio2.setText("情况不属实");
+        }else if (OrderStatus==13){//三级业主审核否--重新下单
+        }else if (OrderStatus==14){//三级业主审核属实-->20m未施工
         }
 
 
@@ -188,29 +221,33 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         mLocation.setText(wm.getLocationDesc());
         mRoadType.setText(wm.getOrderTypeName());
         mDriverwayTypeTv.setText(wm.getLineTypeName());
-        mAllArea.setText(wm.getArea() + "m²");
+        mAllArea.setText("总面积"+wm.getArea() + "m²");
         mPlanTime.setText(wm.getTimePlan() + "");
-        mPlanCost.setText(wm.getMoneyPlan() + "元");
+        mPlanCost.setText(wm.getMoneyPlan() + "");
         mRemark.setText(wm.getDetail());
 
-        if (wm.getLineType() == 1) {
-            mRadio1.setChecked(true);
-            mRadio2.setChecked(false);
-        } else {
-            mRadio1.setChecked(false);
-            mRadio2.setChecked(true);
-        }
-//         mSavePerson.setText(td.getTaskCreateTime());
-//        TextView mPlansTv;
-//        ListViewForScrollView mPlansAddListview;
-//        mApprovalStateTv.setText("");
-//        ListViewForScrollView mApprovalStateLv;
+//        if (wm.getLineType() == 1) {
+//            mRadio1.setChecked(true);
+//            mRadio2.setChecked(false);
+//        } else {
+//            mRadio1.setChecked(false);
+//            mRadio2.setChecked(true);
+//        }
+        mSavePerson.setText(wm.getUserId());
+        mApprovalStateTv.setText(td.getTaskName());
 
         setGridAdapter(wm.getPicUrls());
-        setEventtypeListAdapter(wm.getOrderStatus(),td.getDiseaseMsgDtos());
+        setEventtypeListAdapter(td.getDiseaseMsgDtos());
+        setplanAdapter(td.getPlanFuns());
+        setApprovalAdapter(td.getTaskInfos());
     }
 
-    private void setEventtypeListAdapter(final int OrderStatus, final List<TaskDetails.DiseaseMsgDtosBean> list) {
+    /**
+     * 病害类型
+     *
+     * @param list
+     */
+    private void setEventtypeListAdapter(final List<TaskDetails.DiseaseMsgDtosBean> list) {
         adapter_eventtype = new CommonAdapter<TaskDetails.DiseaseMsgDtosBean>(EventDetailsActivity.this, R.layout.item_eventtype_add, list) {
             @Override
             protected void convert(ViewHolder viewHolder, TaskDetails.DiseaseMsgDtosBean item, final int position) {
@@ -223,22 +260,76 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
                         viewHolder.setText(R.id.item_attr, attrlist.get(0).getValue() + "m" + "*" + attrlist.get(1).getValue() + "m");
                     }
                 }
-                if (OrderStatus==2){
+                if (OrderStatus == 2) {//可编辑
                     viewHolder.setOnClickListener(R.id.item_del, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             list.remove(position);
+                            for (TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean b : list.get(position).getDiseaseAttrMsgDtos()) {
+                                if (b.getDiseaseAttrName().contains("面积")) {
+                                    totalArea = totalArea - Double.parseDouble(b.getValue());
+                                }
+                            }
                             adapter_eventtype.notifyDataSetChanged();
                         }
                     });
-                }else {
-                    viewHolder.setVisible(R.id.item_del,false);
+                } else {
+                    viewHolder.setVisible(R.id.item_del, false);
                 }
             }
         };
         mEventtypeListview.setAdapter(adapter_eventtype);
     }
 
+    /**
+     * 施工计划
+     *
+     * @param list
+     */
+    private void setplanAdapter(final List<Plan> list) {
+        adapter_plan = new CommonAdapter<Plan>(EventDetailsActivity.this, R.layout.item_eventtype_add, list) {
+            @Override
+            protected void convert(ViewHolder viewHolder, Plan item, final int position) {
+                viewHolder.setText(R.id.item_name, item.getFunName());
+                viewHolder.setText(R.id.item_attr, "");
+                if (OrderStatus == 2) {
+                    viewHolder.setOnClickListener(R.id.item_del, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            list.remove(position);
+                            adapter_plan.notifyDataSetChanged();
+                        }
+                    });
+                } else {
+                    viewHolder.setVisible(R.id.item_del, false);
+                }
+            }
+        };
+        mPlansAddListview.setAdapter(adapter_plan);
+    }
+
+    /**
+     * 审批
+     *
+     * @param list
+     */
+    private void setApprovalAdapter(final List<TaskDetails.TaskInfosBean> list) {
+        adapter_approval = new CommonAdapter<TaskDetails.TaskInfosBean>(EventDetailsActivity.this, R.layout.item_approval_list, list) {
+            @Override
+            protected void convert(ViewHolder viewHolder, TaskDetails.TaskInfosBean item, final int position) {
+                viewHolder.setText(R.id.item_name, item.getUserName());
+                viewHolder.setText(R.id.item_desc, item.getDetail());
+                viewHolder.setText(R.id.item_time, item.getEndTime());
+            }
+        };
+        mApprovalStateLv.setAdapter(adapter_approval);
+    }
+
+    /**
+     * 首行图片
+     *
+     * @param list
+     */
     private void setGridAdapter(List<String> list) {
         mGridTupianAdapter = new CommonAdapter<String>(EventDetailsActivity.this, R.layout.item_addphoto_grid, list) {
             @Override
@@ -250,6 +341,184 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         mGridTupian.setAdapter(mGridTupianAdapter);
     }
 
+    @OnClick({R.id.eventdetails_back, R.id.eventdetails_save, R.id.eventdetails_eventType_add, R.id.eventdetails_plansAdd, R.id.eventdetails_send})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.eventdetails_back:
+                finish();
+                overridePendingTransition(0, R.anim.base_slide_out);
+                break;
+            case R.id.eventdetails_save:
+                break;
+            case R.id.eventdetails_eventType_add:
+                Intent intent = new Intent(EventDetailsActivity.this, EventTypeActivity.class);
+                startActivityForResult(intent, 105);
+                break;
+            case R.id.eventdetails_plansAdd:
+                Intent intent2 = new Intent(EventDetailsActivity.this, PlanActivity.class);
+                intent2.putExtra("orderType",OrderType);
+                startActivityForResult(intent2, 106);
+                break;
+            case R.id.eventdetails_send:
+                if (OrderStatus == 2) {
+                    confirmTask1();
+                }else if (OrderStatus==5){
+                    confirmTask2();
+                }else if (OrderStatus==8){
+                    confirmTask3();
+                }else if (OrderStatus==10){
+                    confirmTask4();
+                }else if (OrderStatus==12){
+                    confirmTask5();
+                }
+                break;
+        }
+    }
+
+    /**
+     * 技术员确认信息
+     */
+    private void confirmTask1() {
+        int deal = mConfirmRg.getCheckedRadioButtonId() == R.id.eventdetails_confirm1 ? 4 : 3;
+        String planTime = mPlanTime.getText().toString();
+        String planCost = mPlanCost.getText().toString();
+
+        if (mTaskDetails.getPlanFuns()==null||mTaskDetails.getPlanFuns().size()==0) {
+            showToast("请选择修复方案！");
+            return;
+        }
+
+        if (TextUtils.isEmpty(planTime)||Integer.parseInt(planTime)==0) {
+            showToast("请输入预计修复时间！");
+            return;
+        }
+        if (TextUtils.isEmpty(planCost)||Double.parseDouble(planCost)==0) {
+            showToast("请输入预计修复费用！");
+            return;
+        }
+
+        Map map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        JSONObject object = new JSONObject();
+        object.put("vacationApproved", deal);
+        object.put("opinion", mRemark.getText().toString());
+        object.put("taskId", mTaskDetails.getTaskId());
+        object.put("roleCode", "5");
+        object.put("workOrderId", mTaskDetails.getWorkOrderMsgDto().getWorkOrderId());
+        map.put("body", object.toJSONString());
+
+        if (deal == 4) {
+            JSONObject object1 = new JSONObject();
+            if (OrderType != 5) {
+                object1.put("area", totalArea);
+
+                JSONArray array = new JSONArray();
+                JSONArray array2 = new JSONArray();
+                for (TaskDetails.DiseaseMsgDtosBean e : mTaskDetails.getDiseaseMsgDtos()) {
+                    JSONObject object2 = new JSONObject();
+                    ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean> attrsList = (ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean>) e.getDiseaseAttrMsgDtos();
+                    object2.put("diseaseType", e.getDiseaseType());
+                    object2.put("detail", e.getDetail());
+                    array.add(object2);
+                    for (TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean a : attrsList) {
+                        JSONObject object3 = new JSONObject();
+                        object3.put("diseaseType", e.getDiseaseType());
+                        object3.put("typeUnitId", a.getTypeUnitId());
+                        object3.put("value", a.getValue());
+                        array2.add(object3);
+                    }
+                }
+                map.put("disease", array.toJSONString());
+                map.put("diseaseAttr", array2.toJSONString());
+            }
+            StringBuffer plans = new StringBuffer();
+            for (Plan p : mTaskDetails.getPlanFuns()) {
+                if (!p.getId().equals("qita")){
+                    if (plans.length() == 0) {
+                        plans.append(p.getId());
+                    } else {
+                        plans.append("," + p.getId());
+                    }
+                }else {
+                    object1.put("maintainDetailPlan", p.getFunDetail());
+                }
+            }
+            object1.put("workOrderId", mTaskDetails.getWorkOrderMsgDto().getWorkOrderId());
+            object1.put("processInstanceId", mTaskDetails.getWorkOrderMsgDto().getProcessInstanceId());
+            object1.put("orderType", OrderType);
+            object1.put("maintainFunIds", plans.toString());
+            object1.put("detail",mTaskDetails.getWorkOrderMsgDto().getDetail() );
+            object1.put("timePlan", mPlanTime.getText().toString());
+            object1.put("moneyPlan", mPlanCost.getText().toString());
+            map.put("workOrder", object1.toJSONString());
+        }
+        request.doPostRequest(1, true, Uri.techAffirmDiseaseInfo, map);
+    }
+
+    /**
+     * 监理审批
+     */
+    private void confirmTask2() {
+        int deal = mConfirmRg.getCheckedRadioButtonId() == R.id.eventdetails_confirm1 ? 8 : 7;
+        Map map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        JSONObject object = new JSONObject();
+        object.put("vacationApproved", deal);
+        object.put("opinion", mRemark.getText().toString());
+        object.put("taskId", mTaskDetails.getTaskId());
+        object.put("roleCode", "1");
+        map.put("body", object.toJSONString());
+        request.doPostRequest(2, true, Uri.official, map);
+    }
+    /**
+     * 一级业主审批
+     */
+    private void confirmTask3() {
+        int deal = mConfirmRg.getCheckedRadioButtonId() == R.id.eventdetails_confirm1 ? 10 : 9;
+        Map map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        JSONObject object = new JSONObject();
+        object.put("vacationApproved", deal);
+        object.put("opinion", mRemark.getText().toString());
+        object.put("taskId", mTaskDetails.getTaskId());
+        map.put("body", object.toJSONString());
+        request.doPostRequest(3, true, Uri.official, map);
+    }
+    /**
+     * 二级业主审批
+     */
+    private void confirmTask4() {
+        int deal = mConfirmRg.getCheckedRadioButtonId() == R.id.eventdetails_confirm1 ? 12 : 11;
+        Map map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        JSONObject object = new JSONObject();
+        object.put("vacationApproved", deal);
+        object.put("opinion", mRemark.getText().toString());
+        object.put("taskId", mTaskDetails.getTaskId());
+        map.put("body", object.toJSONString());
+        request.doPostRequest(4, true, Uri.official, map);
+    }
+
+    /**
+     * 三级业主审批
+     */
+    private void confirmTask5() {
+        int deal = mConfirmRg.getCheckedRadioButtonId() == R.id.eventdetails_confirm1 ? 14 : 13;
+        Map map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        JSONObject object = new JSONObject();
+        object.put("vacationApproved", deal);
+        object.put("opinion", mRemark.getText().toString());
+        object.put("taskId", mTaskDetails.getTaskId());
+        map.put("body", object.toJSONString());
+        object.put("roleCode", "5");
+        request.doPostRequest(5, true, Uri.owner3Official, map);
+    }
     @Override
     public void loadDataFinish(int code, Object data) {
         if (code == 0) {
@@ -260,36 +529,15 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
                     setUiData(mTaskDetails);
                 }
             }
+        } else if (code == 1) {
+            showToast("确认成功！");
+            finish();
+        }else if (code == 2||code == 3||code == 4||code == 5) {
+            showToast("审批成功！");
+            finish();
         }
     }
 
-    @Override
-    public void onClick(int whichButton) {
-        if (whichButton == 0) {
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                cameraPath = SAVED_IMAGE_DIR_PATH + System.currentTimeMillis() + ".png";
-                Intent intent = new Intent();
-                intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                String out_file_path = SAVED_IMAGE_DIR_PATH;
-                File dir = new File(out_file_path);
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                } // 把文件地址转换成Uri格式
-                android.net.Uri uri = android.net.Uri.fromFile(new File(cameraPath));
-                // 设置系统相机拍摄照片完成后图片文件的存放地址
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                startActivityForResult(intent, 100);
-            } else {
-                myToast.toast(EventDetailsActivity.this, "请确认已经插入SD卡!");
-            }
-        } else if (whichButton == 1) {
-            Intent pickIntent = new Intent(Intent.ACTION_PICK, null);
-            pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    "image/*");
-            pickIntent.setAction(Intent.ACTION_PICK);
-            startActivityForResult(pickIntent, 102);
-        }
-    }
 
     @Override
     public void showToast(String message) {
@@ -318,84 +566,57 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         request.CancelPost();
     }
 
-    @OnClick({R.id.eventdetails_back, R.id.eventdetails_save, R.id.eventdetails_eventType_add, R.id.eventdetails_plansAdd, R.id.eventdetails_send})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.eventdetails_back:
-                finish();
-                break;
-            case R.id.eventdetails_save:
-                break;
-            case R.id.eventdetails_eventType_add:
-                Intent intent = new Intent(EventDetailsActivity.this, EventTypeActivity.class);
-                startActivityForResult(intent, 105);
-                break;
-            case R.id.eventdetails_plansAdd:
-                break;
-            case R.id.eventdetails_send:
-                break;
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == 100) {
-                LogUtils.d("path=" + cameraPath);
-                File file = new File(cameraPath);
-                mPhotoList.add(mPhotoList.size() - 1, file);
-//                setGridAdapter();
-            } else if (requestCode == 102) {
-                try {
-                    android.net.Uri uri = data.getData();
-                    LogUtils.d(uri);
-                    final String absolutePath = getRealFilePath(EventDetailsActivity.this, uri);
-                    LogUtils.d("path=" + absolutePath);
-                    LogUtils.d("path=" + data);
-                    File file = new File(absolutePath);
-                    if (!mPhotoList.contains(file)) {
-                        mPhotoList.add(mPhotoList.size() - 1, file);
-//                        setGridAdapter();
-                    } else {
-                        myToast.toast(EventDetailsActivity.this, "已选择该相片！");
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else if (requestCode == 105) {
-//                mEventTypeBaseList.add((EventTypeBase) data.getSerializableExtra("EventTypeBase"));
-//                adapter_eventtype.notifyDataSetChanged();
-//                mAllArea.setText(getAllArea() + "m²");
-            }
-        }
-    }
+            if (requestCode == 105) {
+                TaskDetails.DiseaseMsgDtosBean dtosBean = new TaskDetails.DiseaseMsgDtosBean();
+                EventTypeBase eventTypeBase = (EventTypeBase) data.getSerializableExtra("EventTypeBase");
+                dtosBean.setDetail(eventTypeBase.getEventType().getDetail());
+                dtosBean.setDiseaseId(eventTypeBase.getEventType().getId());
+                dtosBean.setDiseaseType(eventTypeBase.getEventType().getOrderType());
+                dtosBean.setDiseaseTypeName(eventTypeBase.getEventType().getName());
 
-    public static String getRealFilePath(final Context context, final android.net.Uri uri) {
-        if (null == uri) return null;
-        final String scheme = uri.getScheme();
-        String data = null;
-        if (scheme == null)
-            data = uri.getPath();
-        else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
-            data = uri.getPath();
-        } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
-            Cursor cursor = context.getContentResolver().query(uri, new String[]{MediaStore.Images.ImageColumns.DATA}, null, null, null);
-            if (null != cursor) {
-                if (cursor.moveToFirst()) {
-                    int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-                    if (index > -1) {
-                        data = cursor.getString(index);
+                ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean> list = new ArrayList<>();
+
+                String areaStr = "";
+                for (EventAttr a : eventTypeBase.getEventAttrsList()) {
+                    TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean bean = new TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean();
+                    bean.setDiseaseAttrName(a.getName());
+                    bean.setTypeUnitId(a.getTypeUnitId());
+                    bean.setValue(a.getDefaultVal());
+                    list.add(bean);
+                    if (bean.getDiseaseAttrName().contains("面积")) {
+                        areaStr = bean.getValue();
                     }
                 }
-                cursor.close();
+                dtosBean.setDiseaseAttrMsgDtos(list);
+
+                mTaskDetails.getDiseaseMsgDtos().add(dtosBean);
+                adapter_eventtype.notifyDataSetChanged();
+                if (!TextUtils.isEmpty(areaStr)) {
+                    totalArea = totalArea + Double.parseDouble(areaStr);
+                    mAllArea.setText(totalArea + "m²");
+                }
+//
+            } else if (requestCode == 106) {
+                ArrayList<Plan> planList = (ArrayList<Plan>) data.getSerializableExtra("planList");
+                for (Plan p :planList){
+                    boolean isExist = false;
+                    for (Plan p2:mTaskDetails.getPlanFuns()){
+                        if (p.getId().equals(p2.getId())) {
+                            isExist = true;// 找到相同项，跳出本层循环
+                            break;
+                        }
+                    }
+                    if (!isExist) {// 不相同，加入list3中
+                        mTaskDetails.getPlanFuns().add(p);
+                    }
+                }
+                adapter_plan.notifyDataSetChanged();
+                LogUtils.d(mTaskDetails.getPlanFuns());
             }
         }
-        return data;
-    }
-
-    @Override
-    public void onCancel(DialogInterface dialog) {
-
     }
 }

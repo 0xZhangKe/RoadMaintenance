@@ -12,8 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:textColor="@color/text_black"
-        android:textSize="14sp" />
+        android:textColor="@color/text_gray"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/item_attr"
@@ -22,7 +22,7 @@
         android:layout_marginLeft="10dp"
         android:layout_weight="1"
         android:textColor="@color/text_gray"
-        android:textSize="14sp" />
+        android:textSize="12sp" />
 
     <ImageView
         android:id="@+id/item_del"

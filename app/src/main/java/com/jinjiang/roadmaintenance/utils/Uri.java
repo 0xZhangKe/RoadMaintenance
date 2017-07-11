@@ -37,18 +37,33 @@ public class Uri {
      */
     public static String addDisease = mainUrl+"disease/addDisease";
     /**
-     * 获取任务状态
+     * 获取任务状态列表
      *
      */
     public static String getOrderWork = mainUrl+"task/getOrderWork";
     /**
-     * 获取任务列表
-     *
-     */
-    public static String getMyTask = mainUrl+"task/getMyTask";
-    /**
-     * 获取任务列表
+     * 获取任务详情
      *
      */
     public static String getDiseaseInfos = mainUrl+"task/getDiseaseInfos";
+    /**
+     * 技术员确认信息
+     *
+     */
+    public static String techAffirmDiseaseInfo = mainUrl+"task/techAffirmDiseaseInfo";
+    /**
+     * 审核信息
+     *
+     */
+    public static String official = mainUrl+"task/official";
+    /**
+     * 三级业主审核信息
+     *
+     */
+    public static String owner3Official = mainUrl+"task/owner3Official";
+    /**
+     * 获取施工方案
+     *
+     */
+    public static String getMaintainFun = mainUrl+"disease/getMaintainFun";
 }

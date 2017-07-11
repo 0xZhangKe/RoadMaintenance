@@ -6,14 +6,6 @@
     android:orientation="vertical"
     tools:context=".ui.fragment.MapFragment">
 
-    <RelativeLayout style="@style/title_RelativeLayoutStyle">
-
-        <TextView
-            style="@style/title_text_Style"
-            android:text="地图" />
-    </RelativeLayout>
-
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

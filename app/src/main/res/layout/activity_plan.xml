@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context="com.jinjiang.roadmaintenance.ui.activity.PlanActivity">
+
+    <RelativeLayout
+        android:id="@+id/plan_title"
+        style="@style/title_RelativeLayoutStyle">
+
+        <LinearLayout
+            android:id="@+id/plan_back"
+            style="@style/title_arrow_Ll_Style">
+
+            <ImageView style="@style/title_arrow_Style" />
+        </LinearLayout>
+
+        <TextView
+            style="@style/title_text_Style"
+            android:text="维修方案" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/plan_view"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_below="@+id/plan_title"
+        android:background="@color/tab_shade" />
+
+    <ListView
+        android:id="@+id/plan_listView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1"
+        android:divider="@null"
+        android:layout_below="@+id/plan_view"
+        android:layout_alignStart="@+id/plan_send" />
+
+    <EditText
+        android:id="@+id/plan_editText"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@id/plan_listView"
+        android:layout_margin="10dp"
+        android:background="#11000000"
+        android:gravity="left|top"
+        android:hint="点击输入其他方案"
+        android:padding="10dp"
+        android:textColor="@color/text_black"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+
+    <TextView
+        android:id="@+id/plan_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/select_blue_button_background_"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="新增"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+</RelativeLayout>

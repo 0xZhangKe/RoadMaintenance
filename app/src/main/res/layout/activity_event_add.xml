@@ -238,6 +238,7 @@
                 android:padding="10dp">
 
                 <TextView
+                    android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="病害类型："
@@ -342,21 +343,52 @@
                     android:orientation="horizontal"
                     android:padding="10dp">
 
-                    <EditText
-                        android:id="@+id/eventadd_fangan"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:background="@null"
-                        android:ellipsize="end"
-                        android:gravity="left"
-                        android:hint="请输入维修方案"
-                        android:maxLength="1000"
-                        android:maxLines="5"
-                        android:padding="5dp"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="维修方案："
+                        android:textColor="@color/text_black"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/eventadd_fangan_know"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:background="@drawable/gre_stroke_back"
+                        android:paddingBottom="1dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="1dp"
+                        android:text="\?"
                         android:textColor="@color/text_black"
                         android:textSize="14sp" />
 
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:text=""
+                        android:textColor="@color/text_black"
+                        android:textSize="14sp" />
+
+                    <ImageView
+                        android:id="@+id/eventadd_fangan_add"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/add1" />
                 </LinearLayout>
+                <com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView
+                    android:id="@+id/eventadd_fangan_listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@null"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:scrollbars="none" />
 
                 <View style="@style/SpacingLineStyle" />
 

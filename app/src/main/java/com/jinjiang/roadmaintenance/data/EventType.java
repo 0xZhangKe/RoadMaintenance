@@ -20,6 +20,7 @@ public class EventType implements Serializable {
     private String id;
     private String name;
     private int orderType;
+    private String picUrl;
     private String desc;
 
     public String getDetail() {
@@ -60,5 +61,13 @@ public class EventType implements Serializable {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
     }
 }

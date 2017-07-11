@@ -1,6 +1,7 @@
 package com.jinjiang.roadmaintenance.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by wuwei on 2017/7/6.
@@ -17,6 +18,7 @@ public class TaskState implements Serializable {
     private int orderStatus;
     private String orderStatusName;
     private int taskCount;
+    private ArrayList<Task> tasks;
 
     public int getOrderStatus() {
         return orderStatus;
@@ -40,5 +42,13 @@ public class TaskState implements Serializable {
 
     public void setTaskCount(int taskCount) {
         this.taskCount = taskCount;
+    }
+
+    public ArrayList<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(ArrayList<Task> tasks) {
+        this.tasks = tasks;
     }
 }

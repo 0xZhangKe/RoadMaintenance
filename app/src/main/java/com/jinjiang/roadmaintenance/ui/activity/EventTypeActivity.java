@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -104,13 +105,13 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
         mValue3.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus){
+                if (hasFocus) {
                     String m1 = mValue1.getText().toString();
                     String m2 = mValue2.getText().toString();
-                    if (!TextUtils.isEmpty(m1)&&!TextUtils.isEmpty(m2)){
-                        float m3 = Float.parseFloat(m1)*Float.parseFloat(m2);
+                    if (!TextUtils.isEmpty(m1) && !TextUtils.isEmpty(m2)) {
+                        float m3 = Float.parseFloat(m1) * Float.parseFloat(m2);
                         DecimalFormat fnum = new DecimalFormat("##0.00");
-                        String dd=fnum.format(m3);
+                        String dd = fnum.format(m3);
                         mValue3.setText(dd);
                     }
                 }
@@ -132,39 +133,39 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
                 break;
             case R.id.eventtype_send:
                 int size = mEventAttrList.size();
-                if (size==1){
+                if (size == 1) {
                     String s1 = mValue1.getText().toString();
-                    if (TextUtils.isEmpty(s1)||s1.equals("0")){
+                    if (TextUtils.isEmpty(s1) || s1.equals("0")) {
                         showToast("请输入长度！");
                         return;
                     }
                     mEventAttrList.get(0).setDefaultVal(s1);
-                }else if (size==2){
+                } else if (size == 2) {
                     String s1 = mValue1.getText().toString();
                     String s2 = mValue2.getText().toString();
-                    if (TextUtils.isEmpty(s1)||s1.equals("0")){
+                    if (TextUtils.isEmpty(s1) || s1.equals("0")) {
                         showToast("请输入长度！");
                         return;
                     }
-                    if (TextUtils.isEmpty(s2)||s2.equals("0")){
+                    if (TextUtils.isEmpty(s2) || s2.equals("0")) {
                         showToast("请输入宽度！");
                         return;
                     }
                     mEventAttrList.get(0).setDefaultVal(s1);
                     mEventAttrList.get(1).setDefaultVal(s2);
-                }else if (size==3){
+                } else if (size == 3) {
                     String s1 = mValue1.getText().toString();
                     String s2 = mValue2.getText().toString();
                     String s3 = mValue3.getText().toString();
-                    if (TextUtils.isEmpty(s1)||s1.equals("0")){
+                    if (TextUtils.isEmpty(s1) || s1.equals("0")) {
                         showToast("请输入长度！");
                         return;
                     }
-                    if (TextUtils.isEmpty(s2)||s2.equals("0")){
+                    if (TextUtils.isEmpty(s2) || s2.equals("0")) {
                         showToast("请输入宽度！");
                         return;
                     }
-                    if (TextUtils.isEmpty(s3)||s3.equals("0")){
+                    if (TextUtils.isEmpty(s3) || s3.equals("0")) {
                         showToast("请输入面积！");
                         return;
                     }
@@ -172,14 +173,14 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
                     mEventAttrList.get(1).setDefaultVal(s2);
                     mEventAttrList.get(2).setDefaultVal(s3);
                 }
-                LogUtils.d(mEventAttrList);
+//                LogUtils.d(mEventAttrList);
                 EventTypeBase base = new EventTypeBase();
                 mEventTypeList.get(eventTypeposition).setDesc(mContent.getText().toString());
                 base.setEventAttrsList(mEventAttrList);
                 base.setEventType(mEventTypeList.get(eventTypeposition));
                 Intent intent = new Intent();
-                intent.putExtra("EventTypeBase",base);
-                setResult(Activity.RESULT_OK,intent);
+                intent.putExtra("EventTypeBase", base);
+                setResult(Activity.RESULT_OK, intent);
                 finish();
                 break;
         }
@@ -243,24 +244,48 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
                 mEventAttrList = JSON.parseObject(data.toString(), new TypeReference<ArrayList<EventAttr>>() {
                 });
                 if (mEventAttrList != null && mEventAttrList.size() > 0) {
-                    if (mEventAttrList.size()==1){
+                    mValue1.setEnabled(true);
+                    mValue2.setEnabled(true);
+                    mValue3.setEnabled(true);
+                    mValue1.setText("");
+                    mValue2.setText("");
+                    mValue3.setText("");
+                    if (mEventAttrList.size() == 1) {
                         mName1.setText(mEventAttrList.get(0).getName());
-                        mValue1.setText(mEventAttrList.get(0).getDefaultVal());
+                        if (!TextUtils.isEmpty(mEventAttrList.get(0).getDefaultVal()) && !mEventAttrList.get(0).getDefaultVal().equals("0")) {
+                            mValue1.setText(mEventAttrList.get(0).getDefaultVal());
+                            mValue1.setEnabled(false);
+                        }
                         mAttr2.setVisibility(View.GONE);
                         mAttr3.setVisibility(View.GONE);
-                    }else if (mEventAttrList.size()==2){
+                    } else if (mEventAttrList.size() == 2) {
                         mName1.setText(mEventAttrList.get(0).getName());
-                        mValue1.setText(mEventAttrList.get(0).getDefaultVal());
+                        if (!TextUtils.isEmpty(mEventAttrList.get(0).getDefaultVal()) && !mEventAttrList.get(0).getDefaultVal().equals("0")){
+                            mValue1.setText(mEventAttrList.get(0).getDefaultVal());
+                            mValue1.setEnabled(false);
+                        }
                         mName2.setText(mEventAttrList.get(1).getName());
-                        mValue2.setText(mEventAttrList.get(1).getDefaultVal());
+                        if (!TextUtils.isEmpty(mEventAttrList.get(1).getDefaultVal()) && !mEventAttrList.get(1).getDefaultVal().equals("0")) {
+                            mValue2.setText(mEventAttrList.get(1).getDefaultVal());
+                            mValue2.setEnabled(false);
+                        }
                         mAttr3.setVisibility(View.GONE);
-                    }else if (mEventAttrList.size()==3){
+                    } else if (mEventAttrList.size() == 3) {
                         mName1.setText(mEventAttrList.get(0).getName());
-                        mValue1.setText(mEventAttrList.get(0).getDefaultVal());
+                        if (!TextUtils.isEmpty(mEventAttrList.get(0).getDefaultVal()) && !mEventAttrList.get(0).getDefaultVal().equals("0")){
+                            mValue1.setText(mEventAttrList.get(0).getDefaultVal());
+                            mValue1.setEnabled(false);
+                        }
                         mName2.setText(mEventAttrList.get(1).getName());
-                        mValue2.setText(mEventAttrList.get(1).getDefaultVal());
+                        if (!TextUtils.isEmpty(mEventAttrList.get(1).getDefaultVal()) && !mEventAttrList.get(1).getDefaultVal().equals("0")){
+                            mValue2.setText(mEventAttrList.get(1).getDefaultVal());
+                            mValue2.setEnabled(false);
+                        }
                         mName3.setText(mEventAttrList.get(2).getName());
-                        mValue3.setText(mEventAttrList.get(2).getDefaultVal());
+                        if (!TextUtils.isEmpty(mEventAttrList.get(2).getDefaultVal()) && !mEventAttrList.get(2).getDefaultVal().equals("0")){
+                            mValue3.setText(mEventAttrList.get(2).getDefaultVal());
+                            mValue3.setEnabled(false);
+                        }
                     }
                 }
             }

@@ -71,6 +71,10 @@ public class SplashActivity extends BaseActivity {
     }
 
     @Override
+    protected void setAnim() {
+    }
+
+    @Override
     protected void initData() {
 
         userInfo = (UserInfo) mAcache.getAsObject("UserInfo");
