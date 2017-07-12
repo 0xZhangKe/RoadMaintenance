@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
@@ -23,6 +24,7 @@ import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.base.BaseActivity;
 import com.jinjiang.roadmaintenance.data.EventAttr;
 import com.jinjiang.roadmaintenance.data.EventTypeBase;
+import com.jinjiang.roadmaintenance.data.MessageEvent;
 import com.jinjiang.roadmaintenance.data.Plan;
 import com.jinjiang.roadmaintenance.data.Task;
 import com.jinjiang.roadmaintenance.data.TaskDetails;
@@ -34,9 +36,13 @@ import com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView;
 import com.jinjiang.roadmaintenance.ui.view.MyGridView;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
+import com.jinjiang.roadmaintenance.utils.ScreenUtils;
 import com.jinjiang.roadmaintenance.utils.Uri;
 import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -180,10 +186,12 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         OrderType = wm.getOrderType();
         totalArea = wm.getArea();
         if (OrderStatus == 2) {//待确认
+            mRemark.setText(wm.getDetail());
             mPlansAdd.setVisibility(View.VISIBLE);
             mEventTypeAdd.setVisibility(View.VISIBLE);
             mPlanTime.setEnabled(true);
             mPlanCost.setEnabled(true);
+            mRemark.setEnabled(true);
             mApprovalStateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 3) {//技术员审批--不处理
             mRemark.setEnabled(false);
@@ -196,20 +204,28 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         }else if (OrderStatus==5){//待批复
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
+            mRemark.setEnabled(true);
+            mRemark.setHint("请输入处理意见");
         }else if (OrderStatus==6){// <20m未施工
 
         }else if (OrderStatus==7){//监理审核否--重新下单
         }else if (OrderStatus==8){//监理审核属实--一级业主批复
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
+            mRemark.setEnabled(true);
+            mRemark.setHint("请输入处理意见");
         }else if (OrderStatus==9){//一级业主审核否--重新下单
         }else if (OrderStatus==10){//一级业主审核属实--二级业主批复
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
+            mRemark.setEnabled(true);
+            mRemark.setHint("请输入处理意见");
         }else if (OrderStatus==11){//二级业主审核否--重新下单
         }else if (OrderStatus==12){//二级业主审核属实--三级业主批复
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
+            mRemark.setEnabled(true);
+            mRemark.setHint("请输入处理意见");
         }else if (OrderStatus==13){//三级业主审核否--重新下单
         }else if (OrderStatus==14){//三级业主审核属实-->20m未施工
         }
@@ -224,7 +240,6 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         mAllArea.setText("总面积"+wm.getArea() + "m²");
         mPlanTime.setText(wm.getTimePlan() + "");
         mPlanCost.setText(wm.getMoneyPlan() + "");
-        mRemark.setText(wm.getDetail());
 
 //        if (wm.getLineType() == 1) {
 //            mRadio1.setChecked(true);
@@ -320,6 +335,19 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
                 viewHolder.setText(R.id.item_name, item.getUserName());
                 viewHolder.setText(R.id.item_desc, item.getDetail());
                 viewHolder.setText(R.id.item_time, item.getEndTime());
+                if (position==0){
+                    viewHolder.setBackgroundRes(R.id.item_dot,R.drawable.gre_dot_blue_back);
+                    TextView v =(TextView) viewHolder.getView(R.id.item_line);
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
+                    params.setMargins(0, ScreenUtils.dp2px(EventDetailsActivity.this,20), 0, 0);
+                    v.setLayoutParams(params);
+                }else {
+                    viewHolder.setBackgroundRes(R.id.item_dot,R.drawable.gre_dot_back);
+                    TextView v =viewHolder.getView(R.id.item_line);
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
+                    params.setMargins(0, 0, 0, 0);
+                    v.setLayoutParams(params);
+                }
             }
         };
         mApprovalStateLv.setAdapter(adapter_approval);
@@ -434,14 +462,14 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             }
             StringBuffer plans = new StringBuffer();
             for (Plan p : mTaskDetails.getPlanFuns()) {
-                if (!p.getId().equals("qita")){
+                if (!p.getId().equals("0")){
                     if (plans.length() == 0) {
                         plans.append(p.getId());
                     } else {
                         plans.append("," + p.getId());
                     }
                 }else {
-                    object1.put("maintainDetailPlan", p.getFunDetail());
+                    object1.put("maintainDetailPlan", p.getOtherDesc());
                 }
             }
             object1.put("workOrderId", mTaskDetails.getWorkOrderMsgDto().getWorkOrderId());
@@ -531,9 +559,11 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             }
         } else if (code == 1) {
             showToast("确认成功！");
+            EventBus.getDefault().post(new MessageEvent(1,""));
             finish();
         }else if (code == 2||code == 3||code == 4||code == 5) {
             showToast("审批成功！");
+            EventBus.getDefault().post(new MessageEvent(1,""));
             finish();
         }
     }
@@ -619,4 +649,5 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             }
         }
     }
+
 }

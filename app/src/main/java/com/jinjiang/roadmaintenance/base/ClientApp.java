@@ -5,6 +5,7 @@ import android.app.Application;
 import com.apkfuns.logutils.LogLevel;
 import com.apkfuns.logutils.LogUtils;
 import com.baidu.mapapi.SDKInitializer;
+import com.raizlabs.android.dbflow.config.FlowManager;
 
 import cn.finalteam.okhttpfinal.OkHttpFinal;
 import cn.finalteam.okhttpfinal.OkHttpFinalConfiguration;
@@ -22,7 +23,7 @@ public class ClientApp extends Application {
         super.onCreate();
         instance = this;
         initLogs();
-
+        FlowManager.init(this);
         SDKInitializer.initialize(getApplicationContext());
 
         OkHttpFinalConfiguration.Builder builder = new OkHttpFinalConfiguration.Builder();

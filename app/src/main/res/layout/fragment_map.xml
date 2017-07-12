@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_margin="10dp"
-                android:background="@drawable/gre_stroke_back"
+                android:background="@drawable/search_back"
                 android:hint="请输入地名"
                 android:maxLines="1"
                 android:paddingLeft="50dp"
@@ -47,7 +47,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/search" />
+                android:src="@drawable/search1" />
 
             <ImageView
                 android:id="@+id/map_add"
@@ -57,7 +57,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/camera" />
+                android:src="@drawable/camero" />
         </RelativeLayout>
 
         <ImageView
@@ -131,7 +131,7 @@
                 android:layout_width="21dp"
                 android:layout_height="20dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/del" />
+                android:src="@drawable/tanhao" />
 
             <TextView
                 android:layout_width="wrap_content"

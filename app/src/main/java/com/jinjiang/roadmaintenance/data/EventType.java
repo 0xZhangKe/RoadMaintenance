@@ -1,13 +1,18 @@
 package com.jinjiang.roadmaintenance.data;
 
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+
 import java.io.Serializable;
 
 /**
  * Created by wuwei on 2017/7/5.
  * 病害类型
  */
-
-public class EventType implements Serializable {
+@Table(database = AppDatabase.class)
+public class EventType extends BaseModel implements Serializable {
 
     /**
      * detail :
@@ -15,13 +20,22 @@ public class EventType implements Serializable {
      * name : 纵向裂缝
      * orderType : 1
      */
-
-    private String detail;
+    @PrimaryKey
     private String id;
+    @Column
+    private long eventId;
+    @Column
+    private String detail;
+    @Column
     private String name;
+    @Column
     private int orderType;
+    @Column
     private String picUrl;
+    @Column
     private String desc;
+    @Column
+    public boolean ischecked;
 
     public String getDetail() {
         return detail;
@@ -69,5 +83,13 @@ public class EventType implements Serializable {
 
     public void setPicUrl(String picUrl) {
         this.picUrl = picUrl;
+    }
+
+    public long getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(long eventId) {
+        this.eventId = eventId;
     }
 }

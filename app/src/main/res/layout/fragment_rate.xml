@@ -23,7 +23,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
             android:scaleType="fitXY"
-            android:src="@drawable/search" />
+            android:src="@drawable/search1" />
     </RelativeLayout>
 
     <View

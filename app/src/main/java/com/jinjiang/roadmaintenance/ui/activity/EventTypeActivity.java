@@ -129,7 +129,11 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
             case R.id.eventadd_eventType_know:
                 break;
             case R.id.eventType_tv_ll:
-                picker_Type.show();
+                if (mEventTypeList!=null&&mEventTypeList.size()>0){
+                    Intent intent1 = new Intent(this, EventTypeSelectActivity.class);
+                    intent1.putExtra("EventTypeList", mEventTypeList);
+                    startActivityForResult(intent1, 100);
+                }
                 break;
             case R.id.eventtype_send:
                 int size = mEventAttrList.size();
@@ -226,11 +230,11 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
                 mEventTypeList = JSON.parseObject(data.toString(), new TypeReference<ArrayList<EventType>>() {
                 });
                 if (mEventTypeList != null && mEventTypeList.size() > 0) {
-                    ArrayList<String> type_list = new ArrayList<>();
-                    for (EventType e : mEventTypeList) {
-                        type_list.add(e.getName());
-                    }
-                    initOptionPicker(type_list);
+//                    ArrayList<String> type_list = new ArrayList<>();
+//                    for (EventType e : mEventTypeList) {
+//                        type_list.add(e.getName());
+//                    }
+//                    initOptionPicker(type_list);
                     mTypeTv.setText(mEventTypeList.get(0).getName());
                     Map map = new HashMap();
                     map.put("userId", userInfo.getUserId());
@@ -260,7 +264,7 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
                         mAttr3.setVisibility(View.GONE);
                     } else if (mEventAttrList.size() == 2) {
                         mName1.setText(mEventAttrList.get(0).getName());
-                        if (!TextUtils.isEmpty(mEventAttrList.get(0).getDefaultVal()) && !mEventAttrList.get(0).getDefaultVal().equals("0")){
+                        if (!TextUtils.isEmpty(mEventAttrList.get(0).getDefaultVal()) && !mEventAttrList.get(0).getDefaultVal().equals("0")) {
                             mValue1.setText(mEventAttrList.get(0).getDefaultVal());
                             mValue1.setEnabled(false);
                         }
@@ -272,17 +276,17 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
                         mAttr3.setVisibility(View.GONE);
                     } else if (mEventAttrList.size() == 3) {
                         mName1.setText(mEventAttrList.get(0).getName());
-                        if (!TextUtils.isEmpty(mEventAttrList.get(0).getDefaultVal()) && !mEventAttrList.get(0).getDefaultVal().equals("0")){
+                        if (!TextUtils.isEmpty(mEventAttrList.get(0).getDefaultVal()) && !mEventAttrList.get(0).getDefaultVal().equals("0")) {
                             mValue1.setText(mEventAttrList.get(0).getDefaultVal());
                             mValue1.setEnabled(false);
                         }
                         mName2.setText(mEventAttrList.get(1).getName());
-                        if (!TextUtils.isEmpty(mEventAttrList.get(1).getDefaultVal()) && !mEventAttrList.get(1).getDefaultVal().equals("0")){
+                        if (!TextUtils.isEmpty(mEventAttrList.get(1).getDefaultVal()) && !mEventAttrList.get(1).getDefaultVal().equals("0")) {
                             mValue2.setText(mEventAttrList.get(1).getDefaultVal());
                             mValue2.setEnabled(false);
                         }
                         mName3.setText(mEventAttrList.get(2).getName());
-                        if (!TextUtils.isEmpty(mEventAttrList.get(2).getDefaultVal()) && !mEventAttrList.get(2).getDefaultVal().equals("0")){
+                        if (!TextUtils.isEmpty(mEventAttrList.get(2).getDefaultVal()) && !mEventAttrList.get(2).getDefaultVal().equals("0")) {
                             mValue3.setText(mEventAttrList.get(2).getDefaultVal());
                             mValue3.setEnabled(false);
                         }
@@ -318,5 +322,21 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
     @Override
     public void cancelRequest() {
         request.CancelPost();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == 100) {
+                eventTypeposition = data.getIntExtra("id",0);
+                mTypeTv.setText(mEventTypeList.get(eventTypeposition).getName());
+                Map map = new HashMap();
+                map.put("userId", userInfo.getUserId());
+                map.put("appSid", userInfo.getAppSid());
+                map.put("id", mEventTypeList.get(eventTypeposition).getId());
+                request.doPostRequest(1, true, Uri.getDiseaseAttr, map);
+            }
+        }
     }
 }

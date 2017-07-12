@@ -30,10 +30,17 @@ import com.bumptech.glide.Glide;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.base.BaseActivity;
 import com.jinjiang.roadmaintenance.data.EventAttr;
+import com.jinjiang.roadmaintenance.data.EventAttr_Table;
 import com.jinjiang.roadmaintenance.data.EventType;
 import com.jinjiang.roadmaintenance.data.EventTypeBase;
+import com.jinjiang.roadmaintenance.data.EventType_Table;
+import com.jinjiang.roadmaintenance.data.FileUri;
+import com.jinjiang.roadmaintenance.data.FileUri_Table;
 import com.jinjiang.roadmaintenance.data.MessageEvent;
 import com.jinjiang.roadmaintenance.data.Plan;
+import com.jinjiang.roadmaintenance.data.Plan_Table;
+import com.jinjiang.roadmaintenance.data.SaveEventData;
+import com.jinjiang.roadmaintenance.data.SaveEventData_Table;
 import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.model.NetWorkRequest;
 import com.jinjiang.roadmaintenance.model.UIDataListener;
@@ -44,6 +51,8 @@ import com.jinjiang.roadmaintenance.ui.view.MyGridView;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
 import com.jinjiang.roadmaintenance.utils.CompressImage;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.sql.language.Select;
 import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
 
@@ -53,6 +62,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -118,13 +128,15 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
     private int orderStatus = 1;
     private HashMap mTask;
     private boolean IsModify = false;
-    private long taskId;
     private double longitude;
     private double latitude;
+    private long eventId = 0;
+    ;
     private ArrayList<HashMap> taskList;
     ArrayList<Plan> mPlanList;
     String savePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tempfile/";
     private CommonAdapter<Plan> adapter_plan;
+    private SaveEventData mEventdata;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,21 +164,20 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         if (intent.hasExtra("Cenpt")) {
             mCenpt = intent.getParcelableExtra("Cenpt");
         }
-        if (intent.hasExtra("Task")) {
-            mTask = (HashMap) intent.getSerializableExtra("Task");
+        if (intent.hasExtra("SaveEventData")) {
+            eventId = intent.getLongExtra("SaveEventData",0);
             IsModify = true;
         }
     }
 
     private void initLocadata() {
-        if (mTask != null) {
-            taskId = (long) mTask.get("id");
-            JSONObject object = JSONObject.parseObject((String) mTask.get("workOrder"));
-            longitude = object.getDouble("longitude");
-            latitude = object.getDouble("latitude");
-            mRoadvalue = (int) mTask.get("mRoadvalue");
+        mEventdata = new Select().from(SaveEventData.class).where(SaveEventData_Table.id.eq(eventId)).querySingle();
+        if (mEventdata != null) {
+            longitude = mEventdata.longitude;
+            latitude = mEventdata.latitude;
+            mRoadvalue = mEventdata.roadvalue;
             if (mRoadvalue == 1 || mRoadvalue == 2) {
-                driverwayType = object.getInteger("lineType");
+                driverwayType = mEventdata.lineType;
                 if (driverwayType == 1) {
                     mRadio1.setChecked(true);
                     mRadio2.setChecked(false);
@@ -175,30 +186,34 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                     mRadio2.setChecked(true);
                 }
             }
-            mAddress = object.getString("locationDesc");
+            mAddress = mEventdata.locationDesc;
             mRoadName.setText(mAddress);
             if (mRoadvalue != 5) {
-                String mArea = object.getString("area");
+                String mArea = mEventdata.area;
                 mAllArea.setText(mArea);
             }
             if (userRole == 5) {
-                String timePlan = object.getString("timePlan");
-                String moneyPlan = object.getString("moneyPlan");
-                mPlanTime.setText(timePlan);
-                mPlanCost.setText(moneyPlan);
-                mPlanList= (ArrayList<Plan>) mTask.get("plans");
+                mPlanTime.setText(mEventdata.timePlan);
+                mPlanCost.setText(mEventdata.moneyPlan);
+                mPlanList = (ArrayList<Plan>) new Select().from(Plan.class).where(Plan_Table.eventId.eq(mEventdata.id)).queryList();
             }
-            String detail = object.getString("detail");
-            mContent.setText(detail);
+            mContent.setText(mEventdata.detail);
             if (mRoadvalue != 5) {
-                mEventTypeBaseList = (ArrayList<EventTypeBase>) mTask.get("mEventTypeBaseList");
-                LogUtils.d(mEventTypeBaseList);
+                mEventTypeBaseList = new ArrayList<>();
+                List<EventType> typeList = new Select().from(EventType.class).where(EventType_Table.eventId.eq(mEventdata.id)).queryList();
+                for (EventType e : typeList) {
+                    EventTypeBase eb = new EventTypeBase();
+                    eb.setEventType(e);
+                    ArrayList<EventAttr> attrList = (ArrayList<EventAttr>) new Select().from(EventAttr.class).where(EventAttr_Table.eventId.eq(mEventdata.id)).queryList();
+                    eb.setEventAttrsList(attrList);
+                    mEventTypeBaseList.add(eb);
+                }
             }
-            ArrayList<String> filelist = (ArrayList<String>) mTask.get("files");
+            List<FileUri> filelist = new Select().from(FileUri.class).where(FileUri_Table.eventId.eq(mEventdata.id)).queryList();
             if (filelist != null) {
-                for (String s : filelist) {
-                    if (!TextUtils.isEmpty(s) && s.length() > 5)
-                        mPhotoList.add(new File(s));
+                for (FileUri s : filelist) {
+                    if (!TextUtils.isEmpty(s.uri) && s.uri.length() > 5)
+                        mPhotoList.add(new File(s.uri));
                 }
             }
         }
@@ -282,6 +297,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         };
         mEventtypeListview.setAdapter(adapter_eventtype);
     }
+
     private void setplanAdapter() {
         adapter_plan = new CommonAdapter<Plan>(EventAddActivity.this, R.layout.item_eventtype_add, mPlanList) {
             @Override
@@ -331,7 +347,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         });
     }
 
-    @OnClick({R.id.eventadd_back, R.id.eventadd_save, R.id.eventadd_eventType_know, R.id.eventadd_eventType_add,R.id.eventadd_fangan_add, R.id.eventadd_send})
+    @OnClick({R.id.eventadd_back, R.id.eventadd_save, R.id.eventadd_eventType_know, R.id.eventadd_eventType_add, R.id.eventadd_fangan_add, R.id.eventadd_send})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.eventadd_back:
@@ -350,7 +366,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                 break;
             case R.id.eventadd_fangan_add:
                 Intent intent2 = new Intent(EventAddActivity.this, PlanActivity.class);
-                intent2.putExtra("orderType",mRoadvalue);
+                intent2.putExtra("orderType", mRoadvalue);
                 startActivityForResult(intent2, 106);
                 break;
             case R.id.eventadd_send:
@@ -386,15 +402,15 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             }
             if (userRole == 5) {
                 StringBuffer plans = new StringBuffer();
-                for (Plan p :mPlanList){
-                    if (!p.getId().equals("qita")) {
+                for (Plan p : mPlanList) {
+                    if (!p.getId().equals("0")) {
                         if (plans.length() == 0) {
                             plans.append(p.getId());
                         } else {
                             plans.append("," + p.getId());
                         }
-                    }else {
-                        object.put("maintainDetailPlan", p.getFunDetail());
+                    } else {
+                        object.put("maintainDetailPlan", p.getOtherDesc());
                     }
                 }
                 object.put("maintainFunIds", plans.toString());
@@ -428,32 +444,79 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             if (orderStatus == 2) {
                 request.doPostUpload(0, true, com.jinjiang.roadmaintenance.utils.Uri.addDisease, map, "files", mPhotoList);
             } else if (orderStatus == 1) {
-                ArrayList<String> list = new ArrayList<>();
-                for (File f : mPhotoList) {
-                    list.add(f.getAbsolutePath());
+                if (eventId == 0) {
+                    mEventdata = new SaveEventData();
+                    mEventdata.id = System.currentTimeMillis();
+                } else {
+                    SQLite.delete(FileUri.class)
+                            .where(FileUri_Table.eventId.is(eventId))
+                            .query();
+                    SQLite.delete(EventType.class)
+                            .where(EventType_Table.eventId.is(eventId))
+                            .query();
+                    SQLite.delete(EventAttr.class)
+                            .where(EventAttr_Table.eventId.is(eventId))
+                            .query();
+                    SQLite.delete(Plan.class)
+                            .where(Plan_Table.eventId.is(eventId))
+                            .query();
                 }
-                map.put("files", list);
-                map.put("plans", mPlanList);
-                map.put("mRoadvalue", mRoadvalue);
-                map.put("id", System.currentTimeMillis());
-                map.put("mEventTypeBaseList", mEventTypeBaseList);
 
-                if (taskList != null) {
-                    if (taskId != 0) {
-                        for (int i = 0; i < taskList.size(); i++) {
-                            if (taskId == (long) taskList.get(i).get("id")) {
-                                LogUtils.d("删除");
-                                taskList.remove(i);
-                            }
+                mEventdata.userId = userInfo.getUserId();
+                mEventdata.appSid = userInfo.getAppSid();
+                mEventdata.orderType = mEventTypeBaseList.get(0).getEventType().getOrderType();
+                if (mRoadvalue == 1 || mRoadvalue == 2) {
+                    mEventdata.lineType = driverwayType;
+                }
+                if (mCenpt != null) {
+                    mEventdata.longitude = mCenpt.longitude;
+                    mEventdata.latitude = mCenpt.latitude;
+                } else {
+                    mEventdata.longitude = longitude;
+                    mEventdata.latitude = latitude;
+                }
+                mEventdata.locationDesc = mAddress;
+                if (mRoadvalue != 5) {
+                    mEventdata.area = getAllArea();
+                }
+                if (userRole == 5) {
+                    for (Plan p : mPlanList) {
+                        p.setEventId(mEventdata.id);
+                        p.save();
+                    }
+                    mEventdata.timePlan = mPlanTime.getText().toString();
+                    mEventdata.moneyPlan = mPlanCost.getText().toString();
+                }
+                mEventdata.detail = mContent.getText().toString();
+                mEventdata.roadvalue = mRoadvalue;
+
+                for (File f : mPhotoList) {
+                    FileUri fileUri = new FileUri();
+                    fileUri.eventId = mEventdata.id;
+                    fileUri.uri = f.getAbsolutePath();
+                    fileUri.save();
+                }
+
+                if (mRoadvalue != 5) {
+                    for (EventTypeBase e : mEventTypeBaseList) {
+                        EventType type = e.getEventType();
+                        ArrayList<EventAttr> attrsList = e.getEventAttrsList();
+                        type.setEventId(mEventdata.id);
+                        type.save();
+                        for (EventAttr a : attrsList) {
+                            a.setEventId(mEventdata.id);
+                            a.setEventTypeId(type.getId());
+                            a.save();
                         }
                     }
-                } else {
-                    taskList = new ArrayList<>();
                 }
-                taskList.add(map);
-                mAcache.put("taskList", taskList);
+                if (eventId == 0) {
+                    mEventdata.save();
+                } else {
+                    mEventdata.update();
+                }
                 showToast("保存成功！");
-                EventBus.getDefault().post(new MessageEvent(0, ""));
+                EventBus.getDefault().post(new MessageEvent(1, ""));
                 finish();
                 overridePendingTransition(0, R.anim.base_slide_out);
             }
@@ -476,7 +539,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             }
         }
         if (userRole == 5) {
-            if (mPlanList==null||mPlanList.size()==0) {
+            if (mPlanList == null || mPlanList.size() == 0) {
                 showToast("请选择施工方案！");
                 return true;
             }
@@ -535,8 +598,8 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == 100) {
-                if (mPhotoList.size() > 8) {
-                    showToast("单次最多上传8张图片！");
+                if (mPhotoList.size() > 4) {
+                    showToast("最多上传4张图片！");
                     return;
                 }
                 LogUtils.d("path=" + cameraPath);
@@ -545,8 +608,8 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                 mPhotoList.add(mPhotoList.size() - 1, Compressfile);
                 setGridAdapter();
             } else if (requestCode == 102) {
-                if (mPhotoList.size() > 8) {
-                    showToast("单次最多上传8张图片！");
+                if (mPhotoList.size() > 4) {
+                    showToast("最多上传4张图片！");
                     return;
                 }
                 try {
@@ -572,9 +635,9 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                 mAllArea.setText(getAllArea() + "m²");
             } else if (requestCode == 106) {
                 ArrayList<Plan> planList = (ArrayList<Plan>) data.getSerializableExtra("planList");
-                for (Plan p :planList){
+                for (Plan p : planList) {
                     boolean isExist = false;
-                    for (Plan p2:mPlanList){
+                    for (Plan p2 : mPlanList) {
                         if (p.getId().equals(p2.getId())) {
                             isExist = true;// 找到相同项，跳出本层循环
                             break;
@@ -628,14 +691,25 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
     @Override
     public void loadDataFinish(int code, Object data) {
         showToast("操作成功！");
-        if (taskId != 0) {
-            for (int i = 0; i < taskList.size(); i++) {
-                if (taskId == (long) taskList.get(i).get("id")) {
-                    taskList.remove(i);
-                    LogUtils.d("del");
-                }
-            }
-            mAcache.put("taskList", taskList);
+        if (eventId != 0) {
+            new Select().from(SaveEventData.class).where(SaveEventData_Table.id.eq(eventId)).querySingle().delete();
+            SQLite.delete(FileUri.class)
+                    .where(FileUri_Table.eventId.is(eventId))
+                    .query();
+            SQLite.delete(EventType.class)
+                    .where(EventType_Table.eventId.is(eventId))
+                    .query();
+            SQLite.delete(EventAttr.class)
+                    .where(EventAttr_Table.eventId.is(eventId))
+                    .query();
+            SQLite.delete(Plan.class)
+                    .where(Plan_Table.eventId.is(eventId))
+                    .query();
+
+            EventBus.getDefault().post(new MessageEvent(1, ""));
+        }
+        if (userRole == 5) {
+            EventBus.getDefault().post(new MessageEvent(1, ""));
         }
         finish();
     }

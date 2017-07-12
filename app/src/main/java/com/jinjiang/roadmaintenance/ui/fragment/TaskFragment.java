@@ -15,23 +15,34 @@ import android.widget.ExpandableListView;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.apkfuns.logutils.LogUtils;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.adapter.TaskAdapter;
+import com.jinjiang.roadmaintenance.data.MessageEvent;
+import com.jinjiang.roadmaintenance.data.SaveEventData;
+import com.jinjiang.roadmaintenance.data.SaveEventData_Table;
 import com.jinjiang.roadmaintenance.data.Task;
 import com.jinjiang.roadmaintenance.data.TaskState;
 import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.model.NetWorkRequest;
 import com.jinjiang.roadmaintenance.model.UIDataListener;
 import com.jinjiang.roadmaintenance.ui.activity.EventAddActivity;
+import com.jinjiang.roadmaintenance.ui.activity.EventDetail2Activity;
 import com.jinjiang.roadmaintenance.ui.activity.EventDetailsActivity;
 import com.jinjiang.roadmaintenance.ui.activity.LoginActivity;
 import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
 import com.jinjiang.roadmaintenance.utils.Uri;
+import com.raizlabs.android.dbflow.sql.language.Select;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -52,8 +63,8 @@ public class TaskFragment extends Fragment implements UIDataListener {
     private NetWorkRequest request;
     private UserInfo userInfo;
     private ArrayList<TaskState> mTaskStateList;
-    private ArrayList<HashMap> localtaskList;
     private TaskAdapter adapter;
+    private List<SaveEventData> mSaveEventData;
 
     public TaskFragment() {
     }
@@ -72,6 +83,7 @@ public class TaskFragment extends Fragment implements UIDataListener {
         View view = inflater.inflate(R.layout.fragment_task, container, false);
 
         unbinder = ButterKnife.bind(this, view);
+        EventBus.getDefault().register(this);
         initData();
         return view;
     }
@@ -81,7 +93,7 @@ public class TaskFragment extends Fragment implements UIDataListener {
         mTaskStateList = new ArrayList<>();
 
         mAcache = ACache.get(getActivity());
-        localtaskList = (ArrayList<HashMap>) mAcache.getAsObject("taskList");
+        mSaveEventData = new Select().from(SaveEventData.class).queryList();
         dialog = DialogProgress.createLoadingDialog(getActivity(), "", this);
         request = new NetWorkRequest(getActivity(), this);
         userInfo = (UserInfo) mAcache.getAsObject("UserInfo");
@@ -98,7 +110,11 @@ public class TaskFragment extends Fragment implements UIDataListener {
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 if (mTaskStateList.get(groupPosition).getOrderStatus()==1001){
                     Intent intent = new Intent(getActivity(), EventAddActivity.class);
-                    intent.putExtra("Task",localtaskList.get(childPosition));
+                    intent.putExtra("SaveEventData",mSaveEventData.get(childPosition).id);
+                    startActivity(intent);
+                }else if (mTaskStateList.get(groupPosition).getOrderStatus()==1002){
+                    Intent intent = new Intent(getActivity(), EventDetail2Activity.class);
+                    intent.putExtra("Task",mTaskStateList.get(groupPosition).getTasks().get(childPosition));
                     startActivity(intent);
                 }else {
                     Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
@@ -125,13 +141,14 @@ public class TaskFragment extends Fragment implements UIDataListener {
                 if (mTaskStateList != null && mTaskStateList.size() > 0) {
                     for (TaskState t:mTaskStateList){
                         if (t.getOrderStatus()==1001){
-                            if (localtaskList!=null&&localtaskList.size()>0){
+                            t.setTasks(null);
+                            mSaveEventData = new Select().from(SaveEventData.class).queryList();
+                            if (mSaveEventData!=null&&mSaveEventData.size()>0){
                                 ArrayList<Task> localTask = new ArrayList<>();
-                                for (HashMap map:localtaskList){
+                                for (SaveEventData d:mSaveEventData){
                                     Task task = new Task();
-                                    task.setCreateDt(map.get("id").toString());
-                                    JSONObject object = JSONObject.parseObject((String) map.get("workOrder"));
-                                    task.setLocationDesc(object.getString("locationDesc"));
+                                    task.setCreateDt(d.id+"");
+                                    task.setLocationDesc(d.locationDesc);
                                     task.setTaskId("loc");
                                     localTask.add(task);
                                 }
@@ -142,33 +159,6 @@ public class TaskFragment extends Fragment implements UIDataListener {
                     adapter.setDatas(mTaskStateList);
                 }
             }
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        localtaskList = (ArrayList<HashMap>) mAcache.getAsObject("taskList");
-        for (TaskState t:mTaskStateList){
-            if (t.getOrderStatus()==1001){
-                t.setTasks(null);
-                if (localtaskList!=null&&localtaskList.size()>0){
-
-                    ArrayList<Task> localTask = new ArrayList<>();
-                    for (HashMap map:localtaskList){
-                        Task task = new Task();
-                        task.setCreateDt(map.get("id").toString());
-                        JSONObject object = JSONObject.parseObject((String) map.get("workOrder"));
-                        task.setLocationDesc(object.getString("locationDesc"));
-                        task.setTaskId("loc");
-                        localTask.add(task);
-                    }
-                    t.setTasks(localTask);
-                }
-            }
-        }
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
         }
     }
 
@@ -203,5 +193,22 @@ public class TaskFragment extends Fragment implements UIDataListener {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
+    public void onDataSynEvent(MessageEvent event) {
+        LogUtils.d(event);
+        if (event.code==1){
+            Map map = new HashMap();
+            map.put("userId", userInfo.getUserId());
+            map.put("appSid", userInfo.getAppSid());
+            request.doPostRequest(0, true, Uri.getOrderWork, map);
+        }
     }
 }

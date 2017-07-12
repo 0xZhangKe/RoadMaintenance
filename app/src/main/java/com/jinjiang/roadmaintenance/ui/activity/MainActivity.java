@@ -26,11 +26,11 @@ public class MainActivity extends BaseActivity {
     private CommonTabLayout mTab;
     private String[] mTitles = {"地图", "任务","进度", "我"};
     private int[] mIconUnselectIds = {
-            R.drawable.tab_home_unselect, R.drawable.tab_speech_unselect,
-            R.drawable.tab_more_unselect,R.drawable.tab_contact_unselect};
+            R.drawable.map1, R.drawable.task1,
+            R.drawable.rate1,R.drawable.my1};
     private int[] mIconSelectIds = {
-            R.drawable.tab_home_select, R.drawable.tab_speech_select,
-            R.drawable.tab_more_select,R.drawable.tab_contact_select};
+            R.drawable.map2, R.drawable.task2,
+            R.drawable.rate2,R.drawable.my2};
     private ArrayList<CustomTabEntity> mTabEntities = new ArrayList<>();
     private Fragment mapFragment;
     private Fragment taskFragment;

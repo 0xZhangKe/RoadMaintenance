@@ -98,6 +98,9 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
     private GeoCoder mSearch;
     private String address;
     private int userRole;
+    private int state = 0;
+    private ArrayList<EventTypeGrid> mGridlist;
+    private CommonAdapter<EventTypeGrid> gridAdapter;
 
     public MapFragment() {
     }
@@ -137,9 +140,9 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
         }
 
         userRole = userInfo.getUserRole();
-        if (userRole==5||userRole==6){
+        if (userRole == 5 || userRole == 6) {
             mAdd.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             mAdd.setVisibility(View.GONE);
         }
 
@@ -153,23 +156,51 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
     }
 
     private void initData() {
-        ArrayList<EventTypeGrid> mGridlist = new ArrayList<>();
-        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found, "全部病害"));
-        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found, "等待维修"));
-        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found, "正在维修"));
-        mGridlist.add(new EventTypeGrid(R.drawable.pic_not_found, "维修完成"));
-        mGrid.setAdapter(new CommonAdapter<EventTypeGrid>(getActivity(), R.layout.item_map_grid, mGridlist) {
+        mGridlist = new ArrayList<>();
+        mGridlist.add(new EventTypeGrid(R.drawable.state_quabbu2, "全部病害"));
+        mGridlist.add(new EventTypeGrid(R.drawable.state_dengdai1, "等待维修"));
+        mGridlist.add(new EventTypeGrid(R.drawable.state_zhengzai1, "正在维修"));
+        mGridlist.add(new EventTypeGrid(R.drawable.state_wancheng1, "维修完成"));
+        gridAdapter = new CommonAdapter<EventTypeGrid>(getActivity(), R.layout.item_map_grid, mGridlist) {
             @Override
             protected void convert(ViewHolder viewHolder, EventTypeGrid item, int position) {
                 viewHolder.setImageResource(R.id.item_mapgrid_img, item.getImg());
                 viewHolder.setText(R.id.item_mapgrid_text, item.getText());
             }
-        });
+        };
+        mGrid.setAdapter(gridAdapter);
         mGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mShadow.setVisibility(View.GONE);
-                mEventType_ll.setVisibility(View.GONE);
+
+                if (position == 0 && state != 0) {
+                    state=0;
+                    mGridlist.get(0).setImg(R.drawable.state_quabbu2);
+                    mGridlist.get(1).setImg(R.drawable.state_dengdai1);
+                    mGridlist.get(2).setImg(R.drawable.state_zhengzai1);
+                    mGridlist.get(3).setImg(R.drawable.state_wancheng1);
+                }else if (position == 1 && state != 1){
+                    state=1;
+                    mGridlist.get(0).setImg(R.drawable.state_quabbu1);
+                    mGridlist.get(1).setImg(R.drawable.state_dengdai2);
+                    mGridlist.get(2).setImg(R.drawable.state_zhengzai1);
+                    mGridlist.get(3).setImg(R.drawable.state_wancheng1);
+                }else if (position == 2 && state != 2){
+                    state=2;
+                    mGridlist.get(0).setImg(R.drawable.state_quabbu1);
+                    mGridlist.get(1).setImg(R.drawable.state_dengdai1);
+                    mGridlist.get(2).setImg(R.drawable.state_zhengzai2);
+                    mGridlist.get(3).setImg(R.drawable.state_wancheng1);
+                }else if (position == 3 && state != 3){
+                    state=3;
+                    mGridlist.get(0).setImg(R.drawable.state_quabbu1);
+                    mGridlist.get(1).setImg(R.drawable.state_dengdai1);
+                    mGridlist.get(2).setImg(R.drawable.state_zhengzai1);
+                    mGridlist.get(3).setImg(R.drawable.state_wancheng2);
+                }
+                gridAdapter.notifyDataSetChanged();
+//                mShadow.setVisibility(View.GONE);
+//                mEventType_ll.setVisibility(View.GONE);
             }
         });
         initBaiduMap();
@@ -188,7 +219,7 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
         mBaiduMap.setOnMapLongClickListener(new BaiduMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                if (userRole==5||userRole==6){
+                if (userRole == 5 || userRole == 6) {
                     if (mBaiduMap != null)
                         mBaiduMap.clear();
 
@@ -212,7 +243,7 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
                         if (mDialog != null)
                             mDialog.show();
 
-                        mEventCenpt=marker.getPosition();
+                        mEventCenpt = marker.getPosition();
                     }
                     mSearch.reverseGeoCode(new ReverseGeoCodeOption()
                             .location(marker.getPosition()));
@@ -269,17 +300,17 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
         }
     }
 
-    @OnClick({R.id.map_add, R.id.map_mylocation, R.id.map_eventType_icon})
+    @OnClick({R.id.map_add, R.id.map_mylocation, R.id.map_eventType_icon, R.id.map_shadow})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.map_add://新增
-                if (myCenpt!=null){
+                if (myCenpt != null) {
                     if (mDialog != null)
                         mDialog.show();
                     mSearch.reverseGeoCode(new ReverseGeoCodeOption()
                             .location(myCenpt));
-                    mEventCenpt=myCenpt;
-                }else {
+                    mEventCenpt = myCenpt;
+                } else {
                     showToast("未能定位到当前位置！");
                 }
                 break;
@@ -290,6 +321,7 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
                     myToast.toast(getActivity(), "正在定位中...");
                 }
                 break;
+            case R.id.map_shadow:
             case R.id.map_eventType_icon:
                 if (mShadow.getVisibility() == View.GONE) {
                     mShadow.setVisibility(View.VISIBLE);

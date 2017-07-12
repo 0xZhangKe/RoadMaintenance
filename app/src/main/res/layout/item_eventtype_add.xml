@@ -13,7 +13,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:textColor="@color/text_gray"
-        android:textSize="12sp" />
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/item_attr"
@@ -22,7 +22,7 @@
         android:layout_marginLeft="10dp"
         android:layout_weight="1"
         android:textColor="@color/text_gray"
-        android:textSize="12sp" />
+        android:textSize="13sp" />
 
     <ImageView
         android:id="@+id/item_del"

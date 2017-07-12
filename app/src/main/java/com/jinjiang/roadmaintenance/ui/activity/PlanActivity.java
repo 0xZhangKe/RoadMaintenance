@@ -21,6 +21,7 @@ import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.model.NetWorkRequest;
 import com.jinjiang.roadmaintenance.model.UIDataListener;
 import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
+import com.jinjiang.roadmaintenance.ui.view.myDialog;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
 import com.jinjiang.roadmaintenance.utils.Uri;
@@ -97,7 +98,7 @@ public class PlanActivity extends BaseActivity implements UIDataListener {
                 if (mPlanList != null && mPlanList.size() > 0) {
                     Plan plan = new Plan();
                     plan.setFunName("其他");
-                    plan.setId("qita");
+                    plan.setId("0");
                     mPlanList.add(plan);
                     mPlanAdapter = new CommonAdapter<Plan>(PlanActivity.this, R.layout.item_plan_add, mPlanList) {
 
@@ -107,12 +108,14 @@ public class PlanActivity extends BaseActivity implements UIDataListener {
                             viewHolder.setOnClickListener(R.id.item_explan, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    new AlertDialog.Builder(PlanActivity.this).setTitle("提示")
-                                            .setMessage(item.getFunDetail())
-                                            .show();
+                                    myDialog myDialog = new myDialog(PlanActivity.this);
+                                    myDialog.setTitle(item.getFunName());
+                                    myDialog.setContenttext(item.getFunDetail());
+                                    myDialog.setImg("");
+                                    myDialog.show();
                                 }
                             });
-                            if (item.getId().equals("qita")) {
+                            if (item.getId().equals("0")) {
                                 viewHolder.setVisible(R.id.item_explan, false);
                             } else {
                                 viewHolder.setVisible(R.id.item_explan, true);
@@ -123,12 +126,12 @@ public class PlanActivity extends BaseActivity implements UIDataListener {
                                     if (isChecked) {
                                         if (!mSelectPlanList.contains(item))
                                             mSelectPlanList.add(item);
-                                        if (item.getId().equals("qita"))
+                                        if (item.getId().equals("0"))
                                             mEditText.setVisibility(View.VISIBLE);
                                     } else {
                                         if (mSelectPlanList.contains(item))
                                             mSelectPlanList.remove(item);
-                                        if (item.getId().equals("qita"))
+                                        if (item.getId().equals("0"))
                                             mEditText.setVisibility(View.GONE);
                                     }
                                 }
@@ -183,12 +186,12 @@ public class PlanActivity extends BaseActivity implements UIDataListener {
                     return;
                 }
                 for (Plan p : mSelectPlanList) {
-                    if (p.getId().equals("qita")) {
+                    if (p.getId().equals("0")) {
                         if (TextUtils.isEmpty(mEditText.getText().toString())) {
                             showToast("请输入其他方案！");
                             return;
                         } else {
-                            p.setFunDetail(mEditText.getText().toString());
+                            p.setOtherDesc(mEditText.getText().toString());
                         }
                     }
                 }
