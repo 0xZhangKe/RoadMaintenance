@@ -28,8 +28,7 @@ import com.apkfuns.logutils.LogUtils;
 import com.bumptech.glide.Glide;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.base.BaseActivity;
-import com.jinjiang.roadmaintenance.data.EventAttr;
-import com.jinjiang.roadmaintenance.data.EventTypeBase;
+import com.jinjiang.roadmaintenance.data.MessageEvent;
 import com.jinjiang.roadmaintenance.data.Plan;
 import com.jinjiang.roadmaintenance.data.Task;
 import com.jinjiang.roadmaintenance.data.TaskDetails;
@@ -48,8 +47,11 @@ import com.jinjiang.roadmaintenance.utils.Uri;
 import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +59,8 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.qqtheme.framework.picker.DatePicker;
+import cn.qqtheme.framework.picker.DatePicker;
 
 public class EventDetail2Activity extends BaseActivity implements UIDataListener, ActionSheetDialog.OnActionSheetSelected, DialogInterface.OnCancelListener {
     @BindView(R.id.eventdetail2_eventId)
@@ -111,6 +115,20 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
     EditText mRealTime;
     @BindView(R.id.eventdetail2_realcost)
     EditText mRealcost;
+    @BindView(R.id.eventdetail2_drivertype_ll)
+    LinearLayout mDrivertypeLl;
+    @BindView(R.id.eventdetail2_allArea)
+    TextView mAllArea;
+    @BindView(R.id.eventdetail2_eventtype_listview)
+    ListViewForScrollView mEventtypeListview;
+    @BindView(R.id.eventdetail2_eventtype_ll)
+    LinearLayout mEventtypeLl;
+    @BindView(R.id.eventdetail2_finishTime)
+    TextView mFinishTime;
+    @BindView(R.id.eventdetail2_realArea)
+    EditText mRealArea;
+    @BindView(R.id.eventdetail2_realarea_ll)
+    LinearLayout mRealareaLl;
     private Task mTask;
     private ACache mAcache;
     private Dialog dialog;
@@ -138,6 +156,8 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
     private List<String> scenePicUrls;
     private CommonAdapter<String> mGridTupianAdapter1;
     private CommonAdapter<String> mGridfujianAdapter1;
+    private DatePicker picker_Time;
+    private String selectDate;
 
 
     @Override
@@ -171,6 +191,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         real_plan = new ArrayList<>();
         xiufutuList = new ArrayList<>();
         fujiantuList = new ArrayList<>();
+
     }
 
     @Override
@@ -186,6 +207,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             map.put("body", object.toJSONString());
             request.doPostRequest(0, true, Uri.getDiseaseInfos, map);
         }
+        initDatePicker();
     }
 
     /**
@@ -197,6 +219,13 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         OrderStatus = wm.getOrderStatus();
         OrderType = wm.getOrderType();
         totalArea = wm.getArea();
+
+        if (OrderType == 5) {
+            mDrivertypeLl.setVisibility(View.GONE);
+            mEventtypeLl.setVisibility(View.GONE);
+        } else if (OrderType == 4 || OrderType == 3) {
+            mDrivertypeLl.setVisibility(View.GONE);
+        }
         if (OrderStatus == 2) {//待确认
         } else if (OrderStatus == 3) {//技术员审批--不处理
         } else if (OrderStatus == 4) {//需处理(不会出现4)
@@ -208,7 +237,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         } else if (OrderStatus == 11) {//二级业主审核否--重新下单
         } else if (OrderStatus == 12) {//二级业主审核属实--三级业主批复
         } else if (OrderStatus == 13) {//三级业主审核否--重新下单
-        } else if (OrderStatus == 14 || OrderStatus == 6) {//三级业主审核属实-->20m未施工
+        } else if (OrderStatus == 14 || OrderStatus == 6|| OrderStatus == 17|| OrderStatus == 19) {//三级业主审核属实-->20m未施工
             xiufutuList.add(new File(""));
             fujiantuList.add(new File(""));
             mRealTime.setEnabled(true);
@@ -218,17 +247,20 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             mApprovalStateLl.setVisibility(View.GONE);
             mConfirmRg.setVisibility(View.GONE);
             mRemark.setEnabled(true);
+            mRealareaLl.setVisibility(View.VISIBLE);
             mSend.setText("提交初验");
 
 
         } else if (OrderStatus == 15) {//初验
-
+            mPlanLl.setVisibility(View.VISIBLE);
+            mSend.setText("验收");
 
         } else if (OrderStatus == 17) {//初验不合格，重新提交施工
 
 
         } else if (OrderStatus == 18) {//初验合格，三方验收
-
+            mPlanLl.setVisibility(View.VISIBLE);
+            mSend.setText("验收");
 
         } else if (OrderStatus == 19) {//验收不合格，重新提交施工
 
@@ -250,6 +282,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         mPlanCost.setText(wm.getMoneyPlan() + "");
         mRealTime.setText(wm.getTimePractical() + "");
         mRealcost.setText(wm.getMoneyPractical() + "");
+        mAllArea.setText("总面积" + wm.getArea() + "m²");
 
         mApprovalStateTv.setText(td.getTaskName());
 
@@ -259,15 +292,42 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         scenePicUrls = wm.getScenePicUrls();
 
         setGridAdapter(wm.getPicUrls());
-        setplanAdapter(real_plan);
         setApprovalAdapter(td.getTaskInfos());
-        if (OrderStatus == 14 || OrderStatus == 6) {
+        if (mTaskDetails.getDiseaseMsgDtos() != null)
+            setEventtypeListAdapter(mTaskDetails.getDiseaseMsgDtos());
+        if (OrderStatus == 14 || OrderStatus == 6|| OrderStatus == 17|| OrderStatus == 19) {
             setxiufuGridAdapter();
             setfujianGridAdapter();
+            setplanAdapter(real_plan);
         } else {
             setxiufuAdapter(scenePicUrls);
             setfujianAdapter(maintainPicUrls);
+            setplanAdapter(mTaskDetails.getPracticalFuns());
         }
+    }
+
+    /**
+     * 病害类型
+     *
+     * @param list
+     */
+    private void setEventtypeListAdapter(final List<TaskDetails.DiseaseMsgDtosBean> list) {
+        adapter_eventtype = new CommonAdapter<TaskDetails.DiseaseMsgDtosBean>(EventDetail2Activity.this, R.layout.item_eventtype_add, list) {
+            @Override
+            protected void convert(ViewHolder viewHolder, TaskDetails.DiseaseMsgDtosBean item, final int position) {
+                viewHolder.setText(R.id.item_name, item.getDiseaseTypeName());
+                ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean> attrlist = (ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean>) item.getDiseaseAttrMsgDtos();
+                if (attrlist != null && attrlist.size() > 0) {
+                    if (attrlist.size() == 1) {
+                        viewHolder.setText(R.id.item_attr, attrlist.get(0).getValue() + "m");
+                    } else {
+                        viewHolder.setText(R.id.item_attr, attrlist.get(0).getValue() + "m" + "*" + attrlist.get(1).getValue() + "m");
+                    }
+                }
+                viewHolder.setVisible(R.id.item_del, false);
+            }
+        };
+        mEventtypeListview.setAdapter(adapter_eventtype);
     }
 
     /**
@@ -375,6 +435,9 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         mGridFujian.setAdapter(mGridfujianAdapter1);
     }
 
+    /**
+     * 修复后本地图片
+     */
     private void setxiufuGridAdapter() {
         mGridXiufutupian.setAdapter(new CommonAdapter<File>(EventDetail2Activity.this, R.layout.item_addphoto_grid, xiufutuList) {
             @Override
@@ -400,12 +463,15 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == xiufutuList.size() - 1) {
                     ActionSheetDialog.showSheet(EventDetail2Activity.this, EventDetail2Activity.this, EventDetail2Activity.this);
-                    fujian=false;
+                    fujian = false;
                 }
             }
         });
     }
 
+    /**
+     * 修复后附件本地图片
+     */
     private void setfujianGridAdapter() {
         mGridFujian.setAdapter(new CommonAdapter<File>(EventDetail2Activity.this, R.layout.item_addphoto_grid, fujiantuList) {
             @Override
@@ -431,29 +497,200 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == fujiantuList.size() - 1) {
                     ActionSheetDialog.showSheet(EventDetail2Activity.this, EventDetail2Activity.this, EventDetail2Activity.this);
-                    fujian=true;
+                    fujian = true;
                 }
             }
         });
     }
-
-    @OnClick({R.id.eventdetail2_back, R.id.eventdetail2_save, R.id.eventdetail2_plansAdd, R.id.eventdetail2_send})
+    @OnClick({R.id.eventdetail2_back, R.id.eventdetail2_save, R.id.eventdetail2_plansAdd, R.id.eventdetail2_send,R.id.eventdetail2_finishTime})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.eventdetail2_back:
                 finish();
                 overridePendingTransition(0, R.anim.base_slide_out);
                 break;
+            case R.id.eventdetail2_finishTime:
+                picker_Time.show();
+                break;
             case R.id.eventdetail2_save:
                 break;
             case R.id.eventdetail2_plansAdd:
+                StringBuffer typeIds = new StringBuffer();
+                if (mTaskDetails != null && mTaskDetails.getDiseaseMsgDtos() != null) {
+                    if (OrderType != 5) {
+                        for (int i = 0; i < mTaskDetails.getDiseaseMsgDtos().size(); i++) {
+                            if (i == 0) {
+                                typeIds.append(mTaskDetails.getDiseaseMsgDtos().get(i).getDiseaseId());
+                            } else {
+                                typeIds.append("," + mTaskDetails.getDiseaseMsgDtos().get(i).getDiseaseId());
+                            }
+                        }
+                    }
+                }
                 Intent intent2 = new Intent(EventDetail2Activity.this, PlanActivity.class);
                 intent2.putExtra("orderType", OrderType);
+                intent2.putExtra("diseaseTypeId", typeIds.toString());
                 startActivityForResult(intent2, 106);
                 break;
             case R.id.eventdetail2_send:
+                if (OrderStatus == 14 || OrderStatus == 6) {//三级业主审核属实-->20m未施工--提交施工后图
+                    wangong();
+                } else if (OrderStatus == 15) {//监理初验
+                    chuyan();
+
+                } else if (OrderStatus == 17) {//初验不合格，重新提交施工
+
+
+                } else if (OrderStatus == 18) {//初验合格，三方验收
+                    sanfang();
+
+                } else if (OrderStatus == 19) {//验收不合格，重新提交施工
+
+
+                } else if (OrderStatus == 20) {//验收合格，完结状态
+
+
+                }
                 break;
         }
+    }
+
+    /**
+     * 初始化日期时间选择器
+     */
+    private void initDatePicker() {
+        //获取当前日期
+        Calendar ca = Calendar.getInstance();
+        int year = ca.get(Calendar.YEAR);//获取年份
+        int month = ca.get(Calendar.MONTH) + 1;//获取月份
+        int day = ca.get(Calendar.DATE);//获取日
+        String monthStr = "" + month;
+        String dayStr = "" + day;
+        if (month < 10) {
+            monthStr = "0" + month;
+        }
+        if (day < 10) {
+            dayStr = "0" + day;
+        }
+        selectDate = year + "-" + monthStr + "-" + dayStr;
+        mFinishTime.setText(selectDate);
+        //设置picker
+        picker_Time = new DatePicker(this, DatePicker.YEAR_MONTH_DAY);
+        picker_Time.setRange(1900, 2100);//设置年份起始
+        picker_Time.setCancelText("取消");
+        picker_Time.setSubmitText("确定");
+        picker_Time.setLineColor(EventDetail2Activity.this.getResources().getColor(R.color.blue));
+        picker_Time.setTextColor(EventDetail2Activity.this.getResources().getColor(R.color.text_black));
+        picker_Time.setCancelTextColor(EventDetail2Activity.this.getResources().getColor(R.color.gray));
+        picker_Time.setSubmitTextColor(EventDetail2Activity.this.getResources().getColor(R.color.blue));
+        picker_Time.setSelectedItem(year,month,day);
+        //监听选择
+        picker_Time.setOnDatePickListener(new DatePicker.OnYearMonthDayPickListener() {
+            @Override
+            public void onDatePicked(String year, String month, String day) {
+                selectDate = year + "-" + month + "-" + day ;
+                mFinishTime.setText(selectDate);
+            }
+        });
+    }
+    /**
+     * 完工
+     */
+    private void wangong() {
+        String reallTime = mRealTime.getText().toString();
+        String reallCost = mRealcost.getText().toString();
+        String reallArea = mRealArea.getText().toString();
+        String finishTime = mFinishTime.getText().toString();
+
+        if (real_plan == null || real_plan.size() == 0) {
+            showToast("请选择实际修复方案！");
+            return;
+        }
+        if (TextUtils.isEmpty(reallTime) || Integer.parseInt(reallTime) == 0) {
+            showToast("请输入实际修复时间！");
+            return;
+        }
+        if (TextUtils.isEmpty(reallCost) || Double.parseDouble(reallCost) == 0) {
+            showToast("请输入实际修复费用！");
+            return;
+        }
+        if (TextUtils.isEmpty(reallArea) || Double.parseDouble(reallArea) == 0) {
+            showToast("请输入实际修复面积！");
+            return;
+        }
+        if (TextUtils.isEmpty(finishTime)) {
+            showToast("请选择完工日期！");
+            return;
+        }
+        if (xiufutuList == null || xiufutuList.size() == 0) {
+            showToast("请选择维修后图片！");
+            return;
+        }
+        if (fujiantuList == null || fujiantuList.size() == 0) {
+            showToast("请选择施工附件！");
+            return;
+        }
+
+
+        Map map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        JSONObject object = new JSONObject();
+        object.put("orderStatus", 15);
+        object.put("timePractical", reallTime);
+        object.put("moneyPractical", reallCost);
+        object.put("taskId", mTaskDetails.getTaskId());
+        object.put("workOrderId", mTaskDetails.getWorkOrderMsgDto().getWorkOrderId());
+        object.put("maintainTime", finishTime);
+
+        StringBuffer plans = new StringBuffer();
+        for (Plan p : real_plan) {
+            if (!p.getId().equals("0")) {
+                if (plans.length() == 0) {
+                    plans.append(p.getId());
+                } else {
+                    plans.append("," + p.getId());
+                }
+            } else {
+                object.put("maintainDetailPractical", p.getOtherDesc());
+            }
+        }
+        object.put("maintainFunIds", plans.toString());
+        object.put("areaPractical", reallArea);
+        map.put("body", object.toString());
+        request.doPostUpload(1,true,Uri.saveConstructionInfo,map,"maintainFiles", fujiantuList,"sceneFiles", xiufutuList);
+    }
+
+    /**
+     * 初验
+     */
+    private void chuyan() {
+        int deal = mConfirmRg.getCheckedRadioButtonId() == R.id.eventdetails_confirm1 ? 18 : 17;
+        Map map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        JSONObject object = new JSONObject();
+        object.put("vacationApproved", deal);
+        object.put("opinion", mRemark.getText().toString());
+        object.put("taskId", mTaskDetails.getTaskId());
+        object.put("roleCode", "1");
+        map.put("body", object.toJSONString());
+        request.doPostRequest(2, true, Uri.official, map);
+    }
+    /**
+     * 三方验收
+     */
+    private void sanfang() {
+        int deal = mConfirmRg.getCheckedRadioButtonId() == R.id.eventdetails_confirm1 ? 20 : 19;
+        Map map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        JSONObject object = new JSONObject();
+        object.put("vacationApproved", deal);
+        object.put("opinion", mRemark.getText().toString());
+        object.put("taskId", mTaskDetails.getTaskId());
+        map.put("body", object.toJSONString());
+        request.doPostRequest(3, true, Uri.official, map);
     }
 
     @Override
@@ -466,6 +703,14 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                     setUiData(mTaskDetails);
                 }
             }
+        }else if (code==1){
+            showToast("提交成功！");
+            EventBus.getDefault().post(new MessageEvent(1, ""));
+            finish();
+        }else {
+            showToast("处理成功！");
+            EventBus.getDefault().post(new MessageEvent(1, ""));
+            finish();
         }
     }
 
@@ -503,7 +748,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
 
             if (requestCode == 100) {
                 if (fujian) {
-                    if (fujiantuList.size()  > 4) {
+                    if (fujiantuList.size() > 4) {
                         showToast("最多上传4张图片！");
                         return;
                     }
@@ -512,7 +757,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                     fujiantuList.add(fujiantuList.size() - 1, Compressfile);
                     setfujianGridAdapter();
                 } else {
-                    if (xiufutuList.size()  > 4) {
+                    if (xiufutuList.size() > 4) {
                         showToast("最多上传4张图片！");
                         return;
                     }
@@ -524,7 +769,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
 
             } else if (requestCode == 102) {
                 if (fujian) {
-                    if (fujiantuList.size()  > 4) {
+                    if (fujiantuList.size() > 4) {
                         showToast("最多上传4张图片！");
                         return;
                     }
@@ -544,7 +789,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                         e.printStackTrace();
                     }
                 } else {
-                    if (xiufutuList.size()  > 4) {
+                    if (xiufutuList.size() > 4) {
                         showToast("最多上传4张图片！");
                         return;
                     }

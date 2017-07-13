@@ -66,4 +66,9 @@ public class Uri {
      *
      */
     public static String getMaintainFun = mainUrl+"disease/getMaintainFun";
+    /**
+     * 完工提交
+     *
+     */
+    public static String saveConstructionInfo = mainUrl+"task/saveConstructionInfo";
 }

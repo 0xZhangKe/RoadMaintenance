@@ -42,7 +42,6 @@ import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,6 +115,10 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
     LinearLayout mRemarkLl;
     @BindView(R.id.eventdetails_send)
     TextView mSend;
+    @BindView(R.id.eventdetails_drivertype_ll)
+    LinearLayout mDrivertypeLl;
+    @BindView(R.id.eventdetails_eventtype_ll)
+    LinearLayout mEventtypeLl;
     private Task mTask;
     private ACache mAcache;
     private Dialog dialog;
@@ -185,6 +188,12 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         OrderStatus = wm.getOrderStatus();
         OrderType = wm.getOrderType();
         totalArea = wm.getArea();
+        if (OrderType==5){
+            mDrivertypeLl.setVisibility(View.GONE);
+            mEventtypeLl.setVisibility(View.GONE);
+        }else if (OrderType==4||OrderType==3){
+            mDrivertypeLl.setVisibility(View.GONE);
+        }
         if (OrderStatus == 2) {//待确认
             mRemark.setText(wm.getDetail());
             mPlansAdd.setVisibility(View.VISIBLE);
@@ -197,37 +206,37 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             mRemark.setEnabled(false);
             mConfirmRg.setVisibility(View.GONE);
             mSend.setVisibility(View.GONE);
-        }else if (OrderStatus==4){//需处理(不会出现4)
+        } else if (OrderStatus == 4) {//需处理(不会出现4)
             mRemark.setEnabled(false);
             mConfirmRg.setVisibility(View.GONE);
             mSend.setVisibility(View.GONE);
-        }else if (OrderStatus==5){//待批复
+        } else if (OrderStatus == 5) {//待批复
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);
             mRemark.setHint("请输入处理意见");
-        }else if (OrderStatus==6){// <20m未施工
+        } else if (OrderStatus == 6) {// <20m未施工
 
-        }else if (OrderStatus==7){//监理审核否--重新下单
-        }else if (OrderStatus==8){//监理审核属实--一级业主批复
+        } else if (OrderStatus == 7) {//监理审核否--重新下单
+        } else if (OrderStatus == 8) {//监理审核属实--一级业主批复
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);
             mRemark.setHint("请输入处理意见");
-        }else if (OrderStatus==9){//一级业主审核否--重新下单
-        }else if (OrderStatus==10){//一级业主审核属实--二级业主批复
+        } else if (OrderStatus == 9) {//一级业主审核否--重新下单
+        } else if (OrderStatus == 10) {//一级业主审核属实--二级业主批复
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);
             mRemark.setHint("请输入处理意见");
-        }else if (OrderStatus==11){//二级业主审核否--重新下单
-        }else if (OrderStatus==12){//二级业主审核属实--三级业主批复
+        } else if (OrderStatus == 11) {//二级业主审核否--重新下单
+        } else if (OrderStatus == 12) {//二级业主审核属实--三级业主批复
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);
             mRemark.setHint("请输入处理意见");
-        }else if (OrderStatus==13){//三级业主审核否--重新下单
-        }else if (OrderStatus==14){//三级业主审核属实-->20m未施工
+        } else if (OrderStatus == 13) {//三级业主审核否--重新下单
+        } else if (OrderStatus == 14) {//三级业主审核属实-->20m未施工
         }
 
 
@@ -237,7 +246,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         mLocation.setText(wm.getLocationDesc());
         mRoadType.setText(wm.getOrderTypeName());
         mDriverwayTypeTv.setText(wm.getLineTypeName());
-        mAllArea.setText("总面积"+wm.getArea() + "m²");
+        mAllArea.setText("总面积" + wm.getArea() + "m²");
         mPlanTime.setText(wm.getTimePlan() + "");
         mPlanCost.setText(wm.getMoneyPlan() + "");
 
@@ -335,15 +344,15 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
                 viewHolder.setText(R.id.item_name, item.getUserName());
                 viewHolder.setText(R.id.item_desc, item.getDetail());
                 viewHolder.setText(R.id.item_time, item.getEndTime());
-                if (position==0){
-                    viewHolder.setBackgroundRes(R.id.item_dot,R.drawable.gre_dot_blue_back);
-                    TextView v =(TextView) viewHolder.getView(R.id.item_line);
+                if (position == 0) {
+                    viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_blue_back);
+                    TextView v = (TextView) viewHolder.getView(R.id.item_line);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
-                    params.setMargins(0, ScreenUtils.dp2px(EventDetailsActivity.this,20), 0, 0);
+                    params.setMargins(0, ScreenUtils.dp2px(EventDetailsActivity.this, 20), 0, 0);
                     v.setLayoutParams(params);
-                }else {
-                    viewHolder.setBackgroundRes(R.id.item_dot,R.drawable.gre_dot_back);
-                    TextView v =viewHolder.getView(R.id.item_line);
+                } else {
+                    viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_back);
+                    TextView v = viewHolder.getView(R.id.item_line);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
                     params.setMargins(0, 0, 0, 0);
                     v.setLayoutParams(params);
@@ -383,20 +392,34 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
                 startActivityForResult(intent, 105);
                 break;
             case R.id.eventdetails_plansAdd:
+                StringBuffer typeIds = new StringBuffer();
+                if (mTaskDetails != null && mTaskDetails.getDiseaseMsgDtos() != null){
+                    if (OrderType != 5) {
+                        for (int i =0;i<mTaskDetails.getDiseaseMsgDtos().size();i++) {
+                            if (i == 0) {
+                                typeIds.append(mTaskDetails.getDiseaseMsgDtos().get(i).getDiseaseId());
+                            } else {
+                                typeIds.append("," + mTaskDetails.getDiseaseMsgDtos().get(i).getDiseaseId());
+                            }
+                        }
+                    }
+                }
+
                 Intent intent2 = new Intent(EventDetailsActivity.this, PlanActivity.class);
-                intent2.putExtra("orderType",OrderType);
+                intent2.putExtra("orderType", OrderType);
+                intent2.putExtra("diseaseTypeId", typeIds.toString());
                 startActivityForResult(intent2, 106);
                 break;
             case R.id.eventdetails_send:
                 if (OrderStatus == 2) {
                     confirmTask1();
-                }else if (OrderStatus==5){
+                } else if (OrderStatus == 5) {
                     confirmTask2();
-                }else if (OrderStatus==8){
+                } else if (OrderStatus == 8) {
                     confirmTask3();
-                }else if (OrderStatus==10){
+                } else if (OrderStatus == 10) {
                     confirmTask4();
-                }else if (OrderStatus==12){
+                } else if (OrderStatus == 12) {
                     confirmTask5();
                 }
                 break;
@@ -411,16 +434,16 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         String planTime = mPlanTime.getText().toString();
         String planCost = mPlanCost.getText().toString();
 
-        if (mTaskDetails.getPlanFuns()==null||mTaskDetails.getPlanFuns().size()==0) {
+        if (mTaskDetails.getPlanFuns() == null || mTaskDetails.getPlanFuns().size() == 0) {
             showToast("请选择修复方案！");
             return;
         }
 
-        if (TextUtils.isEmpty(planTime)||Integer.parseInt(planTime)==0) {
+        if (TextUtils.isEmpty(planTime) || Integer.parseInt(planTime) == 0) {
             showToast("请输入预计修复时间！");
             return;
         }
-        if (TextUtils.isEmpty(planCost)||Double.parseDouble(planCost)==0) {
+        if (TextUtils.isEmpty(planCost) || Double.parseDouble(planCost) == 0) {
             showToast("请输入预计修复费用！");
             return;
         }
@@ -462,13 +485,13 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             }
             StringBuffer plans = new StringBuffer();
             for (Plan p : mTaskDetails.getPlanFuns()) {
-                if (!p.getId().equals("0")){
+                if (!p.getId().equals("0")) {
                     if (plans.length() == 0) {
                         plans.append(p.getId());
                     } else {
                         plans.append("," + p.getId());
                     }
-                }else {
+                } else {
                     object1.put("maintainDetailPlan", p.getOtherDesc());
                 }
             }
@@ -476,7 +499,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             object1.put("processInstanceId", mTaskDetails.getWorkOrderMsgDto().getProcessInstanceId());
             object1.put("orderType", OrderType);
             object1.put("maintainFunIds", plans.toString());
-            object1.put("detail",mTaskDetails.getWorkOrderMsgDto().getDetail() );
+            object1.put("detail", mTaskDetails.getWorkOrderMsgDto().getDetail());
             object1.put("timePlan", mPlanTime.getText().toString());
             object1.put("moneyPlan", mPlanCost.getText().toString());
             map.put("workOrder", object1.toJSONString());
@@ -500,6 +523,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         map.put("body", object.toJSONString());
         request.doPostRequest(2, true, Uri.official, map);
     }
+
     /**
      * 一级业主审批
      */
@@ -515,6 +539,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         map.put("body", object.toJSONString());
         request.doPostRequest(3, true, Uri.official, map);
     }
+
     /**
      * 二级业主审批
      */
@@ -547,6 +572,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         object.put("roleCode", "5");
         request.doPostRequest(5, true, Uri.owner3Official, map);
     }
+
     @Override
     public void loadDataFinish(int code, Object data) {
         if (code == 0) {
@@ -559,11 +585,11 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             }
         } else if (code == 1) {
             showToast("确认成功！");
-            EventBus.getDefault().post(new MessageEvent(1,""));
+            EventBus.getDefault().post(new MessageEvent(1, ""));
             finish();
-        }else if (code == 2||code == 3||code == 4||code == 5) {
+        } else if (code == 2 || code == 3 || code == 4 || code == 5) {
             showToast("审批成功！");
-            EventBus.getDefault().post(new MessageEvent(1,""));
+            EventBus.getDefault().post(new MessageEvent(1, ""));
             finish();
         }
     }
@@ -632,9 +658,9 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
 //
             } else if (requestCode == 106) {
                 ArrayList<Plan> planList = (ArrayList<Plan>) data.getSerializableExtra("planList");
-                for (Plan p :planList){
+                for (Plan p : planList) {
                     boolean isExist = false;
-                    for (Plan p2:mTaskDetails.getPlanFuns()){
+                    for (Plan p2 : mTaskDetails.getPlanFuns()) {
                         if (p.getId().equals(p2.getId())) {
                             isExist = true;// 找到相同项，跳出本层循环
                             break;

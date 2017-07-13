@@ -14,6 +14,7 @@ import android.widget.ListView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.apkfuns.logutils.LogUtils;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.base.BaseActivity;
 import com.jinjiang.roadmaintenance.data.Plan;
@@ -21,6 +22,7 @@ import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.model.NetWorkRequest;
 import com.jinjiang.roadmaintenance.model.UIDataListener;
 import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
+import com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView;
 import com.jinjiang.roadmaintenance.ui.view.myDialog;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
@@ -38,7 +40,7 @@ import butterknife.OnClick;
 public class PlanActivity extends BaseActivity implements UIDataListener {
 
     @BindView(R.id.plan_listView)
-    ListView mListView;
+    ListViewForScrollView mListView;
     @BindView(R.id.plan_editText)
     EditText mEditText;
     private ACache mAcache;
@@ -49,6 +51,7 @@ public class PlanActivity extends BaseActivity implements UIDataListener {
     private ArrayList<Plan> mPlanList;
     private ArrayList<Plan> mSelectPlanList;
     private CommonAdapter<Plan> mPlanAdapter;
+    private String diseaseTypeId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,11 +84,13 @@ public class PlanActivity extends BaseActivity implements UIDataListener {
     protected void initData() {
 
         orderType = getIntent().getIntExtra("orderType", 0);
+        diseaseTypeId = getIntent().getStringExtra("diseaseTypeId");
 
         Map map = new HashMap();
         map.put("userId", userInfo.getUserId());
         map.put("appSid", userInfo.getAppSid());
         map.put("orderType", orderType + "");
+        map.put("diseaseTypeId", diseaseTypeId);
         request.doPostRequest(0, true, Uri.getMaintainFun, map);
     }
 
@@ -108,10 +113,11 @@ public class PlanActivity extends BaseActivity implements UIDataListener {
                             viewHolder.setOnClickListener(R.id.item_explan, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    LogUtils.d(item);
                                     myDialog myDialog = new myDialog(PlanActivity.this);
                                     myDialog.setTitle(item.getFunName());
                                     myDialog.setContenttext(item.getFunDetail());
-                                    myDialog.setImg("");
+                                    myDialog.setImg(item.getPicUrl());
                                     myDialog.show();
                                 }
                             });
@@ -127,12 +133,13 @@ public class PlanActivity extends BaseActivity implements UIDataListener {
                                         if (!mSelectPlanList.contains(item))
                                             mSelectPlanList.add(item);
                                         if (item.getId().equals("0"))
-                                            mEditText.setVisibility(View.VISIBLE);
+                                            mEditText.setEnabled(true);
                                     } else {
                                         if (mSelectPlanList.contains(item))
                                             mSelectPlanList.remove(item);
                                         if (item.getId().equals("0"))
-                                            mEditText.setVisibility(View.GONE);
+                                            mEditText.setText("");
+                                            mEditText.setEnabled(false);
                                     }
                                 }
                             });

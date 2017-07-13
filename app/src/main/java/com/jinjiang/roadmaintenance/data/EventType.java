@@ -23,7 +23,7 @@ public class EventType extends BaseModel implements Serializable {
     @PrimaryKey
     private String id;
     @Column
-    private long eventId;
+    private long eventId;//关联事件，非必须
     @Column
     private String detail;
     @Column
@@ -33,9 +33,9 @@ public class EventType extends BaseModel implements Serializable {
     @Column
     private String picUrl;
     @Column
-    private String desc;
+    private String desc;//
     @Column
-    public boolean ischecked;
+    public boolean ischecked;//是否选中，非必须
 
     public String getDetail() {
         return detail;

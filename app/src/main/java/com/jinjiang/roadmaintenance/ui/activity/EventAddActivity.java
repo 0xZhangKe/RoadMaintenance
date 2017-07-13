@@ -22,8 +22,10 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.apkfuns.logutils.LogUtils;
 import com.baidu.mapapi.model.LatLng;
 import com.bumptech.glide.Glide;
@@ -41,6 +43,8 @@ import com.jinjiang.roadmaintenance.data.Plan;
 import com.jinjiang.roadmaintenance.data.Plan_Table;
 import com.jinjiang.roadmaintenance.data.SaveEventData;
 import com.jinjiang.roadmaintenance.data.SaveEventData_Table;
+import com.jinjiang.roadmaintenance.data.Task;
+import com.jinjiang.roadmaintenance.data.TaskDetails;
 import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.model.NetWorkRequest;
 import com.jinjiang.roadmaintenance.model.UIDataListener;
@@ -63,6 +67,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -107,6 +112,8 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
     RadioButton mRadio2;
     @BindView(R.id.eventadd_fangan_listview)
     ListViewForScrollView mFanganListview;
+    @BindView(R.id.eventadd_save)
+    TextView mSave;
     private OptionPicker picker_Type;
     private int eventType = 0;
     public static String SAVED_IMAGE_DIR_PATH =
@@ -126,17 +133,17 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
     private LatLng mCenpt;
     private int userRole;
     private int orderStatus = 1;
-    private HashMap mTask;
-    private boolean IsModify = false;
+    private boolean IsReLoad = false;
     private double longitude;
     private double latitude;
     private long eventId = 0;
     ;
-    private ArrayList<HashMap> taskList;
     ArrayList<Plan> mPlanList;
     String savePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tempfile/";
     private CommonAdapter<Plan> adapter_plan;
     private SaveEventData mEventdata;
+    private Task mTask;
+    private TaskDetails mTaskDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,8 +172,12 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             mCenpt = intent.getParcelableExtra("Cenpt");
         }
         if (intent.hasExtra("SaveEventData")) {
-            eventId = intent.getLongExtra("SaveEventData",0);
-            IsModify = true;
+            eventId = intent.getLongExtra("SaveEventData", 0);
+        }
+        if (intent.hasExtra("Task")) {
+            mTask = (Task) intent.getSerializableExtra("Task");
+            IsReLoad = true;
+            mSave.setVisibility(View.GONE);
         }
     }
 
@@ -219,11 +230,64 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         }
     }
 
+    private void setUiData(TaskDetails td) {
+        if (mTaskDetails != null) {
+            TaskDetails.WorkOrderMsgDtoBean wm = td.getWorkOrderMsgDto();
+            mRoadvalue = wm.getOrderType();
+            longitude = wm.getLongitude();
+            latitude = wm.getLatitude();
+            if (mRoadvalue == 1 || mRoadvalue == 2) {
+                driverwayType = wm.getLineType();
+                if (driverwayType == 1) {
+                    mRadio1.setChecked(true);
+                    mRadio2.setChecked(false);
+                } else {
+                    mRadio1.setChecked(false);
+                    mRadio2.setChecked(true);
+                }
+            }
+            mAddress = wm.getLocationDesc();
+            mRoadName.setText(mAddress);
+            if (mRoadvalue != 5) {
+                String mArea = wm.getArea() + "";
+                mAllArea.setText(mArea);
+            }
+            if (userRole == 5) {
+                mPlanTime.setText(wm.getTimePlan());
+                mPlanCost.setText(wm.getMoneyPlan() + "");
+                mPlanList = (ArrayList<Plan>) td.getPlanFuns();
+            }
+            mContent.setText(wm.getDetail());
+            if (mRoadvalue != 5) {
+                mEventTypeBaseList = new ArrayList<>();
+                List<TaskDetails.DiseaseMsgDtosBean> typeList = td.getDiseaseMsgDtos();
+                for (TaskDetails.DiseaseMsgDtosBean e : typeList) {
+                    EventTypeBase eb = new EventTypeBase();
+                    EventType eventType = new EventType();
+                    eventType.setId(e.getDiseaseId());
+                    eventType.setName(e.getDiseaseTypeName());
+                    eventType.setDesc(e.getDetail());
+                    eb.setEventType(eventType);
+                    ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean> attrList = (ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean>) e.getDiseaseAttrMsgDtos();
+                    ArrayList<EventAttr> eventAttrArrayList = new ArrayList<>();
+                    for (TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean b : attrList) {
+                        EventAttr ea = new EventAttr();
+                        ea.setName(b.getDiseaseAttrName());
+                        ea.setTypeUnitId(b.getTypeUnitId());
+//                        ea.setDefaultVal(b.getValue());
+                        eventAttrArrayList.add(ea);
+                    }
+                    eb.setEventAttrsList(eventAttrArrayList);
+                    mEventTypeBaseList.add(eb);
+                }
+            }
+        }
+    }
+
     @Override
     protected void initData() {
         mEventTypeBaseList = new ArrayList<>();
         mAcache = ACache.get(EventAddActivity.this);
-        taskList = (ArrayList<HashMap>) mAcache.getAsObject("taskList");
         dialog = DialogProgress.createLoadingDialog(EventAddActivity.this, "", this);
         request = new NetWorkRequest(EventAddActivity.this, this);
 
@@ -235,6 +299,17 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             EventAddActivity.this.finish();
         }
         userRole = userInfo.getUserRole();
+
+        if (mTask != null) {
+            Map map = new HashMap();
+            map.put("userId", userInfo.getUserId());
+            map.put("appSid", userInfo.getAppSid());
+            JSONObject object = new JSONObject();
+            object.put("workOrderId", mTask.getWorkOrderId());
+            object.put("taskId", mTask.getTaskId());
+            map.put("body", object.toJSONString());
+            request.doPostRequest(4, true, com.jinjiang.roadmaintenance.utils.Uri.getDiseaseInfos, map);
+        }
 
         initLocadata();
         setEventTypeAdapter();
@@ -365,8 +440,24 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                 startActivityForResult(intent, 105);
                 break;
             case R.id.eventadd_fangan_add:
+
+                if (mEventTypeBaseList == null || mEventTypeBaseList.size() == 0) {
+                    if (mRoadvalue != 5) {
+                        showToast("请先选择病害类型！");
+                        return;
+                    }
+                }
+                StringBuffer typeIds = new StringBuffer();
+                for (int i = 0; i < mEventTypeBaseList.size(); i++) {
+                    if (i == 0) {
+                        typeIds.append(mEventTypeBaseList.get(i).getEventType().getId());
+                    } else {
+                        typeIds.append("," + mEventTypeBaseList.get(i).getEventType().getId());
+                    }
+                }
                 Intent intent2 = new Intent(EventAddActivity.this, PlanActivity.class);
                 intent2.putExtra("orderType", mRoadvalue);
+                intent2.putExtra("diseaseTypeId", typeIds.toString());
                 startActivityForResult(intent2, 106);
                 break;
             case R.id.eventadd_send:
@@ -381,9 +472,14 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
      */
     private void send() {
         if (!IsNotNull()) {
+            mAddress = mRoadName.getText().toString();
             HashMap map = new HashMap();
             map.put("userId", userInfo.getUserId());
             map.put("appSid", userInfo.getAppSid());
+            if (IsReLoad){
+                map.put("workOrderId",mTaskDetails.getWorkOrderMsgDto().getWorkOrderId());
+                map.put("taskId",mTaskDetails.getTaskId());
+            }
             JSONObject object = new JSONObject();
             object.put("orderType", mEventTypeBaseList.get(0).getEventType().getOrderType());
             if (mRoadvalue == 1 || mRoadvalue == 2) {
@@ -690,28 +786,39 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
 
     @Override
     public void loadDataFinish(int code, Object data) {
-        showToast("操作成功！");
-        if (eventId != 0) {
-            new Select().from(SaveEventData.class).where(SaveEventData_Table.id.eq(eventId)).querySingle().delete();
-            SQLite.delete(FileUri.class)
-                    .where(FileUri_Table.eventId.is(eventId))
-                    .query();
-            SQLite.delete(EventType.class)
-                    .where(EventType_Table.eventId.is(eventId))
-                    .query();
-            SQLite.delete(EventAttr.class)
-                    .where(EventAttr_Table.eventId.is(eventId))
-                    .query();
-            SQLite.delete(Plan.class)
-                    .where(Plan_Table.eventId.is(eventId))
-                    .query();
+        if (code == 0) {
 
-            EventBus.getDefault().post(new MessageEvent(1, ""));
+            showToast("操作成功！");
+            if (eventId != 0) {
+                new Select().from(SaveEventData.class).where(SaveEventData_Table.id.eq(eventId)).querySingle().delete();
+                SQLite.delete(FileUri.class)
+                        .where(FileUri_Table.eventId.is(eventId))
+                        .query();
+                SQLite.delete(EventType.class)
+                        .where(EventType_Table.eventId.is(eventId))
+                        .query();
+                SQLite.delete(EventAttr.class)
+                        .where(EventAttr_Table.eventId.is(eventId))
+                        .query();
+                SQLite.delete(Plan.class)
+                        .where(Plan_Table.eventId.is(eventId))
+                        .query();
+
+                EventBus.getDefault().post(new MessageEvent(1, ""));
+            }
+            if (userRole == 5) {
+                EventBus.getDefault().post(new MessageEvent(1, ""));
+            }
+            finish();
+        } else if (code == 4) {
+            if (data != null) {
+                mTaskDetails = JSON.parseObject(data.toString(), new TypeReference<TaskDetails>() {
+                });
+                if (mTaskDetails != null) {
+                    setUiData(mTaskDetails);
+                }
+            }
         }
-        if (userRole == 5) {
-            EventBus.getDefault().post(new MessageEvent(1, ""));
-        }
-        finish();
     }
 
     @Override

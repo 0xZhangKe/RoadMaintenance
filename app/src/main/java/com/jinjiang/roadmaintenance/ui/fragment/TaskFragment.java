@@ -89,7 +89,7 @@ public class TaskFragment extends Fragment implements UIDataListener {
     }
 
     private void initData() {
-        mListview .setGroupIndicator(null);
+        mListview.setGroupIndicator(null);
         mTaskStateList = new ArrayList<>();
 
         mAcache = ACache.get(getActivity());
@@ -108,17 +108,25 @@ public class TaskFragment extends Fragment implements UIDataListener {
         mListview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                if (mTaskStateList.get(groupPosition).getOrderStatus()==1001){
+                if (mTaskStateList.get(groupPosition).getOrderStatus() == 1001) {
                     Intent intent = new Intent(getActivity(), EventAddActivity.class);
-                    intent.putExtra("SaveEventData",mSaveEventData.get(childPosition).id);
+                    intent.putExtra("SaveEventData", mSaveEventData.get(childPosition).id);
                     startActivity(intent);
-                }else if (mTaskStateList.get(groupPosition).getOrderStatus()==1002){
+                } else if (mTaskStateList.get(groupPosition).getOrderStatus() == 1004){
+                    Intent intent = new Intent(getActivity(), EventAddActivity.class);
+                    intent.putExtra("Task", mTaskStateList.get(groupPosition).getTasks().get(childPosition));
+                    startActivity(intent);
+                }else if (mTaskStateList.get(groupPosition).getOrderStatus() == 1002 ||
+                        mTaskStateList.get(groupPosition).getOrderStatus() == 1006 ||
+                        mTaskStateList.get(groupPosition).getOrderStatus() == 1007 ||
+                        mTaskStateList.get(groupPosition).getOrderStatus() == 1008
+                        ) {
                     Intent intent = new Intent(getActivity(), EventDetail2Activity.class);
-                    intent.putExtra("Task",mTaskStateList.get(groupPosition).getTasks().get(childPosition));
+                    intent.putExtra("Task", mTaskStateList.get(groupPosition).getTasks().get(childPosition));
                     startActivity(intent);
-                }else {
+                } else {
                     Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
-                    intent.putExtra("Task",mTaskStateList.get(groupPosition).getTasks().get(childPosition));
+                    intent.putExtra("Task", mTaskStateList.get(groupPosition).getTasks().get(childPosition));
                     startActivity(intent);
                 }
                 return true;
@@ -139,15 +147,15 @@ public class TaskFragment extends Fragment implements UIDataListener {
                 mTaskStateList = JSON.parseObject(data.toString(), new TypeReference<ArrayList<TaskState>>() {
                 });
                 if (mTaskStateList != null && mTaskStateList.size() > 0) {
-                    for (TaskState t:mTaskStateList){
-                        if (t.getOrderStatus()==1001){
+                    for (TaskState t : mTaskStateList) {
+                        if (t.getOrderStatus() == 1001) {
                             t.setTasks(null);
                             mSaveEventData = new Select().from(SaveEventData.class).queryList();
-                            if (mSaveEventData!=null&&mSaveEventData.size()>0){
+                            if (mSaveEventData != null && mSaveEventData.size() > 0) {
                                 ArrayList<Task> localTask = new ArrayList<>();
-                                for (SaveEventData d:mSaveEventData){
+                                for (SaveEventData d : mSaveEventData) {
                                     Task task = new Task();
-                                    task.setCreateDt(d.id+"");
+                                    task.setCreateDt(d.id + "");
                                     task.setLocationDesc(d.locationDesc);
                                     task.setTaskId("loc");
                                     localTask.add(task);
@@ -204,7 +212,7 @@ public class TaskFragment extends Fragment implements UIDataListener {
     @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
     public void onDataSynEvent(MessageEvent event) {
         LogUtils.d(event);
-        if (event.code==1){
+        if (event.code == 1) {
             Map map = new HashMap();
             map.put("userId", userInfo.getUserId());
             map.put("appSid", userInfo.getAppSid());

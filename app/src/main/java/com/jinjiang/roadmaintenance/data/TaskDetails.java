@@ -28,7 +28,7 @@ public class TaskDetails implements Serializable {
     private WorkOrderMsgDtoBean workOrderMsgDto;
     private List<DiseaseMsgDtosBean> diseaseMsgDtos;
     private List<Plan> planFuns;
-    private List<String> practicalFuns;
+    private List<Plan> practicalFuns;
     private List<TaskInfosBean> taskInfos;
 
     public String getTaskCreateTime() {
@@ -79,11 +79,11 @@ public class TaskDetails implements Serializable {
         this.planFuns = planFuns;
     }
 
-    public List<String> getPracticalFuns() {
+    public List<Plan> getPracticalFuns() {
         return practicalFuns;
     }
 
-    public void setPracticalFuns(List<String> practicalFuns) {
+    public void setPracticalFuns(List<Plan> practicalFuns) {
         this.practicalFuns = practicalFuns;
     }
 

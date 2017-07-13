@@ -22,9 +22,9 @@ public class EventAttr extends BaseModel implements Serializable {
     @PrimaryKey
     private String typeUnitId;
     @Column
-    private String eventTypeId;
+    private String eventTypeId;//非必须
     @Column
-    private long eventId;
+    private long eventId;//非必须
     @Column
     private String name;
     @Column

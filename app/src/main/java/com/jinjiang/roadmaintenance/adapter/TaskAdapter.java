@@ -1,6 +1,7 @@
 package com.jinjiang.roadmaintenance.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -95,13 +96,17 @@ public class TaskAdapter extends BaseExpandableListAdapter {
             view = convertView;
             childholder = (ChildHolder) view.getTag();
         } else {
-            view = View.inflate(context, R.layout.item_task_main, null);
+            view = View.inflate(context, R.layout.item_task_sub, null);
             childholder = new ChildHolder();
             childholder.tv = (TextView) view.findViewById(R.id.tv);
             view.setTag(childholder);
         }
         Task item = mList.get(groupPosition).getTasks().get(childPosition);
-        childholder.tv.setText(item.getLocationDesc() + "-" + item.getOrderTypeName() + "-" + item.getCreateDt());
+        if (TextUtils.isEmpty(item.getOrderTypeName())){
+            childholder.tv.setText(item.getLocationDesc() +"-" + item.getCreateDt());
+        }else {
+            childholder.tv.setText(item.getLocationDesc() + "-" + item.getOrderTypeName() + "-" + item.getCreateDt());
+        }
         return view;
     }
 

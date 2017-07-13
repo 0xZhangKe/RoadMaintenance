@@ -296,6 +296,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/eventdetail2_drivertype_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -331,6 +332,76 @@
             </LinearLayout>
 
             <View style="@style/SpacingLineStyle" />
+            <LinearLayout
+                android:id="@+id/eventdetail2_eventtype_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp"
+                    android:background="@color/tab_shade" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="病害："
+                        android:textColor="@color/text_black"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/eventdetail2_allArea"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:maxLength="50"
+                        android:maxLines="1"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textColor="@color/text_gray"
+                        android:textSize="14sp" />
+
+                    <ImageView
+                        android:id="@+id/eventdetail2_eventType_add"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/add1"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <View style="@style/SpacingLineStyle" />
+
+
+                <com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView
+                    android:id="@+id/eventdetail2_eventtype_listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@null"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:scrollbars="none" />
+
+                <View style="@style/SpacingLineStyle" />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp"
+                    android:background="@color/tab_shade" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -405,8 +476,8 @@
                 android:id="@+id/eventdetail2_plan_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -510,8 +581,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:enabled="false"
                     android:ellipsize="end"
+                    android:enabled="false"
                     android:gravity="right"
                     android:maxLength="50"
                     android:maxLines="1"
@@ -520,6 +591,83 @@
                     android:textColor="@color/text_gray"
                     android:textSize="14sp" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/eventdetail2_realarea_ll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="3dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="3dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="修复日期："
+                        android:textColor="@color/text_gray"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/eventdetail2_finishTime"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:maxLength="50"
+                        android:maxLines="1"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textColor="@color/text_gray"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="3dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="实际维修面积："
+                        android:textColor="@color/text_gray"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/eventdetail2_realArea"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:inputType="number"
+                        android:maxLength="50"
+                        android:maxLines="1"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textColor="@color/text_gray"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
             </LinearLayout>
 
             <View
@@ -706,6 +854,39 @@
                 <View style="@style/SpacingLineStyle" />
 
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:background="@color/tab_shade" />
+            <RadioGroup
+                android:id="@+id/eventdetail2_confirm_rg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/eventdetail2_confirm1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="通过"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+
+                <RadioButton
+                    android:id="@+id/eventdetail2_confirm2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:text="不通过"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+            </RadioGroup>
 
             <LinearLayout
                 android:id="@+id/eventdetail2_remark_ll"
@@ -743,41 +924,6 @@
                 android:background="@color/tab_shade" />
 
             <View style="@style/SpacingLineStyle" />
-
-            <RadioGroup
-                android:id="@+id/eventdetail2_confirm_rg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/eventdetail2_confirm1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="通过"
-                    android:textColor="@color/text_black"
-                    android:textSize="14sp" />
-
-                <RadioButton
-                    android:id="@+id/eventdetail2_confirm2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_weight="1"
-                    android:text="不通过"
-                    android:textColor="@color/text_black"
-                    android:textSize="14sp" />
-            </RadioGroup>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="15dp"
-                android:background="@color/tab_shade" />
 
             <TextView
                 android:id="@+id/eventdetail2_send"

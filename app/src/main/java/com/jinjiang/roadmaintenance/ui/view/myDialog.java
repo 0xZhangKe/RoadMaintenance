@@ -54,13 +54,13 @@ public class myDialog extends Dialog {
      */
     private void initData() {
         //如果用户自定了title和message
-        if (TextUtils.isEmpty(titleStr)) {
+        if (titleStr!=null) {
             titleTv.setText(titleStr);
         }
-        if (TextUtils.isEmpty(contentStr)) {
+        if (contentStr!=null) {
             contentText.setText(contentStr);
         }
-        if (TextUtils.isEmpty(res)){
+        if (res!=null){
             GlideImgManager.glideLoader(context,res,R.drawable.pic_not_found,R.drawable.pic_not_found,img,1);
         }
     }

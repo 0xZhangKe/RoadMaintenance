@@ -25,6 +25,8 @@ public class Plan extends BaseModel implements Serializable {
     private String funDetail;
     @Column
     private String otherDesc;
+    @Column
+    private String picUrl;
 
     public String getId() {
         return id;
@@ -72,5 +74,13 @@ public class Plan extends BaseModel implements Serializable {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
     }
 }
