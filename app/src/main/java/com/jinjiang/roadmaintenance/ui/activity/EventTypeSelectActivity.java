@@ -57,7 +57,7 @@ public class EventTypeSelectActivity extends BaseActivity {
                     public void onClick(View v) {
                         myDialog myDialog = new myDialog(EventTypeSelectActivity.this);
                         myDialog.setTitle(item.getName());
-                        myDialog.setContenttext(item.getDesc());
+                        myDialog.setContenttext(item.getDetail());
                         myDialog.setImg(item.getPicUrl());
                         myDialog.show();
                     }

@@ -44,9 +44,9 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.github.Raizlabs.DBFlow:dbflow-core:4.0.4'
+    compile 'com.github.Raizlabs.DBFlow:dbflow:4.0.4'
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
-    apt "com.github.Raizlabs.DBFlow:dbflow-processor:4.0.4"
-    compile "com.github.Raizlabs.DBFlow:dbflow-core:4.0.4"
-    compile "com.github.Raizlabs.DBFlow:dbflow:4.0.4"
+    apt 'com.github.Raizlabs.DBFlow:dbflow-processor:4.0.4'
 }

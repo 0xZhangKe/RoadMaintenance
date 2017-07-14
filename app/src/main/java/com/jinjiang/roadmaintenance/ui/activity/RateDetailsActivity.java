@@ -1,0 +1,306 @@
+package com.jinjiang.roadmaintenance.ui.activity;
+
+import android.app.Dialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
+import com.bumptech.glide.Glide;
+import com.jinjiang.roadmaintenance.R;
+import com.jinjiang.roadmaintenance.base.BaseActivity;
+import com.jinjiang.roadmaintenance.data.RateList;
+import com.jinjiang.roadmaintenance.data.TaskDetails;
+import com.jinjiang.roadmaintenance.data.UserInfo;
+import com.jinjiang.roadmaintenance.model.NetWorkRequest;
+import com.jinjiang.roadmaintenance.model.UIDataListener;
+import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
+import com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView;
+import com.jinjiang.roadmaintenance.ui.view.MyGridView;
+import com.jinjiang.roadmaintenance.ui.view.myToast;
+import com.jinjiang.roadmaintenance.utils.ACache;
+import com.jinjiang.roadmaintenance.utils.ScreenUtils;
+import com.jinjiang.roadmaintenance.utils.Uri;
+import com.zhy.adapter.abslistview.CommonAdapter;
+import com.zhy.adapter.abslistview.ViewHolder;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+
+public class RateDetailsActivity extends BaseActivity implements UIDataListener {
+
+    @BindView(R.id.rateDetails_title)
+    TextView mTitle;
+    @BindView(R.id.rateDetails_eventId)
+    TextView mEventId;
+    @BindView(R.id.rateDetails_saveDate)
+    TextView mSaveDate;
+    @BindView(R.id.rateDetails_savePerson)
+    TextView mSavePerson;
+    @BindView(R.id.rateDetails_roadName)
+    EditText mRoadName;
+    @BindView(R.id.rateDetails_location)
+    TextView mLocation;
+    @BindView(R.id.rateDetails_roadType)
+    TextView mRoadType;
+    @BindView(R.id.rateDetails_driverwayType)
+    TextView mDriverwayType;
+    @BindView(R.id.rateDetails_planTime)
+    EditText mPlanTime;
+    @BindView(R.id.rateDetails_planCost)
+    TextView mPlanCost;
+    @BindView(R.id.rateDetails_realTime)
+    EditText mRealTime;
+    @BindView(R.id.rateDetails_realcost)
+    EditText mRealcost;
+    @BindView(R.id.rateDetails_grid_xiufuqiantupian)
+    MyGridView mGridXiufuqiantupian;
+    @BindView(R.id.rateDetails_grid_xiufutupian)
+    MyGridView mGridXiufutupian;
+    @BindView(R.id.rateDetails_grid_fujian)
+    MyGridView mGridFujian;
+    @BindView(R.id.rateDetails_approvalStateTv)
+    TextView mApprovalStateTv;
+    @BindView(R.id.rateDetails_approvalStateLv)
+    ListViewForScrollView mApprovalStateLv;
+    @BindView(R.id.rateDetails_drivertype_ll)
+    LinearLayout mDrivertypeLl;
+    private ACache mAcache;
+    private Dialog dialog;
+    private NetWorkRequest request;
+    private UserInfo userInfo;
+    private TaskDetails mTaskDetails;
+    private RateList.RowsBean mRowsBean;
+    private int OrderStatus;
+    private int OrderType;
+    private double totalArea;
+    private List<String> maintainPicUrls;
+    private List<String> scenePicUrls;
+    private CommonAdapter<TaskDetails.TaskInfosBean> adapter_approval;
+    private CommonAdapter<String> mGridTupianAdapter;
+    private CommonAdapter<String> mGridTupianAdapter1;
+    private CommonAdapter<String> mGridfujianAdapter1;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected int getLayoutResID() {
+        return R.layout.activity_rate_details;
+    }
+
+    @Override
+    protected void initUI() {
+        mAcache = ACache.get(RateDetailsActivity.this);
+        dialog = DialogProgress.createLoadingDialog(RateDetailsActivity.this, "", this);
+        request = new NetWorkRequest(RateDetailsActivity.this, this);
+        userInfo = (UserInfo) mAcache.getAsObject("UserInfo");
+        if (userInfo == null || TextUtils.isEmpty(userInfo.getUserId())) {
+            myToast.toast(RateDetailsActivity.this, "登录状态已过期，请重新登录！");
+            startActivity(new Intent(RateDetailsActivity.this, LoginActivity.class));
+            finish();
+        }
+
+        Intent intent = getIntent();
+        if (intent.hasExtra("Row")) {
+            mRowsBean = (RateList.RowsBean) intent.getSerializableExtra("Row");
+        }
+    }
+
+    @Override
+    protected void initData() {
+        if (mRowsBean != null) {
+
+            Map map = new HashMap();
+            map.put("userId", userInfo.getUserId());
+            map.put("appSid", userInfo.getAppSid());
+            JSONObject object = new JSONObject();
+            object.put("workOrderId", mRowsBean.getWorkOrderId());
+            object.put("taskId", mRowsBean.getTaskId());
+            map.put("body", object.toJSONString());
+            request.doPostRequest(0, true, Uri.getDiseaseInfos, map);
+        }
+    }
+
+    /**
+     * 设置界面数据
+     */
+    private void setUiData(TaskDetails td) {
+
+        TaskDetails.WorkOrderMsgDtoBean wm = td.getWorkOrderMsgDto();
+        OrderStatus = wm.getOrderStatus();
+        OrderType = wm.getOrderType();
+        totalArea = wm.getArea();
+
+        if (OrderType == 5) {
+            mDrivertypeLl.setVisibility(View.GONE);
+        } else if (OrderType == 4 || OrderType == 3) {
+            mDrivertypeLl.setVisibility(View.GONE);
+        }
+        mEventId.setText(td.getTaskId());
+        mSaveDate.setText(td.getTaskCreateTime());
+        mSavePerson.setText(wm.getUserId());
+        mRoadName.setText(wm.getLocationDesc());
+        mLocation.setText(wm.getLocationDesc());
+        mRoadType.setText(wm.getOrderTypeName());
+        mDriverwayType.setText(wm.getLineTypeName());
+        mPlanTime.setText(wm.getTimePlan() + "");
+        mPlanCost.setText(wm.getMoneyPlan() + "");
+        mRealTime.setText(wm.getTimePractical() + "");
+        mRealcost.setText(wm.getMoneyPractical() + "");
+
+        mApprovalStateTv.setText(td.getTaskName());
+
+        //设计图
+        maintainPicUrls = wm.getMaintainPicUrls();
+        //施工图
+        scenePicUrls = wm.getScenePicUrls();
+
+        setGridAdapter(wm.getPicUrls());
+        setApprovalAdapter(td.getTaskInfos());
+        setxiufuAdapter(scenePicUrls);
+        setfujianAdapter(maintainPicUrls);
+
+    }
+
+
+    /**
+     * 审批
+     *
+     * @param list
+     */
+    private void setApprovalAdapter(final List<TaskDetails.TaskInfosBean> list) {
+        adapter_approval = new CommonAdapter<TaskDetails.TaskInfosBean>(RateDetailsActivity.this, R.layout.item_approval_list, list) {
+            @Override
+            protected void convert(ViewHolder viewHolder, TaskDetails.TaskInfosBean item, final int position) {
+                viewHolder.setText(R.id.item_name, item.getUserName());
+                viewHolder.setText(R.id.item_desc, item.getDetail());
+                viewHolder.setText(R.id.item_time, item.getEndTime());
+                if (position == 0) {
+                    viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_blue_back);
+                    TextView v = (TextView) viewHolder.getView(R.id.item_line);
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
+                    params.setMargins(0, ScreenUtils.dp2px(RateDetailsActivity.this, 20), 0, 0);
+                    v.setLayoutParams(params);
+                } else {
+                    viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_back);
+                    TextView v = viewHolder.getView(R.id.item_line);
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
+                    params.setMargins(0, 0, 0, 0);
+                    v.setLayoutParams(params);
+                }
+            }
+        };
+        mApprovalStateLv.setAdapter(adapter_approval);
+    }
+
+    /**
+     * 修复前图片
+     *
+     * @param list
+     */
+    private void setGridAdapter(List<String> list) {
+        mGridTupianAdapter = new CommonAdapter<String>(RateDetailsActivity.this, R.layout.item_addphoto_grid, list) {
+            @Override
+            protected void convert(ViewHolder viewHolder, final String item, int position) {
+                Glide.with(RateDetailsActivity.this).load(item).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
+            }
+        };
+        mGridXiufuqiantupian.setAdapter(mGridTupianAdapter);
+    }
+
+    /**
+     * 修复后网络图片
+     *
+     * @param list
+     */
+    private void setxiufuAdapter(List<String> list) {
+        mGridTupianAdapter1 = new CommonAdapter<String>(RateDetailsActivity.this, R.layout.item_addphoto_grid, list) {
+            @Override
+            protected void convert(ViewHolder viewHolder, final String item, int position) {
+                Glide.with(RateDetailsActivity.this).load(item).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
+            }
+        };
+        mGridXiufutupian.setAdapter(mGridTupianAdapter1);
+    }
+
+    /**
+     * 修复后附件网络图片
+     *
+     * @param list
+     */
+    private void setfujianAdapter(List<String> list) {
+        mGridfujianAdapter1 = new CommonAdapter<String>(RateDetailsActivity.this, R.layout.item_addphoto_grid, list) {
+            @Override
+            protected void convert(ViewHolder viewHolder, final String item, int position) {
+                Glide.with(RateDetailsActivity.this).load(item).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
+            }
+        };
+        mGridFujian.setAdapter(mGridfujianAdapter1);
+    }
+
+
+    @OnClick(R.id.rateDetails_back)
+    public void onViewClicked() {
+        finish();
+        overridePendingTransition(0, R.anim.base_slide_out);
+    }
+
+    @Override
+    public void loadDataFinish(int code, Object data) {
+        if (code == 0) {
+            if (data != null) {
+                mTaskDetails = JSON.parseObject(data.toString(), new TypeReference<TaskDetails>() {
+                });
+                if (mTaskDetails != null) {
+                    setUiData(mTaskDetails);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void showToast(String message) {
+        myToast.toast(RateDetailsActivity.this, message);
+    }
+
+    @Override
+    public void showDialog() {
+        if (dialog != null)
+            dialog.show();
+    }
+
+    @Override
+    public void dismissDialog() {
+        if (dialog != null)
+            dialog.dismiss();
+    }
+
+    @Override
+    public void onError(String errorCode, String errorMessage) {
+        showToast(errorMessage);
+    }
+
+    @Override
+    public void cancelRequest() {
+        request.CancelPost();
+    }
+
+}

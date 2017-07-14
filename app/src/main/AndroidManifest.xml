@@ -71,7 +71,8 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity android:name=".ui.activity.PlanActivity" />
         <activity android:name=".ui.activity.EventTypeSelectActivity" />
-        <activity android:name=".ui.activity.EventDetail2Activity"></activity>
+        <activity android:name=".ui.activity.EventDetail2Activity" />
+        <activity android:name=".ui.activity.RateDetailsActivity"></activity>
     </application>
 
 </manifest>

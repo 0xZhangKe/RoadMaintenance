@@ -71,4 +71,9 @@ public class Uri {
      *
      */
     public static String saveConstructionInfo = mainUrl+"task/saveConstructionInfo";
+    /**
+     * 获取进度
+     *
+     */
+    public static String getWorkOrderProgress = mainUrl+"progress/getWorkOrderProgress";
 }

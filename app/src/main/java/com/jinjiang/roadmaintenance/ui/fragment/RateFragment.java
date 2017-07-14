@@ -1,24 +1,38 @@
 package com.jinjiang.roadmaintenance.ui.fragment;
 
-
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.apkfuns.logutils.LogUtils;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.jinjiang.roadmaintenance.R;
-import com.jinjiang.roadmaintenance.ui.activity.EventDetailsActivity;
-import com.jinjiang.roadmaintenance.ui.view.nicespinner.NiceSpinner;
+import com.jinjiang.roadmaintenance.data.RateList;
+import com.jinjiang.roadmaintenance.data.UserInfo;
+import com.jinjiang.roadmaintenance.model.NetWorkRequest;
+import com.jinjiang.roadmaintenance.model.UIDataListener;
+import com.jinjiang.roadmaintenance.ui.activity.LoginActivity;
+import com.jinjiang.roadmaintenance.ui.activity.RateDetailsActivity;
+import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
+import com.jinjiang.roadmaintenance.ui.view.library.PullToRefreshBase;
+import com.jinjiang.roadmaintenance.ui.view.library.PullToRefreshListView;
+import com.jinjiang.roadmaintenance.ui.view.myToast;
+import com.jinjiang.roadmaintenance.utils.ACache;
+import com.jinjiang.roadmaintenance.utils.Uri;
 import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
 
@@ -27,41 +41,70 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import cn.qqtheme.framework.picker.DatePicker;
 import cn.qqtheme.framework.picker.DateTimePicker;
-
 
 /**
  * 进度
  */
-public class RateFragment extends Fragment implements View.OnClickListener{
+public class RateFragment extends Fragment implements UIDataListener {
     private static RateFragment fragment;
-    private ImageView mSearch;
-    private LinearLayout mSearchdown;
-    private CheckBox mTime1;
-    private TextView mTime2;
-    private TextView mTime3;
-    private CheckBox mBiao1;
-    private CheckBox mBiao2;
-    private CheckBox mBiao3;
-    private CheckBox mRoad1;
-    private CheckBox mRoad2;
-    private CheckBox mRoad3;
-    private CheckBox mRoad4;
-    private CheckBox mRoad5;
-    private NiceSpinner mNs;
-    private TextView mReset;
-    private TextView mComfirm;
-    private ListView mListView;
+    @BindView(R.id.rate_listview)
+    PullToRefreshListView mListview;
+    @BindView(R.id.rate_state1)
+    TextView mState1;
+    @BindView(R.id.rate_state2)
+    TextView mState2;
+    @BindView(R.id.rate_state3)
+    TextView mState3;
+    @BindView(R.id.rate_state4)
+    TextView mState4;
+    @BindView(R.id.rate_time1)
+    RadioButton mTime1;
+    @BindView(R.id.rate_time2)
+    RadioButton mTime2;
+    @BindView(R.id.rate_time3)
+    RadioButton mTime3;
+    @BindView(R.id.rate_time4)
+    RadioButton mTime4;
+    @BindView(R.id.rate_time5)
+    TextView mTime5;
+    @BindView(R.id.rate_time6)
+    TextView mTime6;
+    @BindView(R.id.rate_confirm)
+    TextView mConfirm;
+    @BindView(R.id.rate_search_down)
+    LinearLayout mSearchDown;
+    Unbinder unbinder;
+    @BindView(R.id.rate_time_ll)
+    LinearLayout mTimeLl;
+    @BindView(R.id.rate_Gg)
+    RadioGroup mGg;
     private DatePicker picker_Time;
-    private int timeType = 0;
-    private int eventType = 0;
     private String startTime = "";
     private String endTime = "";
+    private int timeType = 0;
+    private int timeState = 1;
+    private int orderStatus = 2001;
+    private ACache mAcache;
+    private Dialog dialog;
+    private NetWorkRequest request;
+    private UserInfo userInfo;
+    private RateList mRateList;
+    private CommonAdapter<RateList.RowsBean> adapter;
+    private ArrayList<RateList.RowsBean> mList;
 
     public RateFragment() {
     }
+
     public static RateFragment newInstance() {
 
         if (fragment == null) {
@@ -74,135 +117,125 @@ public class RateFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_rate, container, false);
-
-        initView(view);
+        unbinder = ButterKnife.bind(this, view);
         initData();
         return view;
     }
 
-    private void initView(View view) {
-        mSearch = (ImageView) view.findViewById(R.id.rate_search);
-        mSearchdown = (LinearLayout) view.findViewById(R.id.rate_search_down);
-        mTime1 = (CheckBox) view.findViewById(R.id.rate_time1);
-        mTime2 = (TextView) view.findViewById(R.id.rate_time2);
-        mTime3 = (TextView) view.findViewById(R.id.rate_time3);
+    private void initData() {
+        mList = new ArrayList<>();
 
-        mBiao1 = (CheckBox) view.findViewById(R.id.rate_biao1);
-        mBiao2 = (CheckBox) view.findViewById(R.id.rate_biao2);
-        mBiao3 = (CheckBox) view.findViewById(R.id.rate_biao3);
-
-        mRoad1 = (CheckBox) view.findViewById(R.id.rate_road1);
-        mRoad2 = (CheckBox) view.findViewById(R.id.rate_road2);
-        mRoad3 = (CheckBox) view.findViewById(R.id.rate_road3);
-        mRoad4 = (CheckBox) view.findViewById(R.id.rate_road4);
-        mRoad5 = (CheckBox) view.findViewById(R.id.rate_road5);
-
-        mNs = (NiceSpinner) view.findViewById(R.id.rate_ns);
-        mReset = (TextView) view.findViewById(R.id.rate_reset);
-        mComfirm = (TextView) view.findViewById(R.id.rate_confirm);
-        mListView = (ListView) view.findViewById(R.id.rate_listview);
-
-        mSearch.setOnClickListener(this);
-        mTime2.setOnClickListener(this);
-        mTime3.setOnClickListener(this);
-        mReset.setOnClickListener(this);
-        mComfirm.setOnClickListener(this);
+        mAcache = ACache.get(getActivity());
+        dialog = DialogProgress.createLoadingDialog(getActivity(), "", this);
+        request = new NetWorkRequest(getActivity(), this);
+        userInfo = (UserInfo) mAcache.getAsObject("UserInfo");
+        if (userInfo == null || TextUtils.isEmpty(userInfo.getUserId())) {
+            myToast.toast(getActivity(), "登录状态已过期，请重新登录！");
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+            getActivity().finish();
+        }
 
         initDatePicker();
 
-    }
-
-    /**
-     * 重置
-     */
-    private void reset(){
-        eventType = 0;
-        mNs.setSelectedIndex(0);
-
-        mTime1.setChecked(false);
-        mTime2.setText("");
-        mTime3.setText("");
-        startTime = "";
-        endTime = "";
-
-        mBiao1.setChecked(false);
-        mBiao2.setChecked(false);
-        mBiao3.setChecked(false);
-
-        mRoad1.setChecked(false);
-        mRoad2.setChecked(false);
-        mRoad3.setChecked(false);
-        mRoad4.setChecked(false);
-        mRoad5.setChecked(false);
-
-    }
-
-    private void initData() {
-        ArrayList typeList = new ArrayList();
-        typeList.add("全部");
-        typeList.add("已记录，待提交");
-        typeList.add("已提交，未施工");
-        typeList.add("已提交，待批复");
-        typeList.add("已批复，审核未通过");
-        typeList.add("已处理，待提交");
-        typeList.add("初验");
-        typeList.add("三方验收");
-        typeList.add("验收不合格");
-        typeList.add("待确认");
-        mNs.attachDataSource(typeList);
-
-        mNs.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                eventType = i;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-
-        ArrayList list = new ArrayList();
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-
-        mListView.setAdapter(new CommonAdapter<String>(getActivity(),R.layout.item_task_main,list) {
-            @Override
-            protected void convert(ViewHolder viewHolder, String item, int position) {
-            }
-        });
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(getActivity(), EventDetailsActivity.class));
-            }
-        });
-        mTime1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mTime4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
+                if (isChecked) {
+                    mTimeLl.setVisibility(View.VISIBLE);
                     startTime = "";
                     endTime = "";
-                    mTime2.setText("");
-                    mTime3.setText("");
-                    mTime2.setEnabled(false);
-                    mTime3.setEnabled(false);
-                    mTime2.setBackground(getResources().getDrawable(R.drawable.gre_stroke_back2));
-                    mTime3.setBackground(getResources().getDrawable(R.drawable.gre_stroke_back2));
-                }else {
-                    mTime2.setEnabled(true);
-                    mTime3.setEnabled(true);
-                    mTime2.setBackground(getResources().getDrawable(R.drawable.gre_stroke_back));
-                    mTime3.setBackground(getResources().getDrawable(R.drawable.gre_stroke_back));
+                    mTime5.setText("");
+                    mTime6.setText("");
+                } else {
+                    mTimeLl.setVisibility(View.GONE);
                 }
             }
         });
 
+        mGg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId){
+                    case R.id.rate_time1:
+                        timeState = 1;
+                        break;
+                    case R.id.rate_time2:
+                        timeState = 2;
+                        break;
+                    case R.id.rate_time3:
+                        timeState = 3;
+                        break;
+                    case R.id.rate_time4:
+                        timeState = 4;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        getDate(0, true, 1);
+
+        mListview.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+                getDate(0, false, 1);
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+                int pageNo = (mList.size() + 9) / 10;
+                getDate(1, false, pageNo);
+            }
+        });
+
+        mListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                i -= 1;
+                Intent intent = new Intent(getActivity(),RateDetailsActivity.class);
+                intent.putExtra("Row",mList.get(i));
+                startActivity(intent);
+            }
+        });
+    }
+
+
+    /**
+     * 获取进度数据
+     *
+     * @param flag
+     * @param isshow
+     * @param page
+     */
+    private void getDate(int flag, boolean isshow, int page) {
+        Map map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        JSONObject object = new JSONObject();
+        object.put("page", page);
+        object.put("pageSize", 10);
+        object.put("orderStatus", orderStatus);
+        object.put("time", timeState);
+        if (timeState == 4) {
+            object.put("startTime", startTime);
+            object.put("endTime", endTime);
+        }
+        map.put("body", object.toJSONString());
+        request.doPostRequest(flag, isshow, Uri.getWorkOrderProgress, map);
+    }
+
+    private void setUiData() {
+
+        adapter = new CommonAdapter<RateList.RowsBean>(getActivity(), R.layout.item_ratelist_main, (List<RateList.RowsBean>) mList) {
+            @Override
+            protected void convert(ViewHolder viewHolder, RateList.RowsBean item, int position) {
+                viewHolder.setText(R.id.tv1, item.getOrderStatusName());
+                viewHolder.setText(R.id.tv2, item.getLocationDesc() + "          " + item.getCreateTime());
+            }
+        };
+
+        mListview.setAdapter(adapter);
     }
 
     /**
@@ -237,7 +270,7 @@ public class RateFragment extends Fragment implements View.OnClickListener{
         picker_Time.setTextColor(RateFragment.this.getResources().getColor(R.color.text_black));
         picker_Time.setCancelTextColor(RateFragment.this.getResources().getColor(R.color.gray_deep));
         picker_Time.setSubmitTextColor(RateFragment.this.getResources().getColor(R.color.blue));
-        picker_Time.setSelectedItem(year,month,day);
+        picker_Time.setSelectedItem(year, month, day);
         //监听选择
         picker_Time.setOnDatePickListener(new DatePicker.OnYearMonthDayPickListener() {
             @Override
@@ -245,10 +278,10 @@ public class RateFragment extends Fragment implements View.OnClickListener{
                 String selectDate = year + "-" + month + "-" + day;
                 switch (timeType) {
                     case 0:
-                        mTime2.setText(selectDate);
+                        mTime5.setText(selectDate);
                         break;
                     case 1:
-                        mTime3.setText(selectDate);
+                        mTime6.setText(selectDate);
                         break;
                     default:
                         break;
@@ -256,6 +289,7 @@ public class RateFragment extends Fragment implements View.OnClickListener{
             }
         });
     }
+
     /**
      * 比较当前选择的日期与今日日期大小
      *
@@ -283,32 +317,158 @@ public class RateFragment extends Fragment implements View.OnClickListener{
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.rate_search:
-                if (mSearchdown.getVisibility()==View.GONE){
-                    mSearchdown.setVisibility(View.VISIBLE);
-                }else {
-                    mSearchdown.setVisibility(View.GONE);
-                }
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
+    private void setmStateBack(int k){
+        switch (k){
+            case 2001:
+                mState1.setBackgroundResource(R.drawable.gre_stroke_back3);
+                mState2.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState3.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState4.setBackgroundResource(R.drawable.gre_stroke_back);
                 break;
-            case R.id.rate_time2:
-                timeType=0;
-                picker_Time.show();
+            case 2002:
+                mState1.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState2.setBackgroundResource(R.drawable.gre_stroke_back3);
+                mState3.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState4.setBackgroundResource(R.drawable.gre_stroke_back);
                 break;
-            case R.id.rate_time3:
-                timeType=1;
-                picker_Time.show();
+            case 2003:
+                mState1.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState2.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState3.setBackgroundResource(R.drawable.gre_stroke_back3);
+                mState4.setBackgroundResource(R.drawable.gre_stroke_back);
                 break;
-            case R.id.rate_reset:
-                reset();
-                break;
-            case R.id.rate_confirm:
-                mSearchdown.setVisibility(View.GONE);
-                reset();
+            case 2004:
+                mState1.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState2.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState3.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState4.setBackgroundResource(R.drawable.gre_stroke_back3);
                 break;
             default:
                 break;
         }
+    }
+    private void setTimeBack(int k){
+        switch (k){
+            case 1:
+                mTime1.setChecked(true);
+                mTime2.setChecked(false);
+                mTime3.setChecked(false);
+                mTime4.setChecked(false);
+                break;
+            case 2:
+                mTime1.setChecked(false);
+                mTime2.setChecked(true);
+                mTime3.setChecked(false);
+                mTime4.setChecked(false);
+                break;
+            case 3:
+                mTime1.setChecked(false);
+                mTime2.setChecked(false);
+                mTime3.setChecked(true);
+                mTime4.setChecked(false);
+                break;
+            case 4:
+                mTime1.setChecked(false);
+                mTime2.setChecked(false);
+                mTime3.setChecked(false);
+                mTime4.setChecked(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @OnClick({R.id.rate_time5, R.id.rate_time6, R.id.rate_confirm, R.id.rate_search})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.rate_search:
+                if (mSearchDown.getVisibility() == View.GONE) {
+                    mSearchDown.setVisibility(View.VISIBLE);
+                    mTime5.setText(startTime);
+                    mTime6.setText(endTime);
+
+                    setmStateBack(orderStatus);
+                    setTimeBack(timeState);
+
+                } else {
+                    mSearchDown.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.rate_time5:
+                timeType = 0;
+                picker_Time.show();
+                break;
+            case R.id.rate_time6:
+                timeType = 1;
+                picker_Time.show();
+                break;
+            case R.id.rate_confirm:
+                if (timeState==4){
+                    if (TextUtils.isEmpty(startTime)&&TextUtils.isEmpty(endTime)){
+                        showToast("请选择自定义时间！");
+                        return;
+                    }
+                }
+                mSearchDown.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    @Override
+    public void loadDataFinish(int code, Object data) {
+        if (code == 0) {
+            if (data != null) {
+                mRateList = JSON.parseObject(data.toString(), new TypeReference<RateList>() {
+                });
+                if (mRateList != null && mRateList.getRows() != null) {
+                    mList.clear();
+                    mList.addAll(mRateList.getRows());
+                    setUiData();
+                }
+            }
+        } else if (code == 1) {
+            if (data != null) {
+                mRateList = JSON.parseObject(data.toString(), new TypeReference<RateList>() {
+                });
+                if (mRateList != null && mRateList.getRows() != null) {
+                    mList.addAll(mRateList.getRows());
+//                    setUiData();
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        } else {
+        }
+    }
+
+    @Override
+    public void showToast(String message) {
+        myToast.toast(getActivity(), message);
+    }
+
+    @Override
+    public void showDialog() {
+        if (dialog != null)
+            dialog.show();
+    }
+
+    @Override
+    public void dismissDialog() {
+        if (dialog != null)
+            dialog.dismiss();
+    }
+
+    @Override
+    public void onError(String errorCode, String errorMessage) {
+        showToast(errorMessage);
+    }
+
+    @Override
+    public void cancelRequest() {
+        request.CancelPost();
     }
 }

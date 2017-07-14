@@ -649,10 +649,10 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             }
         }
 
-        if (TextUtils.isEmpty(mContent.getText().toString())) {
-            showToast("请输入备注！");
-            return true;
-        }
+//        if (TextUtils.isEmpty(mContent.getText().toString())) {
+//            showToast("请输入备注！");
+//            return true;
+//        }
         return false;
     }
 
