@@ -72,7 +72,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 /**
  * 桌面
  */
-public class MapFragment extends Fragment implements LoacationListener, UIDataListener {
+public class MapFragment extends Fragment implements LoacationListener, UIDataListener, View.OnKeyListener {
     private static MapFragment fragment;
     @BindView(R.id.map_bmapView)
     TextureMapView mMapView;
@@ -159,6 +159,8 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
         object.put("typeKey", "order_type");
         map.put("body", object.toJSONString());
         request.doPostRequest(0, true, Uri.getDicByTypeKey, map);
+
+        mMapEdit.setOnKeyListener(this);
     }
 
     private void initData() {
@@ -462,5 +464,16 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
     @Override
     public void cancelRequest() {
         request.CancelPost();
+    }
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
+            String s = mMapEdit.getText().toString();
+            if (!TextUtils.isEmpty(s)) {
+
+            }
+        }
+        return false;
     }
 }

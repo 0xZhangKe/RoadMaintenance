@@ -139,6 +139,8 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
     EditText mUirealarea;
     @BindView(R.id.eventdetail2_uirealDate_ll)
     LinearLayout mUirealDateLl;
+    @BindView(R.id.eventdetail2_title)
+    TextView mTitle;
     private Task mTask;
     private ACache mAcache;
     private Dialog dialog;
@@ -246,6 +248,11 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         } else if (OrderStatus == 12) {//二级业主审核属实--三级业主批复
         } else if (OrderStatus == 13) {//三级业主审核否--重新下单
         } else if (OrderStatus == 14 || OrderStatus == 6 || OrderStatus == 17 || OrderStatus == 19) {//三级业主审核属实-->20m未施工
+            if (OrderStatus == 17 || OrderStatus == 19) {
+                mTitle.setText("重新提交");
+            }else {
+                mTitle.setText("提交初验");
+            }
             xiufutuList.add(new File(""));
             fujiantuList.add(new File(""));
             mRealTime.setEnabled(true);
@@ -264,14 +271,14 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         } else if (OrderStatus == 15) {//初验
             mSend.setText("验收");
             mRemark.setEnabled(true);
+            mTitle.setText("初验");
 
         } else if (OrderStatus == 17) {//初验不合格，重新提交施工
-
 
         } else if (OrderStatus == 18) {//初验合格，三方验收
             mRemark.setEnabled(true);
             mSend.setText("验收");
-
+            mTitle.setText("验收");
         } else if (OrderStatus == 19) {//验收不合格，重新提交施工
 
 
@@ -294,7 +301,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         mUirealcost.setText(wm.getMoneyPractical() + "元");
 
         mUirealdtate.setText(wm.getMaintainStarTime());
-        mUirealarea.setText(wm.getMaintainArea()+"m²");
+        mUirealarea.setText(wm.getMaintainArea() + "m²");
 
         mApprovalStateTv.setText(td.getTaskName());
 
@@ -353,9 +360,9 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             @Override
             protected void convert(ViewHolder viewHolder, Plan item, final int position) {
                 viewHolder.setText(R.id.item_name, item.getFunName());
-                if (item.getId().equals("0")){
+                if (item.getId().equals("0")) {
                     viewHolder.setText(R.id.item_attr, item.getOtherDesc());
-                }else {
+                } else {
                     viewHolder.setText(R.id.item_attr, "");
                 }
                 if (OrderStatus == 6 || OrderStatus == 14) {
@@ -384,9 +391,9 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             @Override
             protected void convert(ViewHolder viewHolder, Plan item, final int position) {
                 viewHolder.setText(R.id.item_name, item.getFunName().trim());
-                if (item.getId().equals("0")){
+                if (item.getId().equals("0")) {
                     viewHolder.setText(R.id.item_attr, item.getOtherDesc());
-                }else {
+                } else {
                     viewHolder.setText(R.id.item_attr, "");
                 }
             }
@@ -409,12 +416,12 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                 if (position == 0) {
                     viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_blue_back);
                     TextView v = (TextView) viewHolder.getView(R.id.item_line);
-                    View v2 =  viewHolder.getView(R.id.item_dot);
+                    View v2 = viewHolder.getView(R.id.item_dot);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
                     RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) v2.getLayoutParams();
                     params.setMargins(0, ScreenUtils.dp2px(EventDetail2Activity.this, 20), 0, 0);
-                    params2.width=ScreenUtils.dp2px(EventDetail2Activity.this, 10);
-                    params2.height=ScreenUtils.dp2px(EventDetail2Activity.this, 10);
+                    params2.width = ScreenUtils.dp2px(EventDetail2Activity.this, 10);
+                    params2.height = ScreenUtils.dp2px(EventDetail2Activity.this, 10);
                     v.setLayoutParams(params);
                     v2.setLayoutParams(params2);
                 } else {
@@ -438,7 +445,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         mGridTupianAdapter = new CommonAdapter<String>(EventDetail2Activity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
-                GlideImgManager.glideLoader(EventDetail2Activity.this,item,R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
+                GlideImgManager.glideLoader(EventDetail2Activity.this, item, R.drawable.pic_not_found, R.drawable.pic_not_found, (ImageView) viewHolder.getView(R.id.item_addphoto_grid_img), 1);
                 viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
             }
         };
@@ -454,7 +461,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         mGridTupianAdapter1 = new CommonAdapter<String>(EventDetail2Activity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
-                GlideImgManager.glideLoader(EventDetail2Activity.this,item,R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
+                GlideImgManager.glideLoader(EventDetail2Activity.this, item, R.drawable.pic_not_found, R.drawable.pic_not_found, (ImageView) viewHolder.getView(R.id.item_addphoto_grid_img), 1);
                 viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
             }
         };
@@ -471,7 +478,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
                 Glide.with(EventDetail2Activity.this).load(item).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
-                GlideImgManager.glideLoader(EventDetail2Activity.this,item,R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
+                GlideImgManager.glideLoader(EventDetail2Activity.this, item, R.drawable.pic_not_found, R.drawable.pic_not_found, (ImageView) viewHolder.getView(R.id.item_addphoto_grid_img), 1);
                 viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
             }
         };
@@ -486,7 +493,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             @Override
             protected void convert(ViewHolder viewHolder, final File item, int position) {
                 if (position != xiufutuList.size() - 1) {
-                    GlideImgManager.glideLoader(EventDetail2Activity.this,"file://" + item.getAbsolutePath(),R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
+                    GlideImgManager.glideLoader(EventDetail2Activity.this, "file://" + item.getAbsolutePath(), R.drawable.pic_not_found, R.drawable.pic_not_found, (ImageView) viewHolder.getView(R.id.item_addphoto_grid_img), 1);
                     viewHolder.setOnClickListener(R.id.item_addphoto_grid_del, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -496,7 +503,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                     });
                     viewHolder.setVisible(R.id.item_addphoto_grid_del, true);
                 } else {
-                    GlideImgManager.glideLoader(EventDetail2Activity.this,"file://" + item.getAbsolutePath(),R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
+                    Glide.with(EventDetail2Activity.this).load(R.drawable.add3).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
                     viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
                 }
             }
@@ -520,7 +527,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             @Override
             protected void convert(ViewHolder viewHolder, final File item, int position) {
                 if (position != fujiantuList.size() - 1) {
-                    GlideImgManager.glideLoader(EventDetail2Activity.this,"file://" + item.getAbsolutePath(),R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
+                    GlideImgManager.glideLoader(EventDetail2Activity.this, "file://" + item.getAbsolutePath(), R.drawable.pic_not_found, R.drawable.pic_not_found, (ImageView) viewHolder.getView(R.id.item_addphoto_grid_img), 1);
                     viewHolder.setOnClickListener(R.id.item_addphoto_grid_del, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -530,7 +537,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                     });
                     viewHolder.setVisible(R.id.item_addphoto_grid_del, true);
                 } else {
-                    GlideImgManager.glideLoader(EventDetail2Activity.this,"file://" + item.getAbsolutePath(),R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
+                    Glide.with(EventDetail2Activity.this).load(R.drawable.add3).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
                     viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
                 }
             }
@@ -583,13 +590,13 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                     chuyan();
 
                 } else if (OrderStatus == 17) {//初验不合格，重新提交施工
-
+                    wangong();
 
                 } else if (OrderStatus == 18) {//初验合格，三方验收
                     sanfang();
 
                 } else if (OrderStatus == 19) {//验收不合格，重新提交施工
-
+                    wangong();
 
                 } else if (OrderStatus == 20) {//验收合格，完结状态
 
@@ -646,13 +653,17 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         String reallCost = mRealcost.getText().toString();
         String reallArea = mRealArea.getText().toString();
         String finishTime = mFinishTime.getText().toString();
+        if (TextUtils.isEmpty(finishTime)) {
+            showToast("请选择完工日期！");
+            return;
+        }
 
         if (real_plan == null || real_plan.size() == 0) {
             showToast("请选择实际修复方案！");
             return;
         }
         if (TextUtils.isEmpty(reallTime) || Integer.parseInt(reallTime) == 0) {
-            showToast("请输入实际修复时间！");
+            showToast("请输入实际工期！");
             return;
         }
         if (TextUtils.isEmpty(reallCost) || Double.parseDouble(reallCost) == 0) {
@@ -663,15 +674,13 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             showToast("请输入实际修复面积！");
             return;
         }
-        if (TextUtils.isEmpty(finishTime)) {
-            showToast("请选择完工日期！");
-            return;
-        }
-        if (xiufutuList == null || xiufutuList.size() == 0) {
+
+
+        if (xiufutuList == null || xiufutuList.size() == 0|| xiufutuList.size() == 1) {
             showToast("请选择维修后图片！");
             return;
         }
-        if (fujiantuList == null || fujiantuList.size() == 0) {
+        if (fujiantuList == null || fujiantuList.size() == 0|| fujiantuList.size() == 1) {
             showToast("请选择施工附件！");
             return;
         }
@@ -871,7 +880,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                     }
                 }
                 adapter_plan.notifyDataSetChanged();
-                LogUtils.d(real_plan);
+//                LogUtils.d(real_plan);
             }
         }
     }

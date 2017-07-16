@@ -117,6 +117,8 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
                 }
             }
         });
+
+        mValue1.requestFocus();
     }
 
     @OnClick({R.id.eventtype_back, R.id.eventadd_eventType_know, R.id.eventType_tv_ll, R.id.eventtype_send})

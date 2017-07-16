@@ -6,37 +6,16 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
     </style>
 
-    <!--Dialog主题-->
-    　　
-
-    <style name="Theme.myDialog" parent="@android:style/Theme.DeviceDefault.Light.Dialog">
-        　　
-        <item name="android:windowTitleStyle">@style/DialogWindowTitle.DeviceDefault</item>
-        <item name="android:dividerHeight">0.5dp</item>
-        <item name="android:divider">#CCCCCC</item>
+    <!--AlderDialog主题-->
+    <style name="Theme.DeviceDefault.Dialog.Alert"  parent="@android:style/Theme.Holo.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
     </style>
-    　
-
-    <style name="DialogWindowTitle.DeviceDefault">
-        　　
-        <item name="android:maxLines">1</item>
-        　　
-        <item name="android:scrollHorizontally">true</item>
-        　　
-        <item name="android:textAppearance">@style/DialogWindowTitle</item>
-        　　
-    </style>
-
-    <style name="DialogWindowTitle">
-        　　
-        <item name="android:textSize">22sp</item>
-        　　
-        <item name="android:textColor">@color/blue</item>
-        　　
-    </style>
-
     <!-- 标题栏的样式 -->
     <style name="title_RelativeLayoutStyle">
         <item name="android:layout_width">match_parent</item>

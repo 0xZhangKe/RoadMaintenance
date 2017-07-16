@@ -183,46 +183,58 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
             mUirealDateLl.setVisibility(View.GONE);
 
         } else if (OrderStatus == 3) {//技术员审批--不处理
+            mPlanTimeLl.setVisibility(View.GONE);
+            mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
             mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 4) {//需处理(不会出现4)
+            mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
-            mUirealDateLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 5) {//监理审批
-            mUirealDateLl.setVisibility(View.GONE);
+            mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 7) {//监理审核否--重新下单
-            mUirealDateLl.setVisibility(View.GONE);
+            mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 8) {//监理审核属实--一级业主批复
-            mUirealDateLl.setVisibility(View.GONE);
+            mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 9) {//一级业主审核否--重新下单
-            mUirealDateLl.setVisibility(View.GONE);
+            mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 10) {//一级业主审核属实--二级业主批复
-            mUirealDateLl.setVisibility(View.GONE);
+            mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 11) {//二级业主审核否--重新下单
-            mUirealDateLl.setVisibility(View.GONE);
+            mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 12) {//二级业主审核属实--三级业主批复
-            mUirealDateLl.setVisibility(View.GONE);
+            mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 13) {//三级业主审核否--重新下单
-            mUirealDateLl.setVisibility(View.GONE);
+            mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 14 || OrderStatus == 6 || OrderStatus == 17 || OrderStatus == 19) {//三级业主审核属实-->20m未施工
+            mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
             mUirealDateLl.setVisibility(View.GONE);

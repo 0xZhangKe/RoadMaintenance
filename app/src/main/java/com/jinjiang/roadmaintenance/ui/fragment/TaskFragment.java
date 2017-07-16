@@ -40,7 +40,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,8 +159,30 @@ public class TaskFragment extends Fragment implements UIDataListener {
                                 ArrayList<Task> localTask = new ArrayList<>();
                                 for (SaveEventData d : mSaveEventData) {
                                     Task task = new Task();
-                                    task.setCreateDt(d.id + "");
+                                    int road = d.roadvalue;
+                                    switch (road){
+                                        case 1:
+                                            task.setOrderTypeName("沥青路面");
+                                            break;
+                                        case 2:
+                                            task.setOrderTypeName("水泥路面");
+                                            break;
+                                        case 3:
+                                            task.setOrderTypeName("人行道");
+                                            break;
+                                        case 4:
+                                            task.setOrderTypeName("井盖");
+                                            break;
+                                        case 5:
+                                            task.setOrderTypeName("其他");
+                                            break;
+                                    }
+
                                     task.setLocationDesc(d.locationDesc);
+                                    SimpleDateFormat sdf= new SimpleDateFormat("MM/dd/yyyy");
+                                    java.util.Date dt = new Date(d.id * 1000);
+                                    String sDateTime = sdf.format(dt);  //得到精确到秒的表示：08/31/2006 21:08:00
+                                    task.setCreateDt(sDateTime);
                                     task.setTaskId("loc");
                                     localTask.add(task);
                                 }

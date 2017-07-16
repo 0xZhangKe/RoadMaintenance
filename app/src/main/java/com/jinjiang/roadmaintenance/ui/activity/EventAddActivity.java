@@ -115,6 +115,8 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
     ListViewForScrollView mFanganListview;
     @BindView(R.id.eventadd_save)
     TextView mSave;
+    @BindView(R.id.eventadd_title)
+    TextView mTitle;
     private OptionPicker picker_Type;
     private int eventType = 0;
     public static String SAVED_IMAGE_DIR_PATH =
@@ -179,6 +181,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             mTask = (Task) intent.getSerializableExtra("Task");
             IsReLoad = true;
             mSave.setVisibility(View.GONE);
+            mTitle.setText("重新提交工单");
         }
     }
 
@@ -247,40 +250,41 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                     mRadio2.setChecked(true);
                 }
             }
+            mEventNum.setText(wm.getSn());
             mAddress = wm.getLocationDesc();
             mRoadName.setText(mAddress);
             if (mRoadvalue != 5) {
-                String mArea = wm.getArea() + "";
-                mAllArea.setText(mArea);
+//                String mArea = wm.getArea() + "";
+//                mAllArea.setText(mArea);
             }
             if (userRole == 5) {
-                mPlanTime.setText(wm.getTimePlan());
-                mPlanCost.setText(wm.getMoneyPlan() + "");
-                mPlanList = (ArrayList<Plan>) td.getPlanFuns();
+//                mPlanTime.setText(wm.getTimePlan() + "");
+//                mPlanCost.setText(wm.getMoneyPlan() + "");
+//                mPlanList = (ArrayList<Plan>) td.getPlanFuns();
             }
             mContent.setText(wm.getDetail());
             if (mRoadvalue != 5) {
-                mEventTypeBaseList = new ArrayList<>();
-                List<TaskDetails.DiseaseMsgDtosBean> typeList = td.getDiseaseMsgDtos();
-                for (TaskDetails.DiseaseMsgDtosBean e : typeList) {
-                    EventTypeBase eb = new EventTypeBase();
-                    EventType eventType = new EventType();
-                    eventType.setId(e.getDiseaseId());
-                    eventType.setName(e.getDiseaseTypeName());
-                    eventType.setDesc(e.getDetail());
-                    eb.setEventType(eventType);
-                    ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean> attrList = (ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean>) e.getDiseaseAttrMsgDtos();
-                    ArrayList<EventAttr> eventAttrArrayList = new ArrayList<>();
-                    for (TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean b : attrList) {
-                        EventAttr ea = new EventAttr();
-                        ea.setName(b.getDiseaseAttrName());
-                        ea.setTypeUnitId(b.getTypeUnitId());
-//                        ea.setDefaultVal(b.getValue());
-                        eventAttrArrayList.add(ea);
-                    }
-                    eb.setEventAttrsList(eventAttrArrayList);
-                    mEventTypeBaseList.add(eb);
-                }
+//                mEventTypeBaseList = new ArrayList<>();
+//                List<TaskDetails.DiseaseMsgDtosBean> typeList = td.getDiseaseMsgDtos();
+//                for (TaskDetails.DiseaseMsgDtosBean e : typeList) {
+//                    EventTypeBase eb = new EventTypeBase();
+//                    EventType eventType = new EventType();
+//                    eventType.setId(e.getDiseaseId());
+//                    eventType.setName(e.getDiseaseTypeName());
+//                    eventType.setDesc(e.getDetail());
+//                    eb.setEventType(eventType);
+//                    ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean> attrList = (ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean>) e.getDiseaseAttrMsgDtos();
+//                    ArrayList<EventAttr> eventAttrArrayList = new ArrayList<>();
+//                    for (TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean b : attrList) {
+//                        EventAttr ea = new EventAttr();
+//                        ea.setName(b.getDiseaseAttrName());
+//                        ea.setTypeUnitId(b.getTypeUnitId());
+////                        ea.setDefaultVal(b.getValue());
+//                        eventAttrArrayList.add(ea);
+//                    }
+//                    eb.setEventAttrsList(eventAttrArrayList);
+//                    mEventTypeBaseList.add(eb);
+//                }
             }
         }
     }
@@ -379,9 +383,9 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             @Override
             protected void convert(ViewHolder viewHolder, Plan item, final int position) {
                 viewHolder.setText(R.id.item_name, item.getFunName());
-                if (item.getId().equals("0")){
+                if (item.getId().equals("0")) {
                     viewHolder.setText(R.id.item_attr, item.getOtherDesc());
-                }else {
+                } else {
                     viewHolder.setText(R.id.item_attr, "");
                 }
                 viewHolder.setOnClickListener(R.id.item_del, new View.OnClickListener() {
@@ -481,7 +485,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
      * 保存或发送
      */
     private void send() {
-        if (orderStatus==2&&IsNotNull()) {
+        if (orderStatus == 2 && IsNotNull()) {
             return;
         }
         mAddress = mRoadName.getText().toString();
@@ -489,7 +493,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         map.put("userId", userInfo.getUserId());
         map.put("appSid", userInfo.getAppSid());
         if (IsReLoad) {
-            map.put("workOrderId", mTaskDetails.getWorkOrderMsgDto().getWorkOrderId());
+            map.put("workOrderId", mTaskDetails.getWorkOrderMsgDto().getWorkOrderId()+"");
             map.put("taskId", mTaskDetails.getTaskId());
         }
         JSONObject object = new JSONObject();
@@ -634,6 +638,10 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
      * 非空判断
      */
     private boolean IsNotNull() {
+        if (mPhotoList==null||mPhotoList.size()==0||mPhotoList.size()==1) {
+            showToast("请选择病害图片！");
+            return true;
+        }
         if (TextUtils.isEmpty(mRoadName.getText().toString())) {
             showToast("请输入道路名称！");
             return true;

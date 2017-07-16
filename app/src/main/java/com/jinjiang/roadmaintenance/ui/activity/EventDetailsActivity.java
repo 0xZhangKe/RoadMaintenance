@@ -59,7 +59,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
 
 
     @BindView(R.id.eventdetails_title)
-    TextView eventdetailsTitle;
+    TextView mTitle;
     @BindView(R.id.eventdetails_grid_tupian)
     MyGridView mGridTupian;
     @BindView(R.id.eventdetails_eventId)
@@ -196,6 +196,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             mDrivertypeLl.setVisibility(View.GONE);
         }
         if (OrderStatus == 2) {//待确认
+            mTitle.setText("确认工单");
             mRemark.setText(wm.getDetail());
             mPlansAdd.setVisibility(View.VISIBLE);
             mEventTypeAdd.setVisibility(View.VISIBLE);
@@ -204,6 +205,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             mRemark.setEnabled(true);
             mApprovalStateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 3) {//技术员审批--不处理
+            mTitle.setText("工单完结");
             mRemark.setEnabled(false);
             mConfirmRg.setVisibility(View.GONE);
             mSend.setVisibility(View.GONE);
@@ -212,6 +214,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             mConfirmRg.setVisibility(View.GONE);
             mSend.setVisibility(View.GONE);
         } else if (OrderStatus == 5) {//待批复--监理批复信息
+            mTitle.setText("批复");
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);

@@ -35,9 +35,9 @@
                 android:layout_margin="10dp"
                 android:background="@drawable/search_back"
                 android:hint="请输入地名"
-                android:imeOptions="actionSearch"
                 android:paddingLeft="50dp"
                 android:paddingRight="25dp"
+                android:imeOptions="actionSearch"
                 android:singleLine="true"
                 android:textSize="14sp" />
 
