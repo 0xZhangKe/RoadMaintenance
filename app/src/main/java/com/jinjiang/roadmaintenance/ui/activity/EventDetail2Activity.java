@@ -42,6 +42,7 @@ import com.jinjiang.roadmaintenance.ui.view.MyGridView;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
 import com.jinjiang.roadmaintenance.utils.CompressImage;
+import com.jinjiang.roadmaintenance.utils.GlideImgManager;
 import com.jinjiang.roadmaintenance.utils.ScreenUtils;
 import com.jinjiang.roadmaintenance.utils.Uri;
 import com.zhy.adapter.abslistview.CommonAdapter;
@@ -59,7 +60,6 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.qqtheme.framework.picker.DatePicker;
 import cn.qqtheme.framework.picker.DatePicker;
 
 public class EventDetail2Activity extends BaseActivity implements UIDataListener, ActionSheetDialog.OnActionSheetSelected, DialogInterface.OnCancelListener {
@@ -117,18 +117,28 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
     EditText mRealcost;
     @BindView(R.id.eventdetail2_drivertype_ll)
     LinearLayout mDrivertypeLl;
-    @BindView(R.id.eventdetail2_allArea)
-    TextView mAllArea;
     @BindView(R.id.eventdetail2_eventtype_listview)
     ListViewForScrollView mEventtypeListview;
-    @BindView(R.id.eventdetail2_eventtype_ll)
-    LinearLayout mEventtypeLl;
     @BindView(R.id.eventdetail2_finishTime)
     TextView mFinishTime;
     @BindView(R.id.eventdetail2_realArea)
     EditText mRealArea;
     @BindView(R.id.eventdetail2_realarea_ll)
     LinearLayout mRealareaLl;
+    @BindView(R.id.eventdetail2_uirealTime)
+    EditText mUirealTime;
+    @BindView(R.id.eventdetail2_uirealcost)
+    EditText mUirealcost;
+    @BindView(R.id.eventdetail2_plan_listview)
+    ListViewForScrollView mPlanListview;
+    @BindView(R.id.eventdetail2_uirealTime_ll)
+    LinearLayout mUirealTimeLl;
+    @BindView(R.id.eventdetail2_uirealdtate)
+    EditText mUirealdtate;
+    @BindView(R.id.eventdetail2_uirealarea)
+    EditText mUirealarea;
+    @BindView(R.id.eventdetail2_uirealDate_ll)
+    LinearLayout mUirealDateLl;
     private Task mTask;
     private ACache mAcache;
     private Dialog dialog;
@@ -158,6 +168,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
     private CommonAdapter<String> mGridfujianAdapter1;
     private DatePicker picker_Time;
     private String selectDate;
+    private CommonAdapter<Plan> adapter_uiplan;
 
 
     @Override
@@ -220,10 +231,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         OrderType = wm.getOrderType();
         totalArea = wm.getArea();
 
-        if (OrderType == 5) {
-            mDrivertypeLl.setVisibility(View.GONE);
-            mEventtypeLl.setVisibility(View.GONE);
-        } else if (OrderType == 4 || OrderType == 3) {
+        if (OrderType == 3 || OrderType == 4 || OrderType == 5) {
             mDrivertypeLl.setVisibility(View.GONE);
         }
         if (OrderStatus == 2) {//待确认
@@ -237,29 +245,31 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         } else if (OrderStatus == 11) {//二级业主审核否--重新下单
         } else if (OrderStatus == 12) {//二级业主审核属实--三级业主批复
         } else if (OrderStatus == 13) {//三级业主审核否--重新下单
-        } else if (OrderStatus == 14 || OrderStatus == 6|| OrderStatus == 17|| OrderStatus == 19) {//三级业主审核属实-->20m未施工
+        } else if (OrderStatus == 14 || OrderStatus == 6 || OrderStatus == 17 || OrderStatus == 19) {//三级业主审核属实-->20m未施工
             xiufutuList.add(new File(""));
             fujiantuList.add(new File(""));
             mRealTime.setEnabled(true);
             mRealcost.setEnabled(true);
+            mUirealTimeLl.setVisibility(View.GONE);
             mPlanLl.setVisibility(View.VISIBLE);
             mXiufuqiantupianLl.setVisibility(View.GONE);
             mApprovalStateLl.setVisibility(View.GONE);
             mConfirmRg.setVisibility(View.GONE);
-            mRemark.setEnabled(true);
+            mRemarkLl.setVisibility(View.GONE);
             mRealareaLl.setVisibility(View.VISIBLE);
+            mUirealDateLl.setVisibility(View.GONE);
             mSend.setText("提交初验");
 
 
         } else if (OrderStatus == 15) {//初验
-            mPlanLl.setVisibility(View.VISIBLE);
             mSend.setText("验收");
+            mRemark.setEnabled(true);
 
         } else if (OrderStatus == 17) {//初验不合格，重新提交施工
 
 
         } else if (OrderStatus == 18) {//初验合格，三方验收
-            mPlanLl.setVisibility(View.VISIBLE);
+            mRemark.setEnabled(true);
             mSend.setText("验收");
 
         } else if (OrderStatus == 19) {//验收不合格，重新提交施工
@@ -271,18 +281,20 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         }
 
 
-        mEventId.setText(td.getTaskId());
+        mEventId.setText(wm.getSn());
         mSaveDate.setText(td.getTaskCreateTime());
         mSavePerson.setText(wm.getUserId());
-        mRoadName.setText(wm.getLocationDesc());
+        mRoadName.setText(ScreenUtils.getRoad(wm.getLocationDesc()));
         mLocation.setText(wm.getLocationDesc());
         mRoadType.setText(wm.getOrderTypeName());
         mDriverwayType.setText(wm.getLineTypeName());
-        mPlanTime.setText(wm.getTimePlan() + "");
-        mPlanCost.setText(wm.getMoneyPlan() + "");
-        mRealTime.setText(wm.getTimePractical() + "");
-        mRealcost.setText(wm.getMoneyPractical() + "");
-        mAllArea.setText("总面积" + wm.getArea() + "m²");
+        mPlanTime.setText(wm.getTimePlan() + "天");
+        mPlanCost.setText(wm.getMoneyPlan() + "元");
+        mUirealTime.setText(wm.getTimePractical() + "天");
+        mUirealcost.setText(wm.getMoneyPractical() + "元");
+
+        mUirealdtate.setText(wm.getMaintainStarTime());
+        mUirealarea.setText(wm.getMaintainArea()+"m²");
 
         mApprovalStateTv.setText(td.getTaskName());
 
@@ -293,16 +305,18 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
 
         setGridAdapter(wm.getPicUrls());
         setApprovalAdapter(td.getTaskInfos());
+        setuiplanAdapter(mTaskDetails.getPracticalFuns());
+        LogUtils.d(mTaskDetails.getPlanFuns());
         if (mTaskDetails.getDiseaseMsgDtos() != null)
             setEventtypeListAdapter(mTaskDetails.getDiseaseMsgDtos());
-        if (OrderStatus == 14 || OrderStatus == 6|| OrderStatus == 17|| OrderStatus == 19) {
+        if (OrderStatus == 14 || OrderStatus == 6 || OrderStatus == 17 || OrderStatus == 19) {
             setxiufuGridAdapter();
             setfujianGridAdapter();
             setplanAdapter(real_plan);
+            setuiplanAdapter(mTaskDetails.getPlanFuns());
         } else {
             setxiufuAdapter(scenePicUrls);
             setfujianAdapter(maintainPicUrls);
-            setplanAdapter(mTaskDetails.getPracticalFuns());
         }
     }
 
@@ -312,7 +326,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
      * @param list
      */
     private void setEventtypeListAdapter(final List<TaskDetails.DiseaseMsgDtosBean> list) {
-        adapter_eventtype = new CommonAdapter<TaskDetails.DiseaseMsgDtosBean>(EventDetail2Activity.this, R.layout.item_eventtype_add, list) {
+        adapter_eventtype = new CommonAdapter<TaskDetails.DiseaseMsgDtosBean>(EventDetail2Activity.this, R.layout.item_eventtype_add2, list) {
             @Override
             protected void convert(ViewHolder viewHolder, TaskDetails.DiseaseMsgDtosBean item, final int position) {
                 viewHolder.setText(R.id.item_name, item.getDiseaseTypeName());
@@ -324,7 +338,6 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                         viewHolder.setText(R.id.item_attr, attrlist.get(0).getValue() + "m" + "*" + attrlist.get(1).getValue() + "m");
                     }
                 }
-                viewHolder.setVisible(R.id.item_del, false);
             }
         };
         mEventtypeListview.setAdapter(adapter_eventtype);
@@ -340,7 +353,11 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             @Override
             protected void convert(ViewHolder viewHolder, Plan item, final int position) {
                 viewHolder.setText(R.id.item_name, item.getFunName());
-                viewHolder.setText(R.id.item_attr, "");
+                if (item.getId().equals("0")){
+                    viewHolder.setText(R.id.item_attr, item.getOtherDesc());
+                }else {
+                    viewHolder.setText(R.id.item_attr, "");
+                }
                 if (OrderStatus == 6 || OrderStatus == 14) {
                     viewHolder.setOnClickListener(R.id.item_del, new View.OnClickListener() {
                         @Override
@@ -358,6 +375,26 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
     }
 
     /**
+     * 施工计划
+     *
+     * @param list
+     */
+    private void setuiplanAdapter(final List<Plan> list) {
+        adapter_uiplan = new CommonAdapter<Plan>(EventDetail2Activity.this, R.layout.item_eventtype_add2, list) {
+            @Override
+            protected void convert(ViewHolder viewHolder, Plan item, final int position) {
+                viewHolder.setText(R.id.item_name, item.getFunName().trim());
+                if (item.getId().equals("0")){
+                    viewHolder.setText(R.id.item_attr, item.getOtherDesc());
+                }else {
+                    viewHolder.setText(R.id.item_attr, "");
+                }
+            }
+        };
+        mPlanListview.setAdapter(adapter_uiplan);
+    }
+
+    /**
      * 审批
      *
      * @param list
@@ -372,9 +409,14 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                 if (position == 0) {
                     viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_blue_back);
                     TextView v = (TextView) viewHolder.getView(R.id.item_line);
+                    View v2 =  viewHolder.getView(R.id.item_dot);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
+                    RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) v2.getLayoutParams();
                     params.setMargins(0, ScreenUtils.dp2px(EventDetail2Activity.this, 20), 0, 0);
+                    params2.width=ScreenUtils.dp2px(EventDetail2Activity.this, 10);
+                    params2.height=ScreenUtils.dp2px(EventDetail2Activity.this, 10);
                     v.setLayoutParams(params);
+                    v2.setLayoutParams(params2);
                 } else {
                     viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_back);
                     TextView v = viewHolder.getView(R.id.item_line);
@@ -396,7 +438,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         mGridTupianAdapter = new CommonAdapter<String>(EventDetail2Activity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
-                Glide.with(EventDetail2Activity.this).load(item).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                GlideImgManager.glideLoader(EventDetail2Activity.this,item,R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
                 viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
             }
         };
@@ -412,7 +454,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         mGridTupianAdapter1 = new CommonAdapter<String>(EventDetail2Activity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
-                Glide.with(EventDetail2Activity.this).load(item).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                GlideImgManager.glideLoader(EventDetail2Activity.this,item,R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
                 viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
             }
         };
@@ -429,6 +471,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
                 Glide.with(EventDetail2Activity.this).load(item).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                GlideImgManager.glideLoader(EventDetail2Activity.this,item,R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
                 viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
             }
         };
@@ -443,7 +486,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             @Override
             protected void convert(ViewHolder viewHolder, final File item, int position) {
                 if (position != xiufutuList.size() - 1) {
-                    Glide.with(EventDetail2Activity.this).load("file://" + item.getAbsolutePath()).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                    GlideImgManager.glideLoader(EventDetail2Activity.this,"file://" + item.getAbsolutePath(),R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
                     viewHolder.setOnClickListener(R.id.item_addphoto_grid_del, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -453,7 +496,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                     });
                     viewHolder.setVisible(R.id.item_addphoto_grid_del, true);
                 } else {
-                    Glide.with(EventDetail2Activity.this).load(R.drawable.add3).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                    GlideImgManager.glideLoader(EventDetail2Activity.this,"file://" + item.getAbsolutePath(),R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
                     viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
                 }
             }
@@ -477,7 +520,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             @Override
             protected void convert(ViewHolder viewHolder, final File item, int position) {
                 if (position != fujiantuList.size() - 1) {
-                    Glide.with(EventDetail2Activity.this).load("file://" + item.getAbsolutePath()).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                    GlideImgManager.glideLoader(EventDetail2Activity.this,"file://" + item.getAbsolutePath(),R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
                     viewHolder.setOnClickListener(R.id.item_addphoto_grid_del, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -487,7 +530,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                     });
                     viewHolder.setVisible(R.id.item_addphoto_grid_del, true);
                 } else {
-                    Glide.with(EventDetail2Activity.this).load(R.drawable.add3).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                    GlideImgManager.glideLoader(EventDetail2Activity.this,"file://" + item.getAbsolutePath(),R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
                     viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
                 }
             }
@@ -502,7 +545,8 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             }
         });
     }
-    @OnClick({R.id.eventdetail2_back, R.id.eventdetail2_save, R.id.eventdetail2_plansAdd, R.id.eventdetail2_send,R.id.eventdetail2_finishTime})
+
+    @OnClick({R.id.eventdetail2_back, R.id.eventdetail2_save, R.id.eventdetail2_plansAdd, R.id.eventdetail2_send, R.id.eventdetail2_finishTime})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.eventdetail2_back:
@@ -583,16 +627,17 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         picker_Time.setTextColor(EventDetail2Activity.this.getResources().getColor(R.color.text_black));
         picker_Time.setCancelTextColor(EventDetail2Activity.this.getResources().getColor(R.color.gray));
         picker_Time.setSubmitTextColor(EventDetail2Activity.this.getResources().getColor(R.color.blue));
-        picker_Time.setSelectedItem(year,month,day);
+        picker_Time.setSelectedItem(year, month, day);
         //监听选择
         picker_Time.setOnDatePickListener(new DatePicker.OnYearMonthDayPickListener() {
             @Override
             public void onDatePicked(String year, String month, String day) {
-                selectDate = year + "-" + month + "-" + day ;
+                selectDate = year + "-" + month + "-" + day;
                 mFinishTime.setText(selectDate);
             }
         });
     }
+
     /**
      * 完工
      */
@@ -658,7 +703,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         object.put("maintainFunIds", plans.toString());
         object.put("areaPractical", reallArea);
         map.put("body", object.toString());
-        request.doPostUpload(1,true,Uri.saveConstructionInfo,map,"maintainFiles", fujiantuList,"sceneFiles", xiufutuList);
+        request.doPostUpload(1, true, Uri.saveConstructionInfo, map, "maintainFiles", fujiantuList, "sceneFiles", xiufutuList);
     }
 
     /**
@@ -673,10 +718,11 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         object.put("vacationApproved", deal);
         object.put("opinion", mRemark.getText().toString());
         object.put("taskId", mTaskDetails.getTaskId());
-        object.put("roleCode", "1");
+        object.put("roleCode", 1);
         map.put("body", object.toJSONString());
         request.doPostRequest(2, true, Uri.official, map);
     }
+
     /**
      * 三方验收
      */
@@ -703,11 +749,11 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                     setUiData(mTaskDetails);
                 }
             }
-        }else if (code==1){
+        } else if (code == 1) {
             showToast("提交成功！");
             EventBus.getDefault().post(new MessageEvent(1, ""));
             finish();
-        }else {
+        } else {
             showToast("处理成功！");
             EventBus.getDefault().post(new MessageEvent(1, ""));
             finish();

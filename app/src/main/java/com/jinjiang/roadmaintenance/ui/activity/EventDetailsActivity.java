@@ -36,6 +36,7 @@ import com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView;
 import com.jinjiang.roadmaintenance.ui.view.MyGridView;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
+import com.jinjiang.roadmaintenance.utils.GlideImgManager;
 import com.jinjiang.roadmaintenance.utils.ScreenUtils;
 import com.jinjiang.roadmaintenance.utils.Uri;
 import com.zhy.adapter.abslistview.CommonAdapter;
@@ -210,7 +211,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             mRemark.setEnabled(false);
             mConfirmRg.setVisibility(View.GONE);
             mSend.setVisibility(View.GONE);
-        } else if (OrderStatus == 5) {//待批复
+        } else if (OrderStatus == 5) {//待批复--监理批复信息
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);
@@ -240,9 +241,9 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         }
 
 
-        mEventId.setText(td.getTaskId());
+        mEventId.setText(wm.getSn());
         mSaveDate.setText(td.getTaskCreateTime());
-        mRoadName.setText(wm.getLocationDesc());
+        mRoadName.setText(ScreenUtils.getRoad(wm.getLocationDesc()));
         mLocation.setText(wm.getLocationDesc());
         mRoadType.setText(wm.getOrderTypeName());
         mDriverwayTypeTv.setText(wm.getLineTypeName());
@@ -315,7 +316,11 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             @Override
             protected void convert(ViewHolder viewHolder, Plan item, final int position) {
                 viewHolder.setText(R.id.item_name, item.getFunName());
-                viewHolder.setText(R.id.item_attr, "");
+                if (item.getId().equals("0")){
+                    viewHolder.setText(R.id.item_attr, item.getOtherDesc());
+                }else {
+                    viewHolder.setText(R.id.item_attr, "");
+                }
                 if (OrderStatus == 2) {
                     viewHolder.setOnClickListener(R.id.item_del, new View.OnClickListener() {
                         @Override
@@ -347,9 +352,14 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
                 if (position == 0) {
                     viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_blue_back);
                     TextView v = (TextView) viewHolder.getView(R.id.item_line);
+                    View v2 =  viewHolder.getView(R.id.item_dot);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
+                    RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) v2.getLayoutParams();
                     params.setMargins(0, ScreenUtils.dp2px(EventDetailsActivity.this, 20), 0, 0);
+                    params2.width=ScreenUtils.dp2px(EventDetailsActivity.this, 10);
+                    params2.height=ScreenUtils.dp2px(EventDetailsActivity.this, 10);
                     v.setLayoutParams(params);
+                    v2.setLayoutParams(params2);
                 } else {
                     viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_back);
                     TextView v = viewHolder.getView(R.id.item_line);
@@ -372,6 +382,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
                 Glide.with(EventDetailsActivity.this).load(item).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                GlideImgManager.glideLoader(EventDetailsActivity.this,item,R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
                 viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
             }
         };

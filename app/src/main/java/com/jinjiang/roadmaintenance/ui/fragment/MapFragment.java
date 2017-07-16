@@ -1,17 +1,20 @@
 package com.jinjiang.roadmaintenance.ui.fragment;
 
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -56,13 +59,14 @@ import com.zhy.adapter.abslistview.ViewHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 
 /**
@@ -83,6 +87,8 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
     @BindView(R.id.map_eventType_ll)
     LinearLayout mEventType_ll;
     Unbinder unbinder;
+    @BindView(R.id.chat_edit)
+    EditText mMapEdit;
     private BaiduMap mBaiduMap;
     private LoacationModel locationModel;
     private MyLocationData locData;
@@ -157,7 +163,7 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
 
     private void initData() {
         mGridlist = new ArrayList<>();
-        mGridlist.add(new EventTypeGrid(R.drawable.state_quabbu2, "全部病害"));
+        mGridlist.add(new EventTypeGrid(R.drawable.state_quabbu2, "全部工单"));
         mGridlist.add(new EventTypeGrid(R.drawable.state_dengdai1, "等待维修"));
         mGridlist.add(new EventTypeGrid(R.drawable.state_zhengzai1, "正在维修"));
         mGridlist.add(new EventTypeGrid(R.drawable.state_wancheng1, "维修完成"));
@@ -174,25 +180,25 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 if (position == 0 && state != 0) {
-                    state=0;
+                    state = 0;
                     mGridlist.get(0).setImg(R.drawable.state_quabbu2);
                     mGridlist.get(1).setImg(R.drawable.state_dengdai1);
                     mGridlist.get(2).setImg(R.drawable.state_zhengzai1);
                     mGridlist.get(3).setImg(R.drawable.state_wancheng1);
-                }else if (position == 1 && state != 1){
-                    state=1;
+                } else if (position == 1 && state != 1) {
+                    state = 1;
                     mGridlist.get(0).setImg(R.drawable.state_quabbu1);
                     mGridlist.get(1).setImg(R.drawable.state_dengdai2);
                     mGridlist.get(2).setImg(R.drawable.state_zhengzai1);
                     mGridlist.get(3).setImg(R.drawable.state_wancheng1);
-                }else if (position == 2 && state != 2){
-                    state=2;
+                } else if (position == 2 && state != 2) {
+                    state = 2;
                     mGridlist.get(0).setImg(R.drawable.state_quabbu1);
                     mGridlist.get(1).setImg(R.drawable.state_dengdai1);
                     mGridlist.get(2).setImg(R.drawable.state_zhengzai2);
                     mGridlist.get(3).setImg(R.drawable.state_wancheng1);
-                }else if (position == 3 && state != 3){
-                    state=3;
+                } else if (position == 3 && state != 3) {
+                    state = 3;
                     mGridlist.get(0).setImg(R.drawable.state_quabbu1);
                     mGridlist.get(1).setImg(R.drawable.state_dengdai1);
                     mGridlist.get(2).setImg(R.drawable.state_zhengzai1);
@@ -204,6 +210,23 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
             }
         });
         initBaiduMap();
+
+        mMapEdit.setOnKeyListener(new View.OnKeyListener() {
+
+            @Override
+
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    // 先隐藏键盘
+                    ((InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(getActivity().getCurrentFocus()
+                                    .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//                    search();
+                }
+                return false;
+            }
+        });
     }
 
     private void initBaiduMap() {
@@ -214,8 +237,8 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
         mBaiduMap = mMapView.getMap();
 //        mMapView.showZoomControls(false);
         mBaiduMap.setMyLocationEnabled(true);
-        LatLng cenpt = new LatLng(30.616744, 110.313039);
-        setbaiduCenter(cenpt, 8);
+        LatLng cenpt = new LatLng(24.787996, 118.558403);
+        setbaiduCenter(cenpt, 13);
         mBaiduMap.setOnMapLongClickListener(new BaiduMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
@@ -261,8 +284,7 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
      */
     private void creatDialog(String[] items) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("选择病害");
-//        builder.setIcon(R.drawable.tools);
+        builder.setTitle("选择类型");
         builder.setItems(items, new DialogInterface.OnClickListener() {
 
             @Override

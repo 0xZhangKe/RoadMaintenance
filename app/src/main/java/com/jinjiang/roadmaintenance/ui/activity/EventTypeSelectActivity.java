@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
 
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.base.BaseActivity;
@@ -48,7 +49,7 @@ public class EventTypeSelectActivity extends BaseActivity {
         Intent intent = getIntent();
         mEventTypeList = (ArrayList<EventType>) intent.getSerializableExtra("EventTypeList");
 
-        mListView.setAdapter(new CommonAdapter<EventType>(EventTypeSelectActivity.this, R.layout.item_plan_add, mEventTypeList) {
+        mListView.setAdapter(new CommonAdapter<EventType>(EventTypeSelectActivity.this, R.layout.item_event_add, mEventTypeList) {
             @Override
             protected void convert(ViewHolder viewHolder, final EventType item, final int position) {
                 viewHolder.setText(R.id.item_name, item.getName());
@@ -63,11 +64,11 @@ public class EventTypeSelectActivity extends BaseActivity {
                     }
                 });
                 if (item.ischecked) {
-                    ((CheckBox) (viewHolder.getView(R.id.item_check))).setChecked(true);
+                    ((RadioButton) (viewHolder.getView(R.id.item_check))).setChecked(true);
                 } else {
-                    ((CheckBox) (viewHolder.getView(R.id.item_check))).setChecked(false);
+                    ((RadioButton) (viewHolder.getView(R.id.item_check))).setChecked(false);
                 }
-                ((CheckBox) (viewHolder.getView(R.id.item_check))).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                ((RadioButton) (viewHolder.getView(R.id.item_check))).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (isChecked) {

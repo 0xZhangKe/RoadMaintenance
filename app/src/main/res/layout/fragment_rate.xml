@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="vertical"
     tools:context="com.jinjiang.roadmaintenance.ui.fragment.RateFragment">
 
     <RelativeLayout
@@ -12,7 +11,7 @@
 
         <TextView
             style="@style/title_text_Style"
-            android:text="任务" />
+            android:text="进度" />
 
         <ImageView
             android:id="@+id/rate_search"
@@ -46,230 +45,272 @@
     <LinearLayout
         android:id="@+id/rate_search_down"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/rate_title"
-        android:background="@drawable/gre_stroke_back"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="10dp"
-            android:text="选择筛选条件"
-            android:textColor="@color/text_black"
-            android:textSize="14sp" />
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="#55000000"
+        android:gravity="center">
 
         <LinearLayout
+            android:id="@+id/rate_search_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="15dp"
-                android:text="状态"
-                android:textColor="@color/text_black"
-                android:textSize="14sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/rate_state1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/gre_stroke_back3"
-                        android:paddingBottom="5dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:paddingTop="5dp"
-                        android:text="维修中"
-                        android:textColor="@color/text_black"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/rate_state2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:background="@drawable/gre_stroke_back"
-                        android:paddingBottom="5dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:paddingTop="5dp"
-                        android:text="待审批"
-                        android:textColor="@color/text_black"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/rate_state3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/gre_stroke_back"
-                        android:paddingBottom="5dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:paddingTop="5dp"
-                        android:text="维修中"
-                        android:textColor="@color/text_black"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/rate_state4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:background="@drawable/gre_stroke_back"
-                        android:paddingBottom="5dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:paddingTop="5dp"
-                        android:text="待审批"
-                        android:textColor="@color/text_black"
-                        android:textSize="14sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_below="@+id/rate_title"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/gre_stroke_back"
+            android:orientation="vertical"
+            android:padding="10dp"
+            >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="10dp"
-                android:text="时间"
+                android:text="选择筛选条件"
                 android:textColor="@color/text_black"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
 
-            <RadioGroup
-                android:id="@+id/rate_Gg"
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/blue" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <RadioButton
-                    android:id="@+id/rate_time1"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="本月"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="15dp"
+                    android:text="状态"
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
 
-                <RadioButton
-                    android:id="@+id/rate_time2"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/rate_state1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/blue_back1"
+                            android:paddingBottom="5dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:paddingTop="5dp"
+                            android:text="待审批"
+                            android:textColor="@color/white"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/rate_state2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="20dp"
+                            android:background="@drawable/gre_back1"
+                            android:paddingBottom="5dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:paddingTop="5dp"
+                            android:text="维修中"
+                            android:textColor="@color/text_gray"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/rate_state3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/gre_back1"
+                            android:paddingBottom="5dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:paddingTop="5dp"
+                            android:text="待验收"
+                            android:textColor="@color/text_gray"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/rate_state4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="20dp"
+                            android:background="@drawable/gre_back1"
+                            android:paddingBottom="5dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:paddingTop="5dp"
+                            android:text="已竣工"
+                            android:textColor="@color/text_gray"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/tab_shade"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="近三月"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:text="时间"
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
 
-                <RadioButton
-                    android:id="@+id/rate_time3"
+                <RadioGroup
+                    android:id="@+id/rate_Gg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:orientation="vertical">
+
+                        <RadioButton
+                            android:id="@+id/rate_time1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="本月"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="14sp" />
+
+                        <RadioButton
+                            android:id="@+id/rate_time2"
+                            android:layout_width="wrap_content"
+                            android:layout_marginTop="-33dp"
+                            android:layout_marginLeft="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="近三月"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="14sp" />
+
+                        <RadioButton
+                            android:id="@+id/rate_time3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="本年度"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="14sp" />
+
+                        <RadioButton
+                            android:id="@+id/rate_time4"
+                            android:layout_width="wrap_content"
+                            android:layout_marginTop="-33dp"
+                            android:layout_marginLeft="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="自定义"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="14sp" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/rate_time_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/rate_time5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="本年度"
+                    android:layout_marginLeft="15dp"
+                    android:background="@drawable/gre_stroke_back"
+                    android:gravity="center_vertical"
+                    android:minWidth="100dp"
+                    android:padding="4dp"
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
 
-                <RadioButton
-                    android:id="@+id/rate_time4"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="自定义"
+                    android:layout_marginLeft="10dp"
+                    android:text="至"
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
-            </RadioGroup>
+
+                <TextView
+                    android:id="@+id/rate_time6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/gre_stroke_back"
+                    android:gravity="center_vertical"
+                    android:minWidth="100dp"
+                    android:padding="4dp"
+                    android:textColor="@color/text_black"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/tab_shade"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/rate_confirm"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/select_blue_button_background_"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="确定"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
         </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/rate_time_ll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="35dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/rate_time5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:background="@drawable/gre_stroke_back"
-                android:gravity="center_vertical"
-                android:minWidth="100dp"
-                android:padding="4dp"
-                android:textColor="@color/text_black"
-                android:textSize="14sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="至"
-                android:textColor="@color/text_black"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/rate_time6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:background="@drawable/gre_stroke_back"
-                android:gravity="center_vertical"
-                android:minWidth="100dp"
-                android:padding="4dp"
-                android:textColor="@color/text_black"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/rate_confirm"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/select_blue_button_background_"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="确定"
-                android:textColor="@color/white"
-                android:textSize="15sp" />
-        </LinearLayout>
-
     </LinearLayout>
 
 </RelativeLayout>

@@ -17,6 +17,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.bumptech.glide.Glide;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.base.BaseActivity;
+import com.jinjiang.roadmaintenance.data.Plan;
 import com.jinjiang.roadmaintenance.data.RateList;
 import com.jinjiang.roadmaintenance.data.TaskDetails;
 import com.jinjiang.roadmaintenance.data.UserInfo;
@@ -27,11 +28,13 @@ import com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView;
 import com.jinjiang.roadmaintenance.ui.view.MyGridView;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
+import com.jinjiang.roadmaintenance.utils.GlideImgManager;
 import com.jinjiang.roadmaintenance.utils.ScreenUtils;
 import com.jinjiang.roadmaintenance.utils.Uri;
 import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +80,24 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
     ListViewForScrollView mApprovalStateLv;
     @BindView(R.id.rateDetails_drivertype_ll)
     LinearLayout mDrivertypeLl;
+    @BindView(R.id.rateDetails_eventtype_listview)
+    ListViewForScrollView mEventtypeListview;
+    @BindView(R.id.rateDetails_plan_listview)
+    ListViewForScrollView mPlanListview;
+    @BindView(R.id.rateDetails_uirealdtate)
+    EditText mUirealdtate;
+    @BindView(R.id.rateDetails_uirealarea)
+    EditText mUirealarea;
+    @BindView(R.id.rateDetails_uirealDate_ll)
+    LinearLayout mUirealDateLl;
+    @BindView(R.id.rateDetails_planTime_ll)
+    LinearLayout mPlanTimeLl;
+    @BindView(R.id.rateDetails_realTime_ll)
+    LinearLayout mRealTimeLl;
+    @BindView(R.id.rateDetails_xiufutupian_ll)
+    LinearLayout mXiufutupianLl;
+    @BindView(R.id.rateDetails_fujian_ll)
+    LinearLayout mFujianLl;
     private ACache mAcache;
     private Dialog dialog;
     private NetWorkRequest request;
@@ -92,6 +113,8 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
     private CommonAdapter<String> mGridTupianAdapter;
     private CommonAdapter<String> mGridTupianAdapter1;
     private CommonAdapter<String> mGridfujianAdapter1;
+    private CommonAdapter<Plan> adapter_uiplan;
+    private CommonAdapter<TaskDetails.DiseaseMsgDtosBean> adapter_eventtype;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,19 +174,96 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
         } else if (OrderType == 4 || OrderType == 3) {
             mDrivertypeLl.setVisibility(View.GONE);
         }
-        mEventId.setText(td.getTaskId());
+
+        if (OrderStatus == 2) {//待确认
+            mPlanTimeLl.setVisibility(View.GONE);
+            mRealTimeLl.setVisibility(View.GONE);
+            mFujianLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
+
+        } else if (OrderStatus == 3) {//技术员审批--不处理
+            mFujianLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 4) {//需处理(不会出现4)
+            mFujianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 5) {//监理审批
+            mUirealDateLl.setVisibility(View.GONE);
+            mFujianLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 7) {//监理审核否--重新下单
+            mUirealDateLl.setVisibility(View.GONE);
+            mFujianLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 8) {//监理审核属实--一级业主批复
+            mUirealDateLl.setVisibility(View.GONE);
+            mFujianLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 9) {//一级业主审核否--重新下单
+            mUirealDateLl.setVisibility(View.GONE);
+            mFujianLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 10) {//一级业主审核属实--二级业主批复
+            mUirealDateLl.setVisibility(View.GONE);
+            mFujianLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 11) {//二级业主审核否--重新下单
+            mUirealDateLl.setVisibility(View.GONE);
+            mFujianLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 12) {//二级业主审核属实--三级业主批复
+            mUirealDateLl.setVisibility(View.GONE);
+            mFujianLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 13) {//三级业主审核否--重新下单
+            mUirealDateLl.setVisibility(View.GONE);
+            mFujianLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 14 || OrderStatus == 6 || OrderStatus == 17 || OrderStatus == 19) {//三级业主审核属实-->20m未施工
+            mFujianLl.setVisibility(View.GONE);
+            mXiufutupianLl.setVisibility(View.GONE);
+            mUirealDateLl.setVisibility(View.GONE);
+        } else if (OrderStatus == 15) {//初验
+
+        } else if (OrderStatus == 17) {//初验不合格，重新提交施工
+
+
+        } else if (OrderStatus == 18) {//初验合格，三方验收
+
+        } else if (OrderStatus == 19) {//验收不合格，重新提交施工
+
+
+        } else if (OrderStatus == 20) {//验收合格，完结状态
+
+        }
+
+
+        mEventId.setText(wm.getSn());
         mSaveDate.setText(td.getTaskCreateTime());
         mSavePerson.setText(wm.getUserId());
-        mRoadName.setText(wm.getLocationDesc());
+        mRoadName.setText(ScreenUtils.getRoad(wm.getLocationDesc()));
         mLocation.setText(wm.getLocationDesc());
         mRoadType.setText(wm.getOrderTypeName());
         mDriverwayType.setText(wm.getLineTypeName());
-        mPlanTime.setText(wm.getTimePlan() + "");
-        mPlanCost.setText(wm.getMoneyPlan() + "");
-        mRealTime.setText(wm.getTimePractical() + "");
-        mRealcost.setText(wm.getMoneyPractical() + "");
+        mPlanTime.setText(wm.getTimePlan() + "天");
+        mPlanCost.setText(wm.getMoneyPlan() + "元");
+        mRealTime.setText(wm.getTimePractical() + "天");
+        mRealcost.setText(wm.getMoneyPractical() + "元");
+
+        mUirealdtate.setText(wm.getMaintainStarTime());
+        mUirealarea.setText(wm.getMaintainArea() + "m²");
 
         mApprovalStateTv.setText(td.getTaskName());
+
+        if (td.getPracticalFuns() != null && td.getPracticalFuns().size() > 0) {
+            setuiplanAdapter(td.getPracticalFuns());
+        } else {
+            setuiplanAdapter(td.getPlanFuns());
+        }
+        setEventtypeListAdapter(td.getDiseaseMsgDtos());
 
         //设计图
         maintainPicUrls = wm.getMaintainPicUrls();
@@ -177,6 +277,44 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
 
     }
 
+    /**
+     * 病害类型
+     *
+     * @param list
+     */
+    private void setEventtypeListAdapter(final List<TaskDetails.DiseaseMsgDtosBean> list) {
+        adapter_eventtype = new CommonAdapter<TaskDetails.DiseaseMsgDtosBean>(RateDetailsActivity.this, R.layout.item_eventtype_add2, list) {
+            @Override
+            protected void convert(ViewHolder viewHolder, TaskDetails.DiseaseMsgDtosBean item, final int position) {
+                viewHolder.setText(R.id.item_name, item.getDiseaseTypeName());
+                ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean> attrlist = (ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean>) item.getDiseaseAttrMsgDtos();
+                if (attrlist != null && attrlist.size() > 0) {
+                    if (attrlist.size() == 1) {
+                        viewHolder.setText(R.id.item_attr, attrlist.get(0).getValue() + "m");
+                    } else {
+                        viewHolder.setText(R.id.item_attr, attrlist.get(0).getValue() + "m" + "*" + attrlist.get(1).getValue() + "m");
+                    }
+                }
+            }
+        };
+        mEventtypeListview.setAdapter(adapter_eventtype);
+    }
+
+    /**
+     * 施工计划
+     *
+     * @param list
+     */
+    private void setuiplanAdapter(final List<Plan> list) {
+        adapter_uiplan = new CommonAdapter<Plan>(RateDetailsActivity.this, R.layout.item_eventtype_add2, list) {
+            @Override
+            protected void convert(ViewHolder viewHolder, Plan item, final int position) {
+                viewHolder.setText(R.id.item_name, item.getFunName().trim());
+                viewHolder.setText(R.id.item_attr, "");
+            }
+        };
+        mPlanListview.setAdapter(adapter_uiplan);
+    }
 
     /**
      * 审批
@@ -217,7 +355,7 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
         mGridTupianAdapter = new CommonAdapter<String>(RateDetailsActivity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
-                Glide.with(RateDetailsActivity.this).load(item).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                GlideImgManager.glideLoader(RateDetailsActivity.this,item,R.drawable.pic_not_found,R.drawable.pic_not_found,(ImageView)viewHolder.getView(R.id.item_addphoto_grid_img),1);
                 viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
             }
         };

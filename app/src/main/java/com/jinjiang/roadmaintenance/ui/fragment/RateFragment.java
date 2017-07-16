@@ -32,6 +32,7 @@ import com.jinjiang.roadmaintenance.ui.view.library.PullToRefreshBase;
 import com.jinjiang.roadmaintenance.ui.view.library.PullToRefreshListView;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
+import com.jinjiang.roadmaintenance.utils.ScreenUtils;
 import com.jinjiang.roadmaintenance.utils.Uri;
 import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
@@ -88,6 +89,8 @@ public class RateFragment extends Fragment implements UIDataListener {
     LinearLayout mTimeLl;
     @BindView(R.id.rate_Gg)
     RadioGroup mGg;
+    @BindView(R.id.rate_search_content)
+    LinearLayout rateSearchContent;
     private DatePicker picker_Time;
     private String startTime = "";
     private String endTime = "";
@@ -125,6 +128,8 @@ public class RateFragment extends Fragment implements UIDataListener {
     private void initData() {
         mList = new ArrayList<>();
 
+        mListview.setMode(PullToRefreshBase.Mode.BOTH);
+
         mAcache = ACache.get(getActivity());
         dialog = DialogProgress.createLoadingDialog(getActivity(), "", this);
         request = new NetWorkRequest(getActivity(), this);
@@ -155,7 +160,7 @@ public class RateFragment extends Fragment implements UIDataListener {
         mGg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-                switch (checkedId){
+                switch (checkedId) {
                     case R.id.rate_time1:
                         timeState = 1;
                         break;
@@ -193,8 +198,8 @@ public class RateFragment extends Fragment implements UIDataListener {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 i -= 1;
-                Intent intent = new Intent(getActivity(),RateDetailsActivity.class);
-                intent.putExtra("Row",mList.get(i));
+                Intent intent = new Intent(getActivity(), RateDetailsActivity.class);
+                intent.putExtra("Row", mList.get(i));
                 startActivity(intent);
             }
         });
@@ -231,7 +236,11 @@ public class RateFragment extends Fragment implements UIDataListener {
             @Override
             protected void convert(ViewHolder viewHolder, RateList.RowsBean item, int position) {
                 viewHolder.setText(R.id.tv1, item.getOrderStatusName());
-                viewHolder.setText(R.id.tv2, item.getLocationDesc() + "          " + item.getCreateTime());
+                if (item.getCreateTime().substring(item.getCreateTime().lastIndexOf("-") + 1).length() >= 3) {
+                    viewHolder.setText(R.id.tv2, ScreenUtils.getRoad(item.getLocationDesc()) + "          " + item.getCreateTime().substring(0, item.getCreateTime().lastIndexOf("-") + 3));
+                } else {
+                    viewHolder.setText(R.id.tv2, ScreenUtils.getRoad(item.getLocationDesc()) + "          " + item.getCreateTime());
+                }
             }
         };
 
@@ -279,9 +288,11 @@ public class RateFragment extends Fragment implements UIDataListener {
                 switch (timeType) {
                     case 0:
                         mTime5.setText(selectDate);
+                        startTime = selectDate;
                         break;
                     case 1:
                         mTime6.setText(selectDate);
+                        endTime = selectDate;
                         break;
                     default:
                         break;
@@ -303,10 +314,10 @@ public class RateFragment extends Fragment implements UIDataListener {
         try {
             Date dt1 = df.parse(DATENow);
             Date dt2 = df.parse(DATESelect);
-            if (dt1.getTime() >= dt2.getTime()) {
+            if (dt1.getTime() > dt2.getTime()) {
                 //DATENow 在DATESelect前
                 return true;
-            } else if (dt1.getTime() < dt2.getTime()) {
+            } else if (dt1.getTime() <= dt2.getTime()) {
                 //DATENow在DATESelect后
                 return false;
             }
@@ -322,38 +333,59 @@ public class RateFragment extends Fragment implements UIDataListener {
         unbinder.unbind();
     }
 
-    private void setmStateBack(int k){
-        switch (k){
+    private void setmStateBack(int k) {
+        switch (k) {
             case 2001:
-                mState1.setBackgroundResource(R.drawable.gre_stroke_back3);
-                mState2.setBackgroundResource(R.drawable.gre_stroke_back);
-                mState3.setBackgroundResource(R.drawable.gre_stroke_back);
-                mState4.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState1.setBackgroundResource(R.drawable.blue_back1);
+                mState2.setBackgroundResource(R.drawable.gre_back1);
+                mState3.setBackgroundResource(R.drawable.gre_back1);
+                mState4.setBackgroundResource(R.drawable.gre_back1);
+
+                mState1.setTextColor(getResources().getColor(R.color.white));
+                mState2.setTextColor(getResources().getColor(R.color.text_gray));
+                mState3.setTextColor(getResources().getColor(R.color.text_gray));
+                mState4.setTextColor(getResources().getColor(R.color.text_gray));
                 break;
             case 2002:
-                mState1.setBackgroundResource(R.drawable.gre_stroke_back);
-                mState2.setBackgroundResource(R.drawable.gre_stroke_back3);
-                mState3.setBackgroundResource(R.drawable.gre_stroke_back);
-                mState4.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState1.setBackgroundResource(R.drawable.gre_back1);
+                mState2.setBackgroundResource(R.drawable.blue_back1);
+                mState3.setBackgroundResource(R.drawable.gre_back1);
+                mState4.setBackgroundResource(R.drawable.gre_back1);
+
+                mState1.setTextColor(getResources().getColor(R.color.text_gray));
+                mState2.setTextColor(getResources().getColor(R.color.white));
+                mState3.setTextColor(getResources().getColor(R.color.text_gray));
+                mState4.setTextColor(getResources().getColor(R.color.text_gray));
                 break;
             case 2003:
-                mState1.setBackgroundResource(R.drawable.gre_stroke_back);
-                mState2.setBackgroundResource(R.drawable.gre_stroke_back);
-                mState3.setBackgroundResource(R.drawable.gre_stroke_back3);
-                mState4.setBackgroundResource(R.drawable.gre_stroke_back);
+                mState1.setBackgroundResource(R.drawable.gre_back1);
+                mState2.setBackgroundResource(R.drawable.gre_back1);
+                mState3.setBackgroundResource(R.drawable.blue_back1);
+                mState4.setBackgroundResource(R.drawable.gre_back1);
+
+                mState1.setTextColor(getResources().getColor(R.color.text_gray));
+                mState2.setTextColor(getResources().getColor(R.color.text_gray));
+                mState3.setTextColor(getResources().getColor(R.color.white));
+                mState4.setTextColor(getResources().getColor(R.color.text_gray));
                 break;
             case 2004:
-                mState1.setBackgroundResource(R.drawable.gre_stroke_back);
-                mState2.setBackgroundResource(R.drawable.gre_stroke_back);
-                mState3.setBackgroundResource(R.drawable.gre_stroke_back);
-                mState4.setBackgroundResource(R.drawable.gre_stroke_back3);
+                mState1.setBackgroundResource(R.drawable.gre_back1);
+                mState2.setBackgroundResource(R.drawable.gre_back1);
+                mState3.setBackgroundResource(R.drawable.gre_back1);
+                mState4.setBackgroundResource(R.drawable.blue_back1);
+
+                mState1.setTextColor(getResources().getColor(R.color.text_gray));
+                mState2.setTextColor(getResources().getColor(R.color.text_gray));
+                mState3.setTextColor(getResources().getColor(R.color.text_gray));
+                mState4.setTextColor(getResources().getColor(R.color.white));
                 break;
             default:
                 break;
         }
     }
-    private void setTimeBack(int k){
-        switch (k){
+
+    private void setTimeBack(int k) {
+        switch (k) {
             case 1:
                 mTime1.setChecked(true);
                 mTime2.setChecked(false);
@@ -383,7 +415,7 @@ public class RateFragment extends Fragment implements UIDataListener {
         }
     }
 
-    @OnClick({R.id.rate_time5, R.id.rate_time6, R.id.rate_confirm, R.id.rate_search})
+    @OnClick({R.id.rate_time5, R.id.rate_time6, R.id.rate_confirm, R.id.rate_search, R.id.rate_state1, R.id.rate_state2, R.id.rate_state3, R.id.rate_state4, R.id.rate_search_down, R.id.rate_search_content})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rate_search:
@@ -408,19 +440,48 @@ public class RateFragment extends Fragment implements UIDataListener {
                 picker_Time.show();
                 break;
             case R.id.rate_confirm:
-                if (timeState==4){
-                    if (TextUtils.isEmpty(startTime)&&TextUtils.isEmpty(endTime)){
+                if (timeState == 4) {
+                    if (TextUtils.isEmpty(startTime) && TextUtils.isEmpty(endTime)) {
                         showToast("请选择自定义时间！");
                         return;
                     }
+                    if (!TextUtils.isEmpty(startTime) && !TextUtils.isEmpty(endTime)) {
+                        if (compare_date(startTime, endTime)) {
+                            showToast("起始时间不能大于结束时间！");
+                            return;
+                        }
+                    }
                 }
                 mSearchDown.setVisibility(View.GONE);
+                getDate(0, true, 1);
+                break;
+            case R.id.rate_state1:
+                orderStatus = 2001;
+                setmStateBack(orderStatus);
+                break;
+            case R.id.rate_state2:
+                orderStatus = 2002;
+                setmStateBack(orderStatus);
+                break;
+            case R.id.rate_state3:
+                orderStatus = 2003;
+                setmStateBack(orderStatus);
+                break;
+            case R.id.rate_state4:
+                orderStatus = 2004;
+                setmStateBack(orderStatus);
+                break;
+            case R.id.rate_search_down:
+                mSearchDown.setVisibility(View.GONE);
+                break;
+            case R.id.rate_search_content:
                 break;
         }
     }
 
     @Override
     public void loadDataFinish(int code, Object data) {
+
         if (code == 0) {
             if (data != null) {
                 mRateList = JSON.parseObject(data.toString(), new TypeReference<RateList>() {
@@ -460,6 +521,7 @@ public class RateFragment extends Fragment implements UIDataListener {
     public void dismissDialog() {
         if (dialog != null)
             dialog.dismiss();
+        mListview.onRefreshComplete();
     }
 
     @Override

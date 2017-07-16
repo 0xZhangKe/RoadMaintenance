@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.data.Task;
 import com.jinjiang.roadmaintenance.data.TaskState;
+import com.jinjiang.roadmaintenance.utils.ScreenUtils;
 
 import java.util.ArrayList;
 
@@ -39,7 +40,10 @@ public class TaskAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return mList.get(groupPosition).getTasks().size();
+        if (mList!=null&&mList.get(groupPosition)!=null&&mList.get(groupPosition).getTasks()!=null){
+            return mList.get(groupPosition).getTasks().size();
+        }
+        return 0;
     }
 
     @Override
@@ -80,9 +84,9 @@ public class TaskAdapter extends BaseExpandableListAdapter {
             groupholder.tv = (TextView) view.findViewById(R.id.tv);
             view.setTag(groupholder);
         }
-        if (mList.get(groupPosition).getTasks()!=null){
+        if (mList.get(groupPosition).getTasks() != null) {
             groupholder.tv.setText(mList.get(groupPosition).getOrderStatusName() + "(" + mList.get(groupPosition).getTasks().size() + ")");
-        }else {
+        } else {
             groupholder.tv.setText(mList.get(groupPosition).getOrderStatusName() + "(0)");
         }
         return view;
@@ -98,14 +102,21 @@ public class TaskAdapter extends BaseExpandableListAdapter {
         } else {
             view = View.inflate(context, R.layout.item_task_sub, null);
             childholder = new ChildHolder();
-            childholder.tv = (TextView) view.findViewById(R.id.tv);
+            childholder.tv1 = (TextView) view.findViewById(R.id.tv1);
+            childholder.tv2 = (TextView) view.findViewById(R.id.tv2);
+            childholder.tv3 = (TextView) view.findViewById(R.id.tv3);
             view.setTag(childholder);
         }
         Task item = mList.get(groupPosition).getTasks().get(childPosition);
-        if (TextUtils.isEmpty(item.getOrderTypeName())){
-            childholder.tv.setText(item.getLocationDesc() +"-" + item.getCreateDt());
-        }else {
-            childholder.tv.setText(item.getLocationDesc() + "-" + item.getOrderTypeName() + "-" + item.getCreateDt());
+        try {
+
+            childholder.tv1.setText(item.getOrderTypeName());
+            childholder.tv2.setText(ScreenUtils.getRoad(item.getLocationDesc()));
+            childholder.tv3.setText(item.getCreateDt().substring(0, item.getCreateDt().lastIndexOf("-") + 3));
+        } catch (Exception e) {
+            childholder.tv1.setText(item.getOrderTypeName());
+            childholder.tv2.setText(ScreenUtils.getRoad(item.getLocationDesc()));
+            childholder.tv3.setText(item.getCreateDt());
         }
         return view;
     }
@@ -120,6 +131,8 @@ public class TaskAdapter extends BaseExpandableListAdapter {
     }
 
     static class ChildHolder {
-        TextView tv;
+        TextView tv1;
+        TextView tv2;
+        TextView tv3;
     }
 }

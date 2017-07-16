@@ -13,12 +13,9 @@ import android.view.WindowManager;
 
 /**
  * 获得屏幕相关的辅助类
- *
  */
-public class ScreenUtils
-{
-    private ScreenUtils()
-    {
+public class ScreenUtils {
+    private ScreenUtils() {
         /* cannot be instantiated */
         throw new UnsupportedOperationException("cannot be instantiated");
     }
@@ -30,10 +27,31 @@ public class ScreenUtils
      * @param context
      * @return
      */
-    public static int dp2px(Context context, float dpVal)
-    {
+    public static int dp2px(Context context, float dpVal) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 dpVal, context.getResources().getDisplayMetrics());
+    }
+
+    public static String getRoad(String str) {
+        String road = "";
+        if (!str.contains("路")){
+            return str;
+        }
+        if (str.contains("镇")){
+            road = str.substring(str.indexOf("镇")+1,str.lastIndexOf("路")+1);
+        }else if (str.contains("县")){
+            road = str.substring(str.indexOf("县")+1,str.lastIndexOf("路")+1);
+        }else if (str.contains("区")){
+            road = str.substring(str.indexOf("区")+1,str.lastIndexOf("路")+1);
+        }else if (str.contains("市")){
+            road = str.substring(str.indexOf("市")+1,str.lastIndexOf("路")+1);
+        }else if (str.contains("省")){
+            road = str.substring(str.indexOf("省")+1,str.lastIndexOf("路")+1);
+        }else {
+            return str;
+        }
+
+        return road;
     }
 
     /**
@@ -43,8 +61,7 @@ public class ScreenUtils
      * @param pxVal
      * @return
      */
-    public static float px2dp(Context context, float pxVal)
-    {
+    public static float px2dp(Context context, float pxVal) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (pxVal / scale);
     }
@@ -84,14 +101,14 @@ public class ScreenUtils
         windowManager.getDefaultDisplay().getMetrics(dm);
         return dm;
     }
+
     /**
      * 获得屏幕宽度
      *
      * @param context
      * @return
      */
-    public static int getScreenWidth(Context context)
-    {
+    public static int getScreenWidth(Context context) {
         WindowManager wm = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
@@ -105,8 +122,7 @@ public class ScreenUtils
      * @param context
      * @return
      */
-    public static int getScreenHeight(Context context)
-    {
+    public static int getScreenHeight(Context context) {
         WindowManager wm = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
@@ -120,19 +136,16 @@ public class ScreenUtils
      * @param context
      * @return
      */
-    public static int getStatusHeight(Context context)
-    {
+    public static int getStatusHeight(Context context) {
 
         int statusHeight = -1;
-        try
-        {
+        try {
             Class<?> clazz = Class.forName("com.android.internal.R$dimen");
             Object object = clazz.newInstance();
             int height = Integer.parseInt(clazz.getField("status_bar_height")
                     .get(object).toString());
             statusHeight = context.getResources().getDimensionPixelSize(height);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return statusHeight;
@@ -144,8 +157,7 @@ public class ScreenUtils
      * @param activity
      * @return
      */
-    public static Bitmap snapShotWithStatusBar(Activity activity)
-    {
+    public static Bitmap snapShotWithStatusBar(Activity activity) {
         View view = activity.getWindow().getDecorView();
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();
@@ -165,8 +177,7 @@ public class ScreenUtils
      * @param activity
      * @return
      */
-    public static Bitmap snapShotWithoutStatusBar(Activity activity)
-    {
+    public static Bitmap snapShotWithoutStatusBar(Activity activity) {
         View view = activity.getWindow().getDecorView();
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();

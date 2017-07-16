@@ -11,7 +11,7 @@
     <ImageView
         android:id="@+id/item_mapgrid_img"
         android:layout_width="80dp"
-        android:layout_height="50dp"
+        android:layout_height="65dp"
         android:scaleType="fitXY"
         android:src="@drawable/pic_not_found" />
 

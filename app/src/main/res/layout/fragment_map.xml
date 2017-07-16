@@ -35,9 +35,10 @@
                 android:layout_margin="10dp"
                 android:background="@drawable/search_back"
                 android:hint="请输入地名"
-                android:maxLines="1"
+                android:imeOptions="actionSearch"
                 android:paddingLeft="50dp"
                 android:paddingRight="25dp"
+                android:singleLine="true"
                 android:textSize="14sp" />
 
             <ImageView
@@ -96,7 +97,7 @@
                 android:paddingBottom="5dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="5dp"
-                android:text="病害显示"
+                android:text="工单显示"
                 android:textColor="@color/text_black"
                 android:textSize="14sp" />
 
@@ -104,8 +105,7 @@
                 android:id="@+id/map_EventType_grid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_margin="10dp"
                 android:columnWidth="90dp"
                 android:gravity="center"
                 android:numColumns="4"
@@ -119,7 +119,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="160dp"
+            android:layout_marginBottom="180dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/dialog_back"
             android:gravity="center_horizontal"

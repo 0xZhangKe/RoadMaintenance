@@ -24,7 +24,7 @@
         <TextView
             android:id="@+id/eventadd_title"
             style="@style/title_text_Style"
-            android:text="添加病害" />
+            android:text="添加工单" />
 
         <TextView
             android:id="@+id/eventadd_save"
@@ -69,9 +69,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="病害图片上传："
+                    android:text="病害图片："
                     android:textColor="@color/text_black"
-                    android:textSize="15sp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -81,12 +81,6 @@
                     android:paddingRight="5dp"
                     android:textColor="@color/text_black"
                     android:textSize="15sp" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="25dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/arr_right" />
             </LinearLayout>
 
             <View style="@style/SpacingLineStyle" />
@@ -120,7 +114,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="病害编号："
+                    android:text="工单编号："
                     android:textColor="@color/text_black"
                     android:textSize="15sp" />
 
@@ -131,11 +125,13 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:ellipsize="end"
+                    android:gravity="right"
                     android:maxLength="50"
                     android:maxLines="1"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
-                    android:textColor="@color/text_black"
+                    android:text="自动编号"
+                    android:textColor="@color/text_gray"
                     android:textSize="14sp" />
 
             </LinearLayout>
@@ -257,7 +253,8 @@
                     android:paddingTop="1dp"
                     android:text="\?"
                     android:textColor="@color/text_black"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/eventadd_eventType_tv"
@@ -312,7 +309,7 @@
                     android:background="@null"
                     android:ellipsize="end"
                     android:gravity="right"
-                    android:hint="请输入总面积"
+                    android:hint="&lt;自动计算&gt;"
                     android:inputType="number"
                     android:maxLength="50"
                     android:maxLines="1"
@@ -320,7 +317,12 @@
                     android:paddingRight="5dp"
                     android:textColor="@color/text_black"
                     android:textSize="14sp" />
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="㎡"
+                    android:textColor="@color/text_gray"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <View
@@ -362,7 +364,8 @@
                         android:paddingTop="1dp"
                         android:text="\?"
                         android:textColor="@color/text_black"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        android:visibility="gone" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -381,6 +384,7 @@
                         android:scaleType="fitXY"
                         android:src="@drawable/add1" />
                 </LinearLayout>
+
                 <com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView
                     android:id="@+id/eventadd_fangan_listview"
                     android:layout_width="match_parent"
@@ -408,7 +412,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="预计修复时间："
+                        android:text="预计修复时间（天）："
                         android:textColor="@color/text_black"
                         android:textSize="15sp" />
 
@@ -442,7 +446,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="预计维修费用："
+                        android:text="预计维修费用（元）："
                         android:textColor="@color/text_black"
                         android:textSize="15sp" />
 
@@ -512,7 +516,7 @@
                 android:background="@drawable/select_blue_button_background_"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="提交"
+                android:text="立即提交"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 

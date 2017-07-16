@@ -49,6 +49,7 @@
                     android:textSize="15sp" />
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/eventadd_eventType_know"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -71,7 +72,7 @@
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:text=""
-                    android:textColor="@color/text_black"
+                    android:textColor="@color/text_gray"
                     android:textSize="14sp" />
 
                 <ImageView
@@ -112,7 +113,7 @@
                     android:maxLines="1"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
-                    android:textColor="@color/text_black"
+                    android:textColor="@color/text_gray"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -148,7 +149,7 @@
                     android:maxLines="1"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
-                    android:textColor="@color/text_black"
+                    android:textColor="@color/text_gray"
                     android:textSize="14sp" />
             </LinearLayout>
             <View style="@style/SpacingLineStyle"/>
@@ -182,7 +183,7 @@
                     android:maxLines="1"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
-                    android:textColor="@color/text_black"
+                    android:textColor="@color/text_gray"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -202,7 +203,7 @@
                     android:background="@null"
                     android:ellipsize="end"
                     android:gravity="left"
-                    android:hint="请输入内容"
+                    android:hint="点击输入备注文字"
                     android:maxLength="1000"
                     android:maxLines="5"
                     android:padding="5dp"
@@ -229,7 +230,7 @@
                     android:background="@drawable/select_blue_button_background_"
                     android:gravity="center"
                     android:padding="10dp"
-                    android:text="新增"
+                    android:text="确认"
                     android:textColor="@color/white"
                     android:textSize="16sp" />
 

@@ -132,14 +132,19 @@ public class PlanActivity extends BaseActivity implements UIDataListener {
                                     if (isChecked) {
                                         if (!mSelectPlanList.contains(item))
                                             mSelectPlanList.add(item);
-                                        if (item.getId().equals("0"))
+                                        if (item.getId().equals("0")){
+                                            mEditText.setVisibility(View.VISIBLE);
                                             mEditText.setEnabled(true);
+                                        }
+
                                     } else {
                                         if (mSelectPlanList.contains(item))
                                             mSelectPlanList.remove(item);
-                                        if (item.getId().equals("0"))
+                                        if (item.getId().equals("0")){
                                             mEditText.setText("");
                                             mEditText.setEnabled(false);
+                                            mEditText.setVisibility(View.GONE);
+                                        }
                                     }
                                 }
                             });

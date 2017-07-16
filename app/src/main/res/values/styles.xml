@@ -8,12 +8,42 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--Dialog主题-->
+    　　
+
+    <style name="Theme.myDialog" parent="@android:style/Theme.DeviceDefault.Light.Dialog">
+        　　
+        <item name="android:windowTitleStyle">@style/DialogWindowTitle.DeviceDefault</item>
+        <item name="android:dividerHeight">0.5dp</item>
+        <item name="android:divider">#CCCCCC</item>
+    </style>
+    　
+
+    <style name="DialogWindowTitle.DeviceDefault">
+        　　
+        <item name="android:maxLines">1</item>
+        　　
+        <item name="android:scrollHorizontally">true</item>
+        　　
+        <item name="android:textAppearance">@style/DialogWindowTitle</item>
+        　　
+    </style>
+
+    <style name="DialogWindowTitle">
+        　　
+        <item name="android:textSize">22sp</item>
+        　　
+        <item name="android:textColor">@color/blue</item>
+        　　
+    </style>
+
     <!-- 标题栏的样式 -->
     <style name="title_RelativeLayoutStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dip</item>
         <item name="android:background">@color/white</item>
     </style>
+
     <style name="title_text_Style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -25,6 +55,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:layout_centerInParent">true</item>
     </style>
+
     <style name="title_arrow_Style">
         <item name="android:layout_width">20sp</item>
         <item name="android:layout_height">20sp</item>
@@ -33,6 +64,7 @@
         <item name="android:src">@drawable/back_black</item>
         <item name="android:layout_centerVertical">true</item>
     </style>
+
     <style name="title_arrow_Ll_Style">
         <item name="android:layout_width">50dp</item>
         <item name="android:layout_height">match_parent</item>

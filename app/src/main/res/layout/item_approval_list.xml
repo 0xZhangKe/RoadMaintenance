@@ -12,15 +12,15 @@
 
         <TextView
             android:id="@+id/item_line"
-            android:layout_width="2dp"
+            android:layout_width="1dp"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
-            android:background="@color/gray_deep" />
+            android:background="@color/tab_shade" />
 
         <View
             android:id="@+id/item_dot"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
+            android:layout_width="7dp"
+            android:layout_height="7dp"
             android:layout_centerInParent="true"
             android:background="@drawable/gre_dot_back" />
 

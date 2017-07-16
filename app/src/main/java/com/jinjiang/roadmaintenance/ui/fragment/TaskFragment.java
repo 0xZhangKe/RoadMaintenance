@@ -89,7 +89,9 @@ public class TaskFragment extends Fragment implements UIDataListener {
     }
 
     private void initData() {
-        mListview.setGroupIndicator(null);
+//        mListview.setGroupIndicator(null);
+        int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
+        mListview.setIndicatorBounds(width-60, width-10);
         mTaskStateList = new ArrayList<>();
 
         mAcache = ACache.get(getActivity());

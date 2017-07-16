@@ -55,6 +55,7 @@ import com.jinjiang.roadmaintenance.ui.view.MyGridView;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
 import com.jinjiang.roadmaintenance.utils.CompressImage;
+import com.jinjiang.roadmaintenance.utils.GlideImgManager;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.zhy.adapter.abslistview.CommonAdapter;
@@ -378,7 +379,11 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             @Override
             protected void convert(ViewHolder viewHolder, Plan item, final int position) {
                 viewHolder.setText(R.id.item_name, item.getFunName());
-                viewHolder.setText(R.id.item_attr, "");
+                if (item.getId().equals("0")){
+                    viewHolder.setText(R.id.item_attr, item.getOtherDesc());
+                }else {
+                    viewHolder.setText(R.id.item_attr, "");
+                }
                 viewHolder.setOnClickListener(R.id.item_del, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -396,8 +401,9 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         mTupianGrid.setAdapter(new CommonAdapter<File>(EventAddActivity.this, R.layout.item_addphoto_grid, mPhotoList) {
             @Override
             protected void convert(ViewHolder viewHolder, final File item, int position) {
+
                 if (position != mPhotoList.size() - 1) {
-                    Glide.with(EventAddActivity.this).load("file://" + item.getAbsolutePath()).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                    GlideImgManager.glideLoader(EventAddActivity.this, "file://" + item.getAbsolutePath(), R.drawable.pic_not_found, R.drawable.pic_not_found, (ImageView) viewHolder.getView(R.id.item_addphoto_grid_img), 1);
                     viewHolder.setOnClickListener(R.id.item_addphoto_grid_del, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -407,8 +413,12 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                     });
                     viewHolder.setVisible(R.id.item_addphoto_grid_del, true);
                 } else {
-                    Glide.with(EventAddActivity.this).load(R.drawable.add3).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
-                    viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
+                    if (mPhotoList.size() <= 4) {
+                        Glide.with(EventAddActivity.this).load(R.drawable.add3).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                        viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
+                    } else {
+
+                    }
                 }
             }
         });
@@ -471,152 +481,152 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
      * 保存或发送
      */
     private void send() {
-        if (!IsNotNull()) {
-            mAddress = mRoadName.getText().toString();
-            HashMap map = new HashMap();
-            map.put("userId", userInfo.getUserId());
-            map.put("appSid", userInfo.getAppSid());
-            if (IsReLoad){
-                map.put("workOrderId",mTaskDetails.getWorkOrderMsgDto().getWorkOrderId());
-                map.put("taskId",mTaskDetails.getTaskId());
+        if (orderStatus==2&&IsNotNull()) {
+            return;
+        }
+        mAddress = mRoadName.getText().toString();
+        HashMap map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        if (IsReLoad) {
+            map.put("workOrderId", mTaskDetails.getWorkOrderMsgDto().getWorkOrderId());
+            map.put("taskId", mTaskDetails.getTaskId());
+        }
+        JSONObject object = new JSONObject();
+        object.put("orderType", mEventTypeBaseList.get(0).getEventType().getOrderType());
+        if (mRoadvalue == 1 || mRoadvalue == 2) {
+            object.put("lineType", driverwayType);
+        }
+        if (mCenpt != null) {
+            object.put("longitude", mCenpt.longitude);
+            object.put("latitude", mCenpt.latitude);
+        } else {
+            object.put("longitude", longitude);
+            object.put("latitude", latitude);
+        }
+        object.put("locationDesc", mAddress);
+        if (mRoadvalue != 5) {
+            object.put("area", getAllArea());
+        }
+        if (userRole == 5) {
+            StringBuffer plans = new StringBuffer();
+            for (Plan p : mPlanList) {
+                if (!p.getId().equals("0")) {
+                    if (plans.length() == 0) {
+                        plans.append(p.getId());
+                    } else {
+                        plans.append("," + p.getId());
+                    }
+                } else {
+                    object.put("maintainDetailPlan", p.getOtherDesc());
+                }
             }
-            JSONObject object = new JSONObject();
-            object.put("orderType", mEventTypeBaseList.get(0).getEventType().getOrderType());
+            object.put("maintainFunIds", plans.toString());
+            object.put("timePlan", mPlanTime.getText().toString());
+            object.put("moneyPlan", mPlanCost.getText().toString());
+        }
+        object.put("orderStatus", "2");
+        object.put("detail", mContent.getText().toString());
+        map.put("workOrder", object.toJSONString());
+        if (mRoadvalue != 5) {
+            JSONArray array = new JSONArray();
+            JSONArray array2 = new JSONArray();
+            for (EventTypeBase e : mEventTypeBaseList) {
+                JSONObject object2 = new JSONObject();
+                EventType type = e.getEventType();
+                ArrayList<EventAttr> attrsList = e.getEventAttrsList();
+                object2.put("diseaseType", type.getId());
+                object2.put("detail", type.getDesc());
+                array.add(object2);
+                for (EventAttr a : attrsList) {
+                    JSONObject object3 = new JSONObject();
+                    object3.put("diseaseType", type.getId());
+                    object3.put("typeUnitId", a.getTypeUnitId());
+                    object3.put("value", a.getDefaultVal());
+                    array2.add(object3);
+                }
+            }
+            map.put("disease", array.toJSONString());
+            map.put("diseaseAttr", array2.toJSONString());
+        }
+        if (orderStatus == 2) {
+            request.doPostUpload(0, true, com.jinjiang.roadmaintenance.utils.Uri.addDisease, map, "files", mPhotoList);
+        } else if (orderStatus == 1) {
+            if (eventId == 0) {
+                mEventdata = new SaveEventData();
+                mEventdata.id = System.currentTimeMillis();
+            } else {
+                SQLite.delete(FileUri.class)
+                        .where(FileUri_Table.eventId.is(eventId))
+                        .query();
+                SQLite.delete(EventType.class)
+                        .where(EventType_Table.eventId.is(eventId))
+                        .query();
+                SQLite.delete(EventAttr.class)
+                        .where(EventAttr_Table.eventId.is(eventId))
+                        .query();
+                SQLite.delete(Plan.class)
+                        .where(Plan_Table.eventId.is(eventId))
+                        .query();
+            }
+
+            mEventdata.userId = userInfo.getUserId();
+            mEventdata.appSid = userInfo.getAppSid();
+            mEventdata.orderType = mEventTypeBaseList.get(0).getEventType().getOrderType();
             if (mRoadvalue == 1 || mRoadvalue == 2) {
-                object.put("lineType", driverwayType);
+                mEventdata.lineType = driverwayType;
             }
             if (mCenpt != null) {
-                object.put("longitude", mCenpt.longitude);
-                object.put("latitude", mCenpt.latitude);
+                mEventdata.longitude = mCenpt.longitude;
+                mEventdata.latitude = mCenpt.latitude;
             } else {
-                object.put("longitude", longitude);
-                object.put("latitude", latitude);
+                mEventdata.longitude = longitude;
+                mEventdata.latitude = latitude;
             }
-            object.put("locationDesc", mAddress);
+            mEventdata.locationDesc = mAddress;
             if (mRoadvalue != 5) {
-                object.put("area", getAllArea());
+                mEventdata.area = getAllArea();
             }
             if (userRole == 5) {
-                StringBuffer plans = new StringBuffer();
                 for (Plan p : mPlanList) {
-                    if (!p.getId().equals("0")) {
-                        if (plans.length() == 0) {
-                            plans.append(p.getId());
-                        } else {
-                            plans.append("," + p.getId());
-                        }
-                    } else {
-                        object.put("maintainDetailPlan", p.getOtherDesc());
-                    }
+                    p.setEventId(mEventdata.id);
+                    p.save();
                 }
-                object.put("maintainFunIds", plans.toString());
-                object.put("timePlan", mPlanTime.getText().toString());
-                object.put("moneyPlan", mPlanCost.getText().toString());
+                mEventdata.timePlan = mPlanTime.getText().toString();
+                mEventdata.moneyPlan = mPlanCost.getText().toString();
             }
-            object.put("orderStatus", "2");
-            object.put("detail", mContent.getText().toString());
-            map.put("workOrder", object.toJSONString());
+            mEventdata.detail = mContent.getText().toString();
+            mEventdata.roadvalue = mRoadvalue;
+
+            for (File f : mPhotoList) {
+                FileUri fileUri = new FileUri();
+                fileUri.eventId = mEventdata.id;
+                fileUri.uri = f.getAbsolutePath();
+                fileUri.save();
+            }
+
             if (mRoadvalue != 5) {
-                JSONArray array = new JSONArray();
-                JSONArray array2 = new JSONArray();
                 for (EventTypeBase e : mEventTypeBaseList) {
-                    JSONObject object2 = new JSONObject();
                     EventType type = e.getEventType();
                     ArrayList<EventAttr> attrsList = e.getEventAttrsList();
-                    object2.put("diseaseType", type.getId());
-                    object2.put("detail", type.getDesc());
-                    array.add(object2);
+                    type.setEventId(mEventdata.id);
+                    type.save();
                     for (EventAttr a : attrsList) {
-                        JSONObject object3 = new JSONObject();
-                        object3.put("diseaseType", type.getId());
-                        object3.put("typeUnitId", a.getTypeUnitId());
-                        object3.put("value", a.getDefaultVal());
-                        array2.add(object3);
+                        a.setEventId(mEventdata.id);
+                        a.setEventTypeId(type.getId());
+                        a.save();
                     }
                 }
-                map.put("disease", array.toJSONString());
-                map.put("diseaseAttr", array2.toJSONString());
             }
-            if (orderStatus == 2) {
-                request.doPostUpload(0, true, com.jinjiang.roadmaintenance.utils.Uri.addDisease, map, "files", mPhotoList);
-            } else if (orderStatus == 1) {
-                if (eventId == 0) {
-                    mEventdata = new SaveEventData();
-                    mEventdata.id = System.currentTimeMillis();
-                } else {
-                    SQLite.delete(FileUri.class)
-                            .where(FileUri_Table.eventId.is(eventId))
-                            .query();
-                    SQLite.delete(EventType.class)
-                            .where(EventType_Table.eventId.is(eventId))
-                            .query();
-                    SQLite.delete(EventAttr.class)
-                            .where(EventAttr_Table.eventId.is(eventId))
-                            .query();
-                    SQLite.delete(Plan.class)
-                            .where(Plan_Table.eventId.is(eventId))
-                            .query();
-                }
-
-                mEventdata.userId = userInfo.getUserId();
-                mEventdata.appSid = userInfo.getAppSid();
-                mEventdata.orderType = mEventTypeBaseList.get(0).getEventType().getOrderType();
-                if (mRoadvalue == 1 || mRoadvalue == 2) {
-                    mEventdata.lineType = driverwayType;
-                }
-                if (mCenpt != null) {
-                    mEventdata.longitude = mCenpt.longitude;
-                    mEventdata.latitude = mCenpt.latitude;
-                } else {
-                    mEventdata.longitude = longitude;
-                    mEventdata.latitude = latitude;
-                }
-                mEventdata.locationDesc = mAddress;
-                if (mRoadvalue != 5) {
-                    mEventdata.area = getAllArea();
-                }
-                if (userRole == 5) {
-                    for (Plan p : mPlanList) {
-                        p.setEventId(mEventdata.id);
-                        p.save();
-                    }
-                    mEventdata.timePlan = mPlanTime.getText().toString();
-                    mEventdata.moneyPlan = mPlanCost.getText().toString();
-                }
-                mEventdata.detail = mContent.getText().toString();
-                mEventdata.roadvalue = mRoadvalue;
-
-                for (File f : mPhotoList) {
-                    FileUri fileUri = new FileUri();
-                    fileUri.eventId = mEventdata.id;
-                    fileUri.uri = f.getAbsolutePath();
-                    fileUri.save();
-                }
-
-                if (mRoadvalue != 5) {
-                    for (EventTypeBase e : mEventTypeBaseList) {
-                        EventType type = e.getEventType();
-                        ArrayList<EventAttr> attrsList = e.getEventAttrsList();
-                        type.setEventId(mEventdata.id);
-                        type.save();
-                        for (EventAttr a : attrsList) {
-                            a.setEventId(mEventdata.id);
-                            a.setEventTypeId(type.getId());
-                            a.save();
-                        }
-                    }
-                }
-                if (eventId == 0) {
-                    mEventdata.save();
-                } else {
-                    mEventdata.update();
-                }
-                showToast("保存成功！");
-                EventBus.getDefault().post(new MessageEvent(1, ""));
-                finish();
-                overridePendingTransition(0, R.anim.base_slide_out);
+            if (eventId == 0) {
+                mEventdata.save();
+            } else {
+                mEventdata.update();
             }
-
+            showToast("保存成功！");
+            EventBus.getDefault().post(new MessageEvent(1, ""));
+            finish();
+            overridePendingTransition(0, R.anim.base_slide_out);
         }
     }
 

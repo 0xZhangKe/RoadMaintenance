@@ -20,18 +20,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:singleLine="true"
-        android:ellipsize="end"
         android:layout_weight="1"
         android:gravity="right"
         android:textColor="@color/text_gray"
         android:textSize="14sp" />
 
-    <ImageView
-        android:id="@+id/item_del"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/delete" />
 </LinearLayout>

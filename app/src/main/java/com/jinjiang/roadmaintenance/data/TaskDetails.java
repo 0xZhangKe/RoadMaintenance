@@ -124,6 +124,8 @@ public class TaskDetails implements Serializable {
 
         private double area;
         private String createDt;
+        private String maintainStarTime;
+        private double maintainArea;
         private String detail;
         private double latitude;
         private int lineType;
@@ -328,6 +330,22 @@ public class TaskDetails implements Serializable {
 
         public void setScenePicUrls(List<String> scenePicUrls) {
             this.scenePicUrls = scenePicUrls;
+        }
+
+        public String getMaintainStarTime() {
+            return maintainStarTime;
+        }
+
+        public void setMaintainStarTime(String maintainStarTime) {
+            this.maintainStarTime = maintainStarTime;
+        }
+
+        public double getMaintainArea() {
+            return maintainArea;
+        }
+
+        public void setMaintainArea(double maintainArea) {
+            this.maintainArea = maintainArea;
         }
     }
 
