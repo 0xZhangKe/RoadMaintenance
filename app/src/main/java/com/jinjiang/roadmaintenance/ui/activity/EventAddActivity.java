@@ -56,6 +56,7 @@ import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
 import com.jinjiang.roadmaintenance.utils.CompressImage;
 import com.jinjiang.roadmaintenance.utils.GlideImgManager;
+import com.jinjiang.roadmaintenance.utils.ScreenUtils;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.zhy.adapter.abslistview.CommonAdapter;
@@ -202,7 +203,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                 }
             }
             mAddress = mEventdata.locationDesc;
-            mRoadName.setText(mAddress);
+            mRoadName.setText(mEventdata.roadName);
             if (mRoadvalue != 5) {
                 String mArea = mEventdata.area;
                 mAllArea.setText(mArea);
@@ -252,7 +253,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             }
             mEventNum.setText(wm.getSn());
             mAddress = wm.getLocationDesc();
-            mRoadName.setText(mAddress);
+            mRoadName.setText(wm.getRoadName());
             if (mRoadvalue != 5) {
 //                String mArea = wm.getArea() + "";
 //                mAllArea.setText(mArea);
@@ -321,7 +322,9 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         setplanAdapter();
         mPhotoList.add(mPhotoList.size(), new File(""));
         setGridAdapter();
-        mRoadName.setText(mAddress);
+        if (!IsReLoad && eventId == 0) {
+            mRoadName.setText(ScreenUtils.getRoad(mAddress));
+        }
 
         if (userRole == 6) {
             mTimeLl.setVisibility(View.GONE);
@@ -417,12 +420,8 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                     });
                     viewHolder.setVisible(R.id.item_addphoto_grid_del, true);
                 } else {
-                    if (mPhotoList.size() <= 4) {
-                        Glide.with(EventAddActivity.this).load(R.drawable.add3).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
-                        viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
-                    } else {
-
-                    }
+                    Glide.with(EventAddActivity.this).load(R.drawable.add3).into((ImageView) viewHolder.getView(R.id.item_addphoto_grid_img));
+                    viewHolder.setVisible(R.id.item_addphoto_grid_del, false);
                 }
             }
         });
@@ -430,6 +429,10 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == mPhotoList.size() - 1) {
+                    if (mPhotoList.size() >= 5) {
+                        showToast("最多上传4张图片！");
+                        return;
+                    }
                     ActionSheetDialog.showSheet(EventAddActivity.this, EventAddActivity.this, EventAddActivity.this);
                 }
             }
@@ -488,16 +491,15 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         if (orderStatus == 2 && IsNotNull()) {
             return;
         }
-        mAddress = mRoadName.getText().toString();
         HashMap map = new HashMap();
         map.put("userId", userInfo.getUserId());
         map.put("appSid", userInfo.getAppSid());
         if (IsReLoad) {
-            map.put("workOrderId", mTaskDetails.getWorkOrderMsgDto().getWorkOrderId()+"");
+            map.put("workOrderId", mTaskDetails.getWorkOrderMsgDto().getWorkOrderId() + "");
             map.put("taskId", mTaskDetails.getTaskId());
         }
         JSONObject object = new JSONObject();
-        object.put("orderType", mEventTypeBaseList.get(0).getEventType().getOrderType());
+        object.put("orderType", mRoadvalue);
         if (mRoadvalue == 1 || mRoadvalue == 2) {
             object.put("lineType", driverwayType);
         }
@@ -509,6 +511,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             object.put("latitude", latitude);
         }
         object.put("locationDesc", mAddress);
+        object.put("roadName", mRoadName.getText().toString());
         if (mRoadvalue != 5) {
             object.put("area", getAllArea());
         }
@@ -529,7 +532,8 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             object.put("timePlan", mPlanTime.getText().toString());
             object.put("moneyPlan", mPlanCost.getText().toString());
         }
-        object.put("orderStatus", "2");
+        if (!IsReLoad)
+            object.put("orderStatus", "2");
         object.put("detail", mContent.getText().toString());
         map.put("workOrder", object.toJSONString());
         if (mRoadvalue != 5) {
@@ -554,7 +558,11 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
             map.put("diseaseAttr", array2.toJSONString());
         }
         if (orderStatus == 2) {
-            request.doPostUpload(0, true, com.jinjiang.roadmaintenance.utils.Uri.addDisease, map, "files", mPhotoList);
+//            if (IsReLoad){
+//                request.doPostUpload(0, true, com.jinjiang.roadmaintenance.utils.Uri.readdDisease, map, "files", mPhotoList);
+//            }else {
+                request.doPostUpload(0, true, com.jinjiang.roadmaintenance.utils.Uri.addDisease, map, "files", mPhotoList);
+//            }
         } else if (orderStatus == 1) {
             if (eventId == 0) {
                 mEventdata = new SaveEventData();
@@ -588,6 +596,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                 mEventdata.latitude = latitude;
             }
             mEventdata.locationDesc = mAddress;
+            mEventdata.roadName = mRoadName.getText().toString();
             if (mRoadvalue != 5) {
                 mEventdata.area = getAllArea();
             }
@@ -638,7 +647,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
      * 非空判断
      */
     private boolean IsNotNull() {
-        if (mPhotoList==null||mPhotoList.size()==0||mPhotoList.size()==1) {
+        if (mPhotoList == null || mPhotoList.size() == 0 || mPhotoList.size() == 1) {
             showToast("请选择病害图片！");
             return true;
         }

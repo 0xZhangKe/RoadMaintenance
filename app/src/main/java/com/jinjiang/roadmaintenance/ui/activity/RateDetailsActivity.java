@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -98,6 +99,8 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
     LinearLayout mXiufutupianLl;
     @BindView(R.id.rateDetails_fujian_ll)
     LinearLayout mFujianLl;
+    @BindView(R.id.rateDetails_approvalStateImg)
+    ImageView mApprovalStateImg;
     private ACache mAcache;
     private Dialog dialog;
     private NetWorkRequest request;
@@ -183,6 +186,8 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
             mUirealDateLl.setVisibility(View.GONE);
 
         } else if (OrderStatus == 3) {//技术员审批--不处理
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
             mPlanTimeLl.setVisibility(View.GONE);
             mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
@@ -199,6 +204,8 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
             mXiufutupianLl.setVisibility(View.GONE);
             mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 7) {//监理审核否--重新下单
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
             mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
@@ -209,6 +216,8 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
             mXiufutupianLl.setVisibility(View.GONE);
             mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 9) {//一级业主审核否--重新下单
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
             mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
@@ -219,6 +228,8 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
             mXiufutupianLl.setVisibility(View.GONE);
             mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 11) {//二级业主审核否--重新下单
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
             mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
@@ -229,6 +240,8 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
             mXiufutupianLl.setVisibility(View.GONE);
             mUirealDateLl.setVisibility(View.GONE);
         } else if (OrderStatus == 13) {//三级业主审核否--重新下单
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
             mRealTimeLl.setVisibility(View.GONE);
             mFujianLl.setVisibility(View.GONE);
             mXiufutupianLl.setVisibility(View.GONE);
@@ -241,12 +254,14 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
         } else if (OrderStatus == 15) {//初验
 
         } else if (OrderStatus == 17) {//初验不合格，重新提交施工
-
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
 
         } else if (OrderStatus == 18) {//初验合格，三方验收
 
         } else if (OrderStatus == 19) {//验收不合格，重新提交施工
-
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
 
         } else if (OrderStatus == 20) {//验收合格，完结状态
 
@@ -256,7 +271,7 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
         mEventId.setText(wm.getSn());
         mSaveDate.setText(td.getTaskCreateTime());
         mSavePerson.setText(wm.getUserId());
-        mRoadName.setText(ScreenUtils.getRoad(wm.getLocationDesc()));
+        mRoadName.setText(wm.getRoadName());
         mLocation.setText(wm.getLocationDesc());
         mRoadType.setText(wm.getOrderTypeName());
         mDriverwayType.setText(wm.getLineTypeName());
@@ -341,13 +356,18 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
                 viewHolder.setText(R.id.item_desc, item.getDetail());
                 viewHolder.setText(R.id.item_time, item.getEndTime());
                 if (position == 0) {
-                    viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_blue_back);
+                    viewHolder.setImageResource(R.id.item_dot, R.drawable.appr2);
                     TextView v = (TextView) viewHolder.getView(R.id.item_line);
+                    View v2 = viewHolder.getView(R.id.item_dot);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
+                    RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) v2.getLayoutParams();
                     params.setMargins(0, ScreenUtils.dp2px(RateDetailsActivity.this, 20), 0, 0);
+                    params2.width = ScreenUtils.dp2px(RateDetailsActivity.this, 15);
+                    params2.height = ScreenUtils.dp2px(RateDetailsActivity.this, 15);
                     v.setLayoutParams(params);
+                    v2.setLayoutParams(params2);
                 } else {
-                    viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_back);
+                    viewHolder.setImageResource(R.id.item_dot, R.drawable.appr1);
                     TextView v = viewHolder.getView(R.id.item_line);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
                     params.setMargins(0, 0, 0, 0);
@@ -363,7 +383,7 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
      *
      * @param list
      */
-    private void setGridAdapter(List<String> list) {
+    private void setGridAdapter(final List<String> list) {
         mGridTupianAdapter = new CommonAdapter<String>(RateDetailsActivity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
@@ -372,6 +392,14 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
             }
         };
         mGridXiufuqiantupian.setAdapter(mGridTupianAdapter);
+        mGridXiufuqiantupian.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(RateDetailsActivity.this,ImgshowActivity.class);
+                intent.putExtra("url",list.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -379,7 +407,7 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
      *
      * @param list
      */
-    private void setxiufuAdapter(List<String> list) {
+    private void setxiufuAdapter(final List<String> list) {
         mGridTupianAdapter1 = new CommonAdapter<String>(RateDetailsActivity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
@@ -388,6 +416,14 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
             }
         };
         mGridXiufutupian.setAdapter(mGridTupianAdapter1);
+        mGridXiufutupian.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(RateDetailsActivity.this,ImgshowActivity.class);
+                intent.putExtra("url",list.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -395,7 +431,7 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
      *
      * @param list
      */
-    private void setfujianAdapter(List<String> list) {
+    private void setfujianAdapter(final List<String> list) {
         mGridfujianAdapter1 = new CommonAdapter<String>(RateDetailsActivity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
@@ -404,6 +440,14 @@ public class RateDetailsActivity extends BaseActivity implements UIDataListener 
             }
         };
         mGridFujian.setAdapter(mGridfujianAdapter1);
+        mGridFujian.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(RateDetailsActivity.this,ImgshowActivity.class);
+                intent.putExtra("url",list.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
 

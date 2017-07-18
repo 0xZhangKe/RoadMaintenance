@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -120,6 +121,8 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
     LinearLayout mDrivertypeLl;
     @BindView(R.id.eventdetails_eventtype_ll)
     LinearLayout mEventtypeLl;
+    @BindView(R.id.eventdetails_approvalStateImg)
+    ImageView mApprovalStateImg;
     private Task mTask;
     private ACache mAcache;
     private Dialog dialog;
@@ -222,31 +225,39 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         } else if (OrderStatus == 6) {// <20m未施工
 
         } else if (OrderStatus == 7) {//监理审核否--重新下单
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 8) {//监理审核属实--一级业主批复
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);
             mRemark.setHint("请输入处理意见");
         } else if (OrderStatus == 9) {//一级业主审核否--重新下单
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 10) {//一级业主审核属实--二级业主批复
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);
             mRemark.setHint("请输入处理意见");
         } else if (OrderStatus == 11) {//二级业主审核否--重新下单
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 12) {//二级业主审核属实--三级业主批复
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);
             mRemark.setHint("请输入处理意见");
         } else if (OrderStatus == 13) {//三级业主审核否--重新下单
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 14) {//三级业主审核属实-->20m未施工
         }
 
 
         mEventId.setText(wm.getSn());
         mSaveDate.setText(td.getTaskCreateTime());
-        mRoadName.setText(ScreenUtils.getRoad(wm.getLocationDesc()));
+        mRoadName.setText(wm.getRoadName());
         mLocation.setText(wm.getLocationDesc());
         mRoadType.setText(wm.getOrderTypeName());
         mDriverwayTypeTv.setText(wm.getLineTypeName());
@@ -353,18 +364,18 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
                 viewHolder.setText(R.id.item_desc, item.getDetail());
                 viewHolder.setText(R.id.item_time, item.getEndTime());
                 if (position == 0) {
-                    viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_blue_back);
+                    viewHolder.setImageResource(R.id.item_dot, R.drawable.appr2);
                     TextView v = (TextView) viewHolder.getView(R.id.item_line);
                     View v2 =  viewHolder.getView(R.id.item_dot);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
                     RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) v2.getLayoutParams();
                     params.setMargins(0, ScreenUtils.dp2px(EventDetailsActivity.this, 20), 0, 0);
-                    params2.width=ScreenUtils.dp2px(EventDetailsActivity.this, 10);
-                    params2.height=ScreenUtils.dp2px(EventDetailsActivity.this, 10);
+                    params2.width=ScreenUtils.dp2px(EventDetailsActivity.this, 15);
+                    params2.height=ScreenUtils.dp2px(EventDetailsActivity.this, 15);
                     v.setLayoutParams(params);
                     v2.setLayoutParams(params2);
                 } else {
-                    viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_back);
+                    viewHolder.setImageResource(R.id.item_dot, R.drawable.appr1);
                     TextView v = viewHolder.getView(R.id.item_line);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
                     params.setMargins(0, 0, 0, 0);
@@ -380,7 +391,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
      *
      * @param list
      */
-    private void setGridAdapter(List<String> list) {
+    private void setGridAdapter(final List<String> list) {
         mGridTupianAdapter = new CommonAdapter<String>(EventDetailsActivity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
@@ -390,6 +401,14 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             }
         };
         mGridTupian.setAdapter(mGridTupianAdapter);
+        mGridTupian.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(EventDetailsActivity.this,ImgshowActivity.class);
+                intent.putExtra("url",list.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     @OnClick({R.id.eventdetails_back, R.id.eventdetails_save, R.id.eventdetails_eventType_add, R.id.eventdetails_plansAdd, R.id.eventdetails_send})

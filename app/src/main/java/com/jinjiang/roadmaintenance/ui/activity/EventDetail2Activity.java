@@ -141,6 +141,8 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
     LinearLayout mUirealDateLl;
     @BindView(R.id.eventdetail2_title)
     TextView mTitle;
+    @BindView(R.id.eventdetail2_approvalStateImg)
+    ImageView mApprovalStateImg;
     private Task mTask;
     private ACache mAcache;
     private Dialog dialog;
@@ -250,7 +252,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         } else if (OrderStatus == 14 || OrderStatus == 6 || OrderStatus == 17 || OrderStatus == 19) {//三级业主审核属实-->20m未施工
             if (OrderStatus == 17 || OrderStatus == 19) {
                 mTitle.setText("重新提交");
-            }else {
+            } else {
                 mTitle.setText("提交初验");
             }
             xiufutuList.add(new File(""));
@@ -274,14 +276,15 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             mTitle.setText("初验");
 
         } else if (OrderStatus == 17) {//初验不合格，重新提交施工
-
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 18) {//初验合格，三方验收
             mRemark.setEnabled(true);
             mSend.setText("验收");
             mTitle.setText("验收");
         } else if (OrderStatus == 19) {//验收不合格，重新提交施工
-
-
+            mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
+            mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 20) {//验收合格，完结状态
 
 
@@ -291,7 +294,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         mEventId.setText(wm.getSn());
         mSaveDate.setText(td.getTaskCreateTime());
         mSavePerson.setText(wm.getUserId());
-        mRoadName.setText(ScreenUtils.getRoad(wm.getLocationDesc()));
+        mRoadName.setText(wm.getRoadName());
         mLocation.setText(wm.getLocationDesc());
         mRoadType.setText(wm.getOrderTypeName());
         mDriverwayType.setText(wm.getLineTypeName());
@@ -414,18 +417,18 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
                 viewHolder.setText(R.id.item_desc, item.getDetail());
                 viewHolder.setText(R.id.item_time, item.getEndTime());
                 if (position == 0) {
-                    viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_blue_back);
+                    viewHolder.setImageResource(R.id.item_dot, R.drawable.appr2);
                     TextView v = (TextView) viewHolder.getView(R.id.item_line);
                     View v2 = viewHolder.getView(R.id.item_dot);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
                     RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) v2.getLayoutParams();
                     params.setMargins(0, ScreenUtils.dp2px(EventDetail2Activity.this, 20), 0, 0);
-                    params2.width = ScreenUtils.dp2px(EventDetail2Activity.this, 10);
-                    params2.height = ScreenUtils.dp2px(EventDetail2Activity.this, 10);
+                    params2.width = ScreenUtils.dp2px(EventDetail2Activity.this, 15);
+                    params2.height = ScreenUtils.dp2px(EventDetail2Activity.this, 15);
                     v.setLayoutParams(params);
                     v2.setLayoutParams(params2);
                 } else {
-                    viewHolder.setBackgroundRes(R.id.item_dot, R.drawable.gre_dot_back);
+                    viewHolder.setImageResource(R.id.item_dot, R.drawable.appr1);
                     TextView v = viewHolder.getView(R.id.item_line);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
                     params.setMargins(0, 0, 0, 0);
@@ -441,7 +444,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
      *
      * @param list
      */
-    private void setGridAdapter(List<String> list) {
+    private void setGridAdapter(final List<String> list) {
         mGridTupianAdapter = new CommonAdapter<String>(EventDetail2Activity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
@@ -450,6 +453,14 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             }
         };
         mGridXiufuqiantupian.setAdapter(mGridTupianAdapter);
+        mGridXiufuqiantupian.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(EventDetail2Activity.this,ImgshowActivity.class);
+                intent.putExtra("url",list.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -457,7 +468,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
      *
      * @param list
      */
-    private void setxiufuAdapter(List<String> list) {
+    private void setxiufuAdapter(final List<String> list) {
         mGridTupianAdapter1 = new CommonAdapter<String>(EventDetail2Activity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
@@ -466,6 +477,14 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             }
         };
         mGridXiufutupian.setAdapter(mGridTupianAdapter1);
+        mGridXiufutupian.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(EventDetail2Activity.this,ImgshowActivity.class);
+                intent.putExtra("url",list.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -473,7 +492,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
      *
      * @param list
      */
-    private void setfujianAdapter(List<String> list) {
+    private void setfujianAdapter(final List<String> list) {
         mGridfujianAdapter1 = new CommonAdapter<String>(EventDetail2Activity.this, R.layout.item_addphoto_grid, list) {
             @Override
             protected void convert(ViewHolder viewHolder, final String item, int position) {
@@ -483,6 +502,14 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             }
         };
         mGridFujian.setAdapter(mGridfujianAdapter1);
+        mGridXiufutupian.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(EventDetail2Activity.this,ImgshowActivity.class);
+                intent.putExtra("url",list.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -512,6 +539,10 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == xiufutuList.size() - 1) {
+                    if (xiufutuList.size()>=5){
+                        showToast("最多上传4张图片！");
+                        return;
+                    }
                     ActionSheetDialog.showSheet(EventDetail2Activity.this, EventDetail2Activity.this, EventDetail2Activity.this);
                     fujian = false;
                 }
@@ -546,6 +577,10 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == fujiantuList.size() - 1) {
+                    if (fujiantuList.size()>=5){
+                        showToast("最多上传4张图片！");
+                        return;
+                    }
                     ActionSheetDialog.showSheet(EventDetail2Activity.this, EventDetail2Activity.this, EventDetail2Activity.this);
                     fujian = true;
                 }
@@ -676,11 +711,11 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
         }
 
 
-        if (xiufutuList == null || xiufutuList.size() == 0|| xiufutuList.size() == 1) {
+        if (xiufutuList == null || xiufutuList.size() == 0 || xiufutuList.size() == 1) {
             showToast("请选择维修后图片！");
             return;
         }
-        if (fujiantuList == null || fujiantuList.size() == 0|| fujiantuList.size() == 1) {
+        if (fujiantuList == null || fujiantuList.size() == 0 || fujiantuList.size() == 1) {
             showToast("请选择施工附件！");
             return;
         }
@@ -719,7 +754,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
      * 初验
      */
     private void chuyan() {
-        int deal = mConfirmRg.getCheckedRadioButtonId() == R.id.eventdetails_confirm1 ? 18 : 17;
+        int deal = mConfirmRg.getCheckedRadioButtonId() == R.id.eventdetail2_confirm1 ? 18 : 17;
         Map map = new HashMap();
         map.put("userId", userInfo.getUserId());
         map.put("appSid", userInfo.getAppSid());

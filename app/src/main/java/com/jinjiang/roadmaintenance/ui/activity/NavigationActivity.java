@@ -41,8 +41,8 @@ public class NavigationActivity extends BaseActivity implements LoacationListene
     private MyLocationData locData;
     private double lat;
     private double lot;
-    private double lat2 = 30.616744;
-    private double lot2 = 110.313039;
+    private double lat2 ;
+    private double lot2 ;
     private boolean isLocated = false;
     private RoutePlanSearch mSearch;
     private PlanNode stNode;
@@ -67,7 +67,10 @@ public class NavigationActivity extends BaseActivity implements LoacationListene
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setMyLocationEnabled(true);
 
-        LatLng latLng = new LatLng(30.616744, 110.313039);
+        lat2 = getIntent().getDoubleExtra("lat",0);
+        lot2 = getIntent().getDoubleExtra("lot",0);
+
+        LatLng latLng = new LatLng(24.787996, 118.558403);
         setbaiduCenter(latLng, 8);
     }
 

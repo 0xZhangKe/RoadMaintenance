@@ -17,12 +17,12 @@
             android:layout_centerHorizontal="true"
             android:background="@color/tab_shade" />
 
-        <View
+        <ImageView
             android:id="@+id/item_dot"
-            android:layout_width="7dp"
-            android:layout_height="7dp"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/gre_dot_back" />
+            android:src="@drawable/appr1" />
 
     </RelativeLayout>
 

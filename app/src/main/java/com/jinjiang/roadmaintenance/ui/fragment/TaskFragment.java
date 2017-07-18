@@ -59,6 +59,8 @@ public class TaskFragment extends Fragment implements UIDataListener {
     private static TaskFragment fragment;
     @BindView(R.id.task_listview)
     ExpandableListView mListview;
+    @BindView(R.id.task_empty)
+    View mEmpty;
     Unbinder unbinder;
     private ACache mAcache;
     private Dialog dialog;
@@ -93,7 +95,7 @@ public class TaskFragment extends Fragment implements UIDataListener {
     private void initData() {
 //        mListview.setGroupIndicator(null);
         int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
-        mListview.setIndicatorBounds(width-60, width-10);
+        mListview.setIndicatorBounds(width-80, width-10);
         mTaskStateList = new ArrayList<>();
 
         mAcache = ACache.get(getActivity());
@@ -108,6 +110,7 @@ public class TaskFragment extends Fragment implements UIDataListener {
         }
 
         adapter = new TaskAdapter(getActivity(), mTaskStateList);
+        mListview.setEmptyView(mEmpty);
         mListview.setAdapter(adapter);
         mListview.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override

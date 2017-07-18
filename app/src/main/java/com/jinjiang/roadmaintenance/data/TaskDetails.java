@@ -131,6 +131,7 @@ public class TaskDetails implements Serializable {
         private int lineType;
         private String lineTypeName;
         private String locationDesc;
+        private String roadName;
         private double longitude;
         private double moneyPlan;
         private double moneyPractical;
@@ -346,6 +347,14 @@ public class TaskDetails implements Serializable {
 
         public void setMaintainArea(double maintainArea) {
             this.maintainArea = maintainArea;
+        }
+
+        public String getRoadName() {
+            return roadName;
+        }
+
+        public void setRoadName(String roadName) {
+            this.roadName = roadName;
         }
     }
 

@@ -27,6 +27,8 @@ public class SaveEventData extends BaseModel {
     @Column
     public String locationDesc;
     @Column
+    public String roadName;
+    @Column
     public String area;
     @Column
     public String moneyPlan;

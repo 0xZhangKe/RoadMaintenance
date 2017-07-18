@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jinjiang.roadmaintenance.R;
@@ -82,7 +83,39 @@ public class TaskAdapter extends BaseExpandableListAdapter {
             view = View.inflate(context, R.layout.item_task_main, null);
             groupholder = new GroupHolder();
             groupholder.tv = (TextView) view.findViewById(R.id.tv);
+            groupholder.img = (ImageView) view.findViewById(R.id.img);
             view.setTag(groupholder);
+        }
+        switch (mList.get(groupPosition).getOrderStatus()){
+            case 1001:
+                groupholder.img.setImageResource(R.drawable.task1001);
+                break;
+            case 1002:
+                groupholder.img.setImageResource(R.drawable.task1002);
+                break;
+            case 1003:
+                groupholder.img.setImageResource(R.drawable.task1003);
+                break;
+            case 1004:
+                groupholder.img.setImageResource(R.drawable.task1004);
+                break;
+            case 1005:
+                groupholder.img.setImageResource(R.drawable.task1005);
+                break;
+            case 1006:
+                groupholder.img.setImageResource(R.drawable.task1006);
+                break;
+            case 1007:
+                groupholder.img.setImageResource(R.drawable.task1007);
+                break;
+            case 1008:
+                groupholder.img.setImageResource(R.drawable.task1008);
+                break;
+            case 1009:
+                groupholder.img.setImageResource(R.drawable.task1009);
+                break;
+            default:
+                break;
         }
         if (mList.get(groupPosition).getTasks() != null) {
             groupholder.tv.setText(mList.get(groupPosition).getOrderStatusName() + "(" + mList.get(groupPosition).getTasks().size() + ")");
@@ -128,6 +161,7 @@ public class TaskAdapter extends BaseExpandableListAdapter {
 
     static class GroupHolder {
         TextView tv;
+        ImageView img;
     }
 
     static class ChildHolder {

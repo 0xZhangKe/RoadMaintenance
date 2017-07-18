@@ -12,6 +12,11 @@ public class Uri {
      */
     public static String mainUrl = "http://yun1.seagetech.com:28080/tjroad/";
     /**
+     * 测试路径
+     *
+     */
+//    public static String mainUrl = "http://192.168.199.125/road/";
+    /**
      * 用户登录
      *
      */
@@ -36,6 +41,11 @@ public class Uri {
      *
      */
     public static String addDisease = mainUrl+"disease/addDisease";
+    /**
+     * 重新上传上传
+     *
+     */
+    public static String readdDisease = mainUrl+"task/addDisease";
     /**
      * 获取任务状态列表
      *
@@ -76,4 +86,9 @@ public class Uri {
      *
      */
     public static String getWorkOrderProgress = mainUrl+"progress/getWorkOrderProgress";
+    /**
+     * 获取进度
+     *
+     */
+    public static String getWorkOrderLocation = mainUrl+"map/getWorkOrderLocation";
 }

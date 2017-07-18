@@ -28,8 +28,8 @@
         <activity
             android:name=".ui.activity.SplashActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:theme="@style/splashTheme">
+            android:theme="@style/splashTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize">
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,7 +64,8 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity android:name=".ui.activity.NavigationActivity"
+        <activity
+            android:name=".ui.activity.NavigationActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
@@ -74,12 +75,12 @@
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
             android:name=".ui.activity.PlanActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
-        <activity android:name=".ui.activity.EventTypeSelectActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            />
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".ui.activity.EventTypeSelectActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.activity.EventDetail2Activity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -88,6 +89,7 @@
             android:name=".ui.activity.RateDetailsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity android:name=".ui.activity.ImgshowActivity"></activity>
     </application>
 
 </manifest>

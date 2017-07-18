@@ -55,6 +55,23 @@ public class ScreenUtils {
     }
 
     /**
+     * 将2017-05-12 3:45:20格式转换为2017-05-12
+     * @param date
+     * @return
+     */
+    public static String getStrDate(String date){
+        String str = "";
+        if (date.substring(date.lastIndexOf("-") + 1).length() >= 3) {
+            str = date.substring(0, date.lastIndexOf("-") + 3);
+        }else {
+            return date;
+        }
+
+        return str;
+    }
+
+
+    /**
      * px转dp
      *
      * @param context

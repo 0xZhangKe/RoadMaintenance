@@ -264,7 +264,7 @@
                     android:layout_height="wrap_content"
                     />
                 <ImageView
-                    android:layout_width="15dp"
+                    android:layout_width="12dp"
                     android:layout_height="15dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/location2" />
@@ -598,17 +598,32 @@
                         android:textColor="@color/text_black"
                         android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/eventdetails_approvalStateTv"
+                    <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@null"
-                        android:gravity="right"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:textColor="@color/text_black"
-                        android:textSize="14sp" />
+                        android:gravity="right|center_vertical"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:id="@+id/eventdetails_approvalStateImg"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:visibility="gone"
+                            android:scaleType="fitXY"
+                            android:layout_marginRight="5dp"
+                            android:src="@drawable/jinggao"
+                            />
+                        <TextView
+                            android:id="@+id/eventdetails_approvalStateTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:gravity="right"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
+                            android:textColor="@color/text_black"
+                            android:textSize="14sp" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <View style="@style/SpacingLineStyle" />
@@ -645,7 +660,6 @@
                     android:enabled="false"
                     android:gravity="left|top"
                     android:hint="请输入备注"
-                    android:inputType="number"
                     android:maxLength="50"
                     android:maxLines="1"
                     android:padding="10dp"

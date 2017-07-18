@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -12,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -22,6 +24,7 @@ import android.widget.LinearLayout;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.apkfuns.logutils.LogUtils;
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
@@ -32,6 +35,7 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.SearchResult;
@@ -42,6 +46,7 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.data.EventTypeGrid;
+import com.jinjiang.roadmaintenance.data.MapData;
 import com.jinjiang.roadmaintenance.data.RoadType;
 import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.model.LoacationListener;
@@ -72,7 +77,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 /**
  * 桌面
  */
-public class MapFragment extends Fragment implements LoacationListener, UIDataListener, View.OnKeyListener {
+public class MapFragment extends Fragment implements LoacationListener, UIDataListener {
     private static MapFragment fragment;
     @BindView(R.id.map_bmapView)
     TextureMapView mMapView;
@@ -104,9 +109,15 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
     private GeoCoder mSearch;
     private String address;
     private int userRole;
-    private int state = 0;
+    private int[] state = new int[]{0,0,0,0};
     private ArrayList<EventTypeGrid> mGridlist;
+    private ArrayList<MapData> mPointList;
     private CommonAdapter<EventTypeGrid> gridAdapter;
+    private BitmapDescriptor icon1;
+    private BitmapDescriptor icon2;
+    private BitmapDescriptor icon3;
+    private BitmapDescriptor icon4;
+    private Marker marker_dot;
 
     public MapFragment() {
     }
@@ -132,6 +143,19 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
 
     private void initView(View view) {
 
+        icon1 = BitmapDescriptorFactory
+                .fromBitmap(getViewBitmap(R.drawable.shenpi));
+        icon2 = BitmapDescriptorFactory
+                .fromBitmap(getViewBitmap(R.drawable.zhengzai));
+        icon3 = BitmapDescriptorFactory
+                .fromBitmap(getViewBitmap(R.drawable.dengdai));
+        icon4 = BitmapDescriptorFactory
+                .fromBitmap(getViewBitmap(R.drawable.wancheng));
+
+        bitmapDescriptor_location = BitmapDescriptorFactory
+                .fromBitmap(getViewBitmap(R.drawable.location_icon));
+
+        mPointList = new ArrayList<>();
         mAcache = ACache.get(getActivity());
         dialog = DialogProgress.createLoadingDialog(getActivity(), "", this);
         locationModel = new LoacationModel(getActivity(), this, 3000);
@@ -160,15 +184,66 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
         map.put("body", object.toJSONString());
         request.doPostRequest(0, true, Uri.getDicByTypeKey, map);
 
-        mMapEdit.setOnKeyListener(this);
+
+        if (userRole != 6) {
+            getMapdata("", "");
+        }
+    }
+
+    /**
+     * 将View转换成Bitmap
+     *
+     * @return
+     */
+
+    private Bitmap getViewBitmap(int res) {
+
+        View addViewContent = View.inflate(getActivity(), R.layout.item_marker, null);
+        ((ImageView) addViewContent.findViewById(R.id.img)).setImageResource(res);
+        addViewContent.setDrawingCacheEnabled(true);
+
+        addViewContent.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        addViewContent.layout(0, 0,
+                addViewContent.getMeasuredWidth(),
+                addViewContent.getMeasuredHeight());
+
+        addViewContent.buildDrawingCache();
+        Bitmap cacheBitmap = addViewContent.getDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
+
+        return bitmap;
+    }
+
+    private void getMapdata(String roadName, String orderStatus) {
+        Map map = new HashMap();
+        map.put("userId", userInfo.getUserId());
+        map.put("appSid", userInfo.getAppSid());
+        JSONObject object = new JSONObject();
+        object.put("roadName", roadName);
+        StringBuffer buffer = new StringBuffer();
+        for (int i:state){
+            if (i!=0){
+                if (buffer.length()==0){
+                    buffer.append(""+i);
+                }else {
+                    buffer.append(","+i);
+                }
+            }
+        }
+        object.put("orderStatus", buffer.toString());
+        map.put("body", object.toJSONString());
+        request.doPostRequest(1, true, Uri.getWorkOrderLocation, map);
     }
 
     private void initData() {
         mGridlist = new ArrayList<>();
-        mGridlist.add(new EventTypeGrid(R.drawable.state_quabbu2, "全部工单"));
-        mGridlist.add(new EventTypeGrid(R.drawable.state_dengdai1, "等待维修"));
-        mGridlist.add(new EventTypeGrid(R.drawable.state_zhengzai1, "正在维修"));
-        mGridlist.add(new EventTypeGrid(R.drawable.state_wancheng1, "维修完成"));
+//        mGridlist.add(new EventTypeGrid(R.drawable.state_quabbu2, "全部工单"));
+        mGridlist.add(new EventTypeGrid(R.drawable.state_shenpi1, "待审批"));
+        mGridlist.add(new EventTypeGrid(R.drawable.state_zhengzai1, "维修中"));
+        mGridlist.add(new EventTypeGrid(R.drawable.state_dengdai1, "待验收"));
+        mGridlist.add(new EventTypeGrid(R.drawable.state_wancheng1, "已完成"));
         gridAdapter = new CommonAdapter<EventTypeGrid>(getActivity(), R.layout.item_map_grid, mGridlist) {
             @Override
             protected void convert(ViewHolder viewHolder, EventTypeGrid item, int position) {
@@ -181,50 +256,66 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                if (position == 0 && state != 0) {
-                    state = 0;
-                    mGridlist.get(0).setImg(R.drawable.state_quabbu2);
-                    mGridlist.get(1).setImg(R.drawable.state_dengdai1);
-                    mGridlist.get(2).setImg(R.drawable.state_zhengzai1);
-                    mGridlist.get(3).setImg(R.drawable.state_wancheng1);
-                } else if (position == 1 && state != 1) {
-                    state = 1;
-                    mGridlist.get(0).setImg(R.drawable.state_quabbu1);
-                    mGridlist.get(1).setImg(R.drawable.state_dengdai2);
-                    mGridlist.get(2).setImg(R.drawable.state_zhengzai1);
-                    mGridlist.get(3).setImg(R.drawable.state_wancheng1);
-                } else if (position == 2 && state != 2) {
-                    state = 2;
-                    mGridlist.get(0).setImg(R.drawable.state_quabbu1);
-                    mGridlist.get(1).setImg(R.drawable.state_dengdai1);
-                    mGridlist.get(2).setImg(R.drawable.state_zhengzai2);
-                    mGridlist.get(3).setImg(R.drawable.state_wancheng1);
-                } else if (position == 3 && state != 3) {
-                    state = 3;
-                    mGridlist.get(0).setImg(R.drawable.state_quabbu1);
-                    mGridlist.get(1).setImg(R.drawable.state_dengdai1);
-                    mGridlist.get(2).setImg(R.drawable.state_zhengzai1);
-                    mGridlist.get(3).setImg(R.drawable.state_wancheng2);
+                if (position == 0) {
+                    if (state[0]==0){
+                        state[0]=2001;
+                        mGridlist.get(0).setImg(R.drawable.state_shenpi2);
+                    }else {
+                        state[0]=0;
+                        mGridlist.get(0).setImg(R.drawable.state_shenpi1);
+                    }
+                    getMapdata("", "");
+                } else if (position == 1) {
+                    if (state[1]==0){
+                        state[1]=2002;
+                        mGridlist.get(1).setImg(R.drawable.state_zhengzai2);
+                    }else {
+                        state[1]=0;
+                        mGridlist.get(1).setImg(R.drawable.state_zhengzai1);
+                    }
+                    getMapdata("", "");
+                } else if (position == 2) {
+                    if (state[2]==0){
+                        state[2]=2003;
+                        mGridlist.get(2).setImg(R.drawable.state_dengdai2);
+                    }else {
+                        state[2]=0;
+                        mGridlist.get(2).setImg(R.drawable.state_dengdai1);
+                    }
+                    getMapdata("", "");
+                } else if (position == 3) {
+                    if (state[3]==0){
+                        state[3]=2004;
+                        mGridlist.get(3).setImg(R.drawable.state_wancheng2);
+                    }else {
+                        state[3]=0;
+                        mGridlist.get(3).setImg(R.drawable.state_wancheng1);
+                    }
+                    getMapdata("", "");
                 }
                 gridAdapter.notifyDataSetChanged();
-//                mShadow.setVisibility(View.GONE);
-//                mEventType_ll.setVisibility(View.GONE);
             }
         });
         initBaiduMap();
 
+        mMapEdit.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         mMapEdit.setOnKeyListener(new View.OnKeyListener() {
 
             @Override
 
             public boolean onKey(View v, int keyCode, KeyEvent event) {
 
-                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
                     // 先隐藏键盘
                     ((InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE))
                             .hideSoftInputFromWindow(getActivity().getCurrentFocus()
                                     .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-//                    search();
+                    String s = mMapEdit.getText().toString();
+                    LogUtils.d(s);
+                    if (!TextUtils.isEmpty(s)) {
+                        getMapdata(s, "");
+                        mMapEdit.getText().clear();
+                    }
                 }
                 return false;
             }
@@ -232,9 +323,6 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
     }
 
     private void initBaiduMap() {
-
-        bitmapDescriptor_location = BitmapDescriptorFactory
-                .fromResource(R.drawable.location_icon);
 
         mBaiduMap = mMapView.getMap();
 //        mMapView.showZoomControls(false);
@@ -245,16 +333,16 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
             @Override
             public void onMapLongClick(LatLng latLng) {
                 if (userRole == 5 || userRole == 6) {
-                    if (mBaiduMap != null)
-                        mBaiduMap.clear();
+                    if (mBaiduMap != null&&marker_dot!=null)
+                        marker_dot.remove();
 
                     MarkerOptions option = new MarkerOptions()
                             .position(latLng)
                             .icon(bitmapDescriptor_location);
-                    Marker marker = (Marker) mBaiduMap.addOverlay(option);
+                    marker_dot = (Marker) mBaiduMap.addOverlay(option);
                     Bundle bundle = new Bundle();
-                    bundle.putString("LatLng", "");
-                    marker.setExtraInfo(bundle);
+                    bundle.putString("LatLng","");
+                    marker_dot.setExtraInfo(bundle);
                 }
             }
         });
@@ -412,6 +500,10 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
             mMapView.onDestroy();
         bitmapDescriptor_location.recycle();
         mSearch.destroy();
+        icon1.recycle();
+        icon2.recycle();
+        icon3.recycle();
+        icon4.recycle();
     }
 
 
@@ -433,6 +525,38 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
                         item[i] = mRoadTypeList.get(i).getText();
                     }
                     creatDialog(item);
+                }
+            }
+        } else if (code == 1) {
+            if (data != null) {
+                mPointList = JSON.parseObject(data.toString(), new TypeReference<ArrayList<MapData>>() {
+                });
+                mBaiduMap.clear();
+                if (mPointList != null && mPointList.size() > 0) {
+
+                    for (MapData d : mPointList) {
+                        LatLng point = new LatLng(d.getLatitude(), d.getLongitude());
+                        //构建MarkerOption，用于在地图上添加Marker
+                        OverlayOptions option = null;
+                        if (d.getOrderStatus() == 2001) {//未处理
+                            option = new MarkerOptions()
+                                    .position(point)
+                                    .icon(icon1);
+                        } else if (d.getOrderStatus() == 2002) {//未处理
+                            option = new MarkerOptions()
+                                    .position(point)
+                                    .icon(icon2);
+                        } else if (d.getOrderStatus() == 2003) {//未处理
+                            option = new MarkerOptions()
+                                    .position(point)
+                                    .icon(icon3);
+                        } else if (d.getOrderStatus() == 2004) {//未处理
+                            option = new MarkerOptions()
+                                    .position(point)
+                                    .icon(icon4);
+                        }
+                        Marker marker = (Marker) mBaiduMap.addOverlay(option);
+                    }
                 }
             }
         }
@@ -466,14 +590,4 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
         request.CancelPost();
     }
 
-    @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
-            String s = mMapEdit.getText().toString();
-            if (!TextUtils.isEmpty(s)) {
-
-            }
-        }
-        return false;
-    }
 }

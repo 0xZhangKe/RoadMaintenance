@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/item_mapgrid_img"
-        android:layout_width="80dp"
-        android:layout_height="65dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:scaleType="fitXY"
         android:src="@drawable/pic_not_found" />
 
@@ -19,7 +19,7 @@
         android:id="@+id/item_mapgrid_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:text="全部病害"
         android:textColor="@color/text_gray"
         android:textSize="14sp" />

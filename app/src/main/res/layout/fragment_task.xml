@@ -24,16 +24,24 @@
         android:layout_below="@id/task_title"
         android:background="@color/tab_shade" />
 
-    <ExpandableListView
-        android:id="@+id/task_listview"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/task_view"
-        android:divider="@color/tab_shade"
-        android:dividerHeight="10dp"
-        android:childDivider="#00000000"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:scrollbars="none" />
+        android:layout_below="@+id/task_view">
+        <ExpandableListView
+            android:id="@+id/task_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/tab_shade"
+            android:dividerHeight="10dp"
+            android:childDivider="#00000000"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:scrollbars="none" />
+        <include
+            android:id="@+id/task_empty"
+            layout="@layout/list_emptyview"/>
+    </RelativeLayout>
+
 
 </RelativeLayout>

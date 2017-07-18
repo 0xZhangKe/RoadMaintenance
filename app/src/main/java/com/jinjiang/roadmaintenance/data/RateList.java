@@ -51,6 +51,10 @@ public class RateList implements Serializable {
         private String orderStatusName;
         private String processInstanceId;
         private String taskId;
+        private String roadName;
+        private int orderStatus;
+        private String orderType;
+        private String orderTypeName;
         private int workOrderId;
 
         public String getArea() {
@@ -107,6 +111,38 @@ public class RateList implements Serializable {
 
         public void setWorkOrderId(int workOrderId) {
             this.workOrderId = workOrderId;
+        }
+
+        public String getRoadName() {
+            return roadName;
+        }
+
+        public void setRoadName(String roadName) {
+            this.roadName = roadName;
+        }
+
+        public int getOrderStatus() {
+            return orderStatus;
+        }
+
+        public void setOrderStatus(int orderStatus) {
+            this.orderStatus = orderStatus;
+        }
+
+        public String getOrderType() {
+            return orderType;
+        }
+
+        public void setOrderType(String orderType) {
+            this.orderType = orderType;
+        }
+
+        public String getOrderTypeName() {
+            return orderTypeName;
+        }
+
+        public void setOrderTypeName(String orderTypeName) {
+            this.orderTypeName = orderTypeName;
         }
     }
 }
