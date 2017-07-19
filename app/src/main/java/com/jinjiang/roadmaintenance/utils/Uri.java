@@ -101,4 +101,19 @@ public class Uri {
      *
      */
     public static String sendSms = mainUrl+"login/sendSms";
+    /**
+     * 发送验证码,修改手机号
+     *
+     */
+    public static String sendSms2 = mainUrl+"my/sendSms";
+    /**
+     * 修改手机号
+     *
+     */
+    public static String updateUserTel = mainUrl+"my/updateUserTel";
+    /**
+     * 修改头像
+     *
+     */
+    public static String uploadHeader = mainUrl+"my/uploadHeader";
 }

@@ -96,8 +96,8 @@ public class RateFragment extends Fragment implements UIDataListener {
     private DatePicker picker_Time;
     private String startTime = "";
     private String endTime = "";
-    private int timeType = 3;
-    private int timeState = 1;
+    private int timeType = 0;
+    private int timeState = 3;
     private int[] orderStatus = new int[]{0, 0, 0, 0};
     private ACache mAcache;
     private Dialog dialog;
@@ -223,11 +223,13 @@ public class RateFragment extends Fragment implements UIDataListener {
         object.put("page", page);
         object.put("pageSize", 10);
         StringBuffer buffer = new StringBuffer();
-        for (int i:orderStatus){
-            if (buffer.length()==0){
-                buffer.append(""+i);
-            }else {
-                buffer.append(","+i);
+        for (int i : orderStatus) {
+            if (i != 0) {
+                if (buffer.length() == 0) {
+                    buffer.append("" + i);
+                } else {
+                    buffer.append("," + i);
+                }
             }
         }
         object.put("orderStatus", buffer.toString());
@@ -456,33 +458,33 @@ public class RateFragment extends Fragment implements UIDataListener {
                 getDate(0, true, 1);
                 break;
             case R.id.rate_state1:
-                if (orderStatus[0]==0){
+                if (orderStatus[0] == 0) {
                     orderStatus[0] = 2001;
-                }else {
+                } else {
                     orderStatus[0] = 0;
                 }
                 setmStateBack(orderStatus);
                 break;
             case R.id.rate_state2:
-                if (orderStatus[1]==0){
+                if (orderStatus[1] == 0) {
                     orderStatus[1] = 2002;
-                }else {
+                } else {
                     orderStatus[1] = 0;
                 }
                 setmStateBack(orderStatus);
                 break;
             case R.id.rate_state3:
-                if (orderStatus[2]==0){
+                if (orderStatus[2] == 0) {
                     orderStatus[2] = 2003;
-                }else {
+                } else {
                     orderStatus[2] = 0;
                 }
                 setmStateBack(orderStatus);
                 break;
             case R.id.rate_state4:
-                if (orderStatus[3]==0){
+                if (orderStatus[3] == 0) {
                     orderStatus[3] = 2004;
-                }else {
+                } else {
                     orderStatus[3] = 0;
                 }
                 setmStateBack(orderStatus);

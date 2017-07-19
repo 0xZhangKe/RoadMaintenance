@@ -1096,7 +1096,7 @@
                     android:ellipsize="end"
                     android:enabled="false"
                     android:gravity="left|top"
-                    android:hint="请输入处理意见"
+                    android:hint="请输入审批意见"
                     android:maxLength="50"
                     android:maxLines="1"
                     android:padding="10dp"

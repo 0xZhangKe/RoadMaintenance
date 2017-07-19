@@ -454,6 +454,8 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
                 break;
             case R.id.eventadd_eventType_add:
                 Intent intent = new Intent(EventAddActivity.this, EventTypeActivity.class);
+                intent.putExtra("roadtype",mRoadvalue+"");
+                LogUtils.d("lumian"+mRoadvalue);
                 startActivityForResult(intent, 105);
                 break;
             case R.id.eventadd_fangan_add:
@@ -494,14 +496,14 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         HashMap map = new HashMap();
         map.put("userId", userInfo.getUserId());
         map.put("appSid", userInfo.getAppSid());
-        if (IsReLoad) {
-            map.put("workOrderId", mTaskDetails.getWorkOrderMsgDto().getWorkOrderId() + "");
-            map.put("taskId", mTaskDetails.getTaskId());
-        }
         JSONObject object = new JSONObject();
         object.put("orderType", mRoadvalue);
         if (mRoadvalue == 1 || mRoadvalue == 2) {
             object.put("lineType", driverwayType);
+        }
+        if (IsReLoad) {
+            object.put("workOrderId", mTaskDetails.getWorkOrderMsgDto().getWorkOrderId() + "");
+            object.put("taskId", mTaskDetails.getTaskId());
         }
         if (mCenpt != null) {
             object.put("longitude", mCenpt.longitude);
@@ -512,9 +514,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
         }
         object.put("locationDesc", mAddress);
         object.put("roadName", mRoadName.getText().toString());
-        if (mRoadvalue != 5) {
-            object.put("area", getAllArea());
-        }
+        object.put("area", getAllArea());
         if (userRole == 5) {
             StringBuffer plans = new StringBuffer();
             for (Plan p : mPlanList) {
@@ -561,7 +561,7 @@ public class EventAddActivity extends BaseActivity implements ActionSheetDialog.
 //            if (IsReLoad){
 //                request.doPostUpload(0, true, com.jinjiang.roadmaintenance.utils.Uri.readdDisease, map, "files", mPhotoList);
 //            }else {
-                request.doPostUpload(0, true, com.jinjiang.roadmaintenance.utils.Uri.addDisease, map, "files", mPhotoList);
+            request.doPostUpload(0, true, com.jinjiang.roadmaintenance.utils.Uri.addDisease, map, "files", mPhotoList);
 //            }
         } else if (orderStatus == 1) {
             if (eventId == 0) {

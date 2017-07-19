@@ -502,7 +502,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
             }
         };
         mGridFujian.setAdapter(mGridfujianAdapter1);
-        mGridXiufutupian.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mGridFujian.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(EventDetail2Activity.this,ImgshowActivity.class);
@@ -771,7 +771,7 @@ public class EventDetail2Activity extends BaseActivity implements UIDataListener
      * 三方验收
      */
     private void sanfang() {
-        int deal = mConfirmRg.getCheckedRadioButtonId() == R.id.eventdetails_confirm1 ? 20 : 19;
+        int deal = mConfirmRg.getCheckedRadioButtonId() == R.id.eventdetail2_confirm1 ? 20 : 19;
         Map map = new HashMap();
         map.put("userId", userInfo.getUserId());
         map.put("appSid", userInfo.getAppSid());

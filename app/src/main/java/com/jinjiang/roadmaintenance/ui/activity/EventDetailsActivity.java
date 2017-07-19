@@ -218,10 +218,10 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             mSend.setVisibility(View.GONE);
         } else if (OrderStatus == 5) {//待批复--监理批复信息
             mTitle.setText("批复");
-            mRadio1.setText("情况属实");
-            mRadio2.setText("情况不属实");
+            mRadio1.setText("通过");
+            mRadio2.setText("不通过");
             mRemark.setEnabled(true);
-            mRemark.setHint("请输入处理意见");
+            mRemark.setHint("请输入审批意见");
         } else if (OrderStatus == 6) {// <20m未施工
 
         } else if (OrderStatus == 7) {//监理审核否--重新下单
@@ -229,28 +229,28 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 8) {//监理审核属实--一级业主批复
             mTitle.setText("批复");
-            mRadio1.setText("情况属实");
-            mRadio2.setText("情况不属实");
+            mRadio1.setText("通过");
+            mRadio2.setText("不通过");
             mRemark.setEnabled(true);
-            mRemark.setHint("请输入处理意见");
+            mRemark.setHint("请输入审批意见");
         } else if (OrderStatus == 9) {//一级业主审核否--重新下单
             mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
             mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 10) {//一级业主审核属实--二级业主批复
             mTitle.setText("批复");
-            mRadio1.setText("情况属实");
-            mRadio2.setText("情况不属实");
+            mRadio1.setText("通过");
+            mRadio2.setText("不通过");
             mRemark.setEnabled(true);
-            mRemark.setHint("请输入处理意见");
+            mRemark.setHint("请输入审批意见");
         } else if (OrderStatus == 11) {//二级业主审核否--重新下单
             mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
             mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 12) {//二级业主审核属实--三级业主批复
             mTitle.setText("批复");
-            mRadio1.setText("情况属实");
-            mRadio2.setText("情况不属实");
+            mRadio1.setText("通过");
+            mRadio2.setText("不通过");
             mRemark.setEnabled(true);
-            mRemark.setHint("请输入处理意见");
+            mRemark.setHint("请输入审批意见");
         } else if (OrderStatus == 13) {//三级业主审核否--重新下单
             mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
             mApprovalStateImg.setVisibility(View.VISIBLE);
