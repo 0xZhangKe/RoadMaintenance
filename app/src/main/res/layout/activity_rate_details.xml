@@ -69,7 +69,7 @@
 
             </LinearLayout>
 
-            <View style="@style/SpacingLineMarginStyle" />
+            <View style="@style/SpacingLineStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -85,8 +85,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="工单编号："
-                    android:textColor="@color/text_gray"
-                    android:textSize="14sp" />
+                    android:textColor="#666"
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/rateDetails_eventId"
@@ -119,8 +119,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="记录日期："
-                    android:textColor="@color/text_gray"
-                    android:textSize="14sp" />
+                    android:textColor="#666"
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/rateDetails_saveDate"
@@ -144,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingBottom="5dp"
+                android:paddingBottom="10dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:paddingTop="3dp">
@@ -153,8 +153,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="记录人："
-                    android:textColor="@color/text_gray"
-                    android:textSize="14sp" />
+                    android:textColor="#666"
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/rateDetails_savePerson"
@@ -183,14 +183,14 @@
                 android:paddingBottom="3dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:paddingTop="5dp">
+                android:paddingTop="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="道路名称："
-                    android:textColor="@color/text_gray"
-                    android:textSize="14sp" />
+                    android:textColor="#666"
+                    android:textSize="15sp" />
 
                 <EditText
                     android:id="@+id/rateDetails_roadName"
@@ -224,8 +224,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="位置描述："
-                    android:textColor="@color/text_gray"
-                    android:textSize="14sp" />
+                    android:textColor="#666"
+                    android:textSize="15sp" />
                 <View
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -266,8 +266,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="类        型："
-                    android:textColor="@color/text_gray"
-                    android:textSize="14sp" />
+                    android:textColor="#666"
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/rateDetails_roadType"
@@ -292,7 +292,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingBottom="5dp"
+                android:paddingBottom="10dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:paddingTop="3dp">
@@ -301,8 +301,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="车        道："
-                    android:textColor="@color/text_gray"
-                    android:textSize="14sp" />
+                    android:textColor="#666"
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/rateDetails_driverwayType"
@@ -329,7 +329,7 @@
                 android:layout_height="wrap_content"
                 android:divider="@null"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp"
+                android:paddingRight="15dp"
                 android:scrollbars="none" />
 
             <View style="@style/SpacingLineMarginStyle" />
@@ -358,14 +358,14 @@
                     android:paddingBottom="3dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:paddingTop="5dp">
+                    android:paddingTop="10dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="预计工期："
-                        android:textColor="@color/text_gray"
-                        android:textSize="14sp" />
+                        android:textColor="#666"
+                        android:textSize="15sp" />
 
                     <EditText
                         android:id="@+id/rateDetails_planTime"
@@ -399,8 +399,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="预计费用："
-                        android:textColor="@color/text_gray"
-                        android:textSize="14sp" />
+                        android:textColor="#666"
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/rateDetails_planCost"
@@ -441,8 +441,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="实际工期："
-                        android:textColor="@color/text_gray"
-                        android:textSize="14sp" />
+                        android:textColor="#666"
+                        android:textSize="15sp" />
 
                     <EditText
                         android:id="@+id/rateDetails_realTime"
@@ -476,8 +476,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="实际费用："
-                        android:textColor="@color/text_gray"
-                        android:textSize="14sp" />
+                        android:textColor="#666"
+                        android:textSize="15sp" />
 
                     <EditText
                         android:id="@+id/rateDetails_realcost"
@@ -514,14 +514,14 @@
                     android:paddingBottom="10dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:paddingTop="3dp">
+                    android:paddingTop="10dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="维修开始日期："
-                        android:textColor="@color/text_gray"
-                        android:textSize="14sp" />
+                        android:textColor="#666"
+                        android:textSize="15sp" />
 
                     <EditText
                         android:id="@+id/rateDetails_uirealdtate"
@@ -555,8 +555,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="实际维修总面积："
-                        android:textColor="@color/text_gray"
-                        android:textSize="14sp" />
+                        android:textColor="#666"
+                        android:textSize="15sp" />
 
                     <EditText
                         android:id="@+id/rateDetails_uirealarea"
@@ -615,7 +615,7 @@
 
                 </LinearLayout>
 
-                <View style="@style/SpacingLineMarginStyle" />
+                <View style="@style/SpacingLineStyle" />
 
                 <com.jinjiang.roadmaintenance.ui.view.MyGridView
                     android:id="@+id/rateDetails_grid_xiufuqiantupian"
@@ -661,7 +661,7 @@
 
                 </LinearLayout>
 
-                <View style="@style/SpacingLineMarginStyle" />
+                <View style="@style/SpacingLineStyle" />
 
                 <com.jinjiang.roadmaintenance.ui.view.MyGridView
                     android:id="@+id/rateDetails_grid_xiufutupian"
@@ -707,7 +707,7 @@
 
                 </LinearLayout>
 
-                <View style="@style/SpacingLineMarginStyle" />
+                <View style="@style/SpacingLineStyle" />
 
                 <com.jinjiang.roadmaintenance.ui.view.MyGridView
                     android:id="@+id/rateDetails_grid_fujian"
@@ -778,7 +778,7 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <View style="@style/SpacingLineMarginStyle" />
+                <View style="@style/SpacingLineStyle" />
 
                 <com.jinjiang.roadmaintenance.ui.view.ListViewForScrollView
                     android:id="@+id/rateDetails_approvalStateLv"
