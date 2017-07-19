@@ -89,7 +89,8 @@
             android:name=".ui.activity.RateDetailsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity android:name=".ui.activity.ImgshowActivity"></activity>
+        <activity android:name=".ui.activity.ImgshowActivity" />
+        <activity android:name=".ui.activity.modifyPswActivity"></activity>
     </application>
 
 </manifest>

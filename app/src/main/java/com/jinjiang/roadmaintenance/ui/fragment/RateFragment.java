@@ -96,7 +96,7 @@ public class RateFragment extends Fragment implements UIDataListener {
     private DatePicker picker_Time;
     private String startTime = "";
     private String endTime = "";
-    private int timeType = 0;
+    private int timeType = 3;
     private int timeState = 1;
     private int[] orderStatus = new int[]{0, 0, 0, 0};
     private ACache mAcache;

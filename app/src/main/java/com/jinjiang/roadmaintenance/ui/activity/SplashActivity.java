@@ -27,7 +27,7 @@ public class SplashActivity extends BaseActivity {
     private static final int GO_LOGIN = 1001;
     private static final int GO_HOME = 1002;
     // 延迟3秒
-    private static final long SPLASH_DELAY_MILLIS = 0;
+    private static final long SPLASH_DELAY_MILLIS = 3;
     private ACache mAcache;
     private UserInfo userInfo;
     /**

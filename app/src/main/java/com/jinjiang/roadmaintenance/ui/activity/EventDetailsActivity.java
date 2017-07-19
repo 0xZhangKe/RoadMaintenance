@@ -228,6 +228,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
             mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 8) {//监理审核属实--一级业主批复
+            mTitle.setText("批复");
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);
@@ -236,6 +237,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
             mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 10) {//一级业主审核属实--二级业主批复
+            mTitle.setText("批复");
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);
@@ -244,6 +246,7 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             mApprovalStateTv.setTextColor(getResources().getColor(R.color.red));
             mApprovalStateImg.setVisibility(View.VISIBLE);
         } else if (OrderStatus == 12) {//二级业主审核属实--三级业主批复
+            mTitle.setText("批复");
             mRadio1.setText("情况属实");
             mRadio2.setText("情况不属实");
             mRemark.setEnabled(true);
@@ -303,12 +306,12 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
                     viewHolder.setOnClickListener(R.id.item_del, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            list.remove(position);
                             for (TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean b : list.get(position).getDiseaseAttrMsgDtos()) {
                                 if (b.getDiseaseAttrName().contains("面积")) {
                                     totalArea = totalArea - Double.parseDouble(b.getValue());
                                 }
                             }
+                            list.remove(position);
                             adapter_eventtype.notifyDataSetChanged();
                         }
                     });
@@ -430,9 +433,9 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
                     if (OrderType != 5) {
                         for (int i =0;i<mTaskDetails.getDiseaseMsgDtos().size();i++) {
                             if (i == 0) {
-                                typeIds.append(mTaskDetails.getDiseaseMsgDtos().get(i).getDiseaseId());
+                                typeIds.append(mTaskDetails.getDiseaseMsgDtos().get(i).getDiseaseType());
                             } else {
-                                typeIds.append("," + mTaskDetails.getDiseaseMsgDtos().get(i).getDiseaseId());
+                                typeIds.append("," + mTaskDetails.getDiseaseMsgDtos().get(i).getDiseaseType());
                             }
                         }
                     }
@@ -601,8 +604,8 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
         object.put("vacationApproved", deal);
         object.put("opinion", mRemark.getText().toString());
         object.put("taskId", mTaskDetails.getTaskId());
-        map.put("body", object.toJSONString());
         object.put("roleCode", "5");
+        map.put("body", object.toJSONString());
         request.doPostRequest(5, true, Uri.owner3Official, map);
     }
 
@@ -662,9 +665,9 @@ public class EventDetailsActivity extends BaseActivity implements UIDataListener
             if (requestCode == 105) {
                 TaskDetails.DiseaseMsgDtosBean dtosBean = new TaskDetails.DiseaseMsgDtosBean();
                 EventTypeBase eventTypeBase = (EventTypeBase) data.getSerializableExtra("EventTypeBase");
-                dtosBean.setDetail(eventTypeBase.getEventType().getDetail());
-                dtosBean.setDiseaseId(eventTypeBase.getEventType().getId());
-                dtosBean.setDiseaseType(eventTypeBase.getEventType().getOrderType());
+                dtosBean.setDetail(eventTypeBase.getEventType().getDesc());
+//                dtosBean.setDiseaseId(eventTypeBase.getEventType().getId());
+                dtosBean.setDiseaseType(Integer.parseInt(eventTypeBase.getEventType().getId()));
                 dtosBean.setDiseaseTypeName(eventTypeBase.getEventType().getName());
 
                 ArrayList<TaskDetails.DiseaseMsgDtosBean.DiseaseAttrMsgDtosBean> list = new ArrayList<>();

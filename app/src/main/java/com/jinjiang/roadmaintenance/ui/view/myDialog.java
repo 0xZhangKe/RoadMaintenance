@@ -5,10 +5,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.utils.GlideImgManager;
 
@@ -62,6 +62,11 @@ public class myDialog extends Dialog {
         }
         if (res!=null){
             GlideImgManager.glideLoader(context,res,R.drawable.pic_not_found,R.drawable.pic_not_found,img,1);
+        }else {
+            img.setVisibility(View.GONE);
+        }
+        if (TextUtils.isEmpty(res)){
+            img.setVisibility(View.GONE);
         }
     }
 

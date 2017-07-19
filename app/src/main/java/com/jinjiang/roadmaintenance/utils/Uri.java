@@ -91,4 +91,14 @@ public class Uri {
      *
      */
     public static String getWorkOrderLocation = mainUrl+"map/getWorkOrderLocation";
+    /**
+     * 修改密码
+     *
+     */
+    public static String updateUserPass = mainUrl+"my/updateUserPass";
+    /**
+     * 发送验证码
+     *
+     */
+    public static String sendSms = mainUrl+"login/sendSms";
 }

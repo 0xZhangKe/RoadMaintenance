@@ -27,14 +27,18 @@ public class MapData implements Serializable {
     private double latitude;
     private String locationDesc;
     private double longitude;
+    private double area;
     private int orderStatus;
     private String orderStatusName;
     private int orderType;
     private String orderTypeName;
     private String processInstanceId;
     private String roadName;
+    private String diseaseNames;
     private String taskId;
     private int workOrderId;
+    private int lineType;
+    private String lineTypeName;
 
     public String getCreateTime() {
         return createTime;
@@ -130,5 +134,37 @@ public class MapData implements Serializable {
 
     public void setWorkOrderId(int workOrderId) {
         this.workOrderId = workOrderId;
+    }
+
+    public double getArea() {
+        return area;
+    }
+
+    public void setArea(double area) {
+        this.area = area;
+    }
+
+    public String getDiseaseNames() {
+        return diseaseNames;
+    }
+
+    public void setDiseaseNames(String diseaseNames) {
+        this.diseaseNames = diseaseNames;
+    }
+
+    public int getLineType() {
+        return lineType;
+    }
+
+    public void setLineType(int lineType) {
+        this.lineType = lineType;
+    }
+
+    public String getLineTypeName() {
+        return lineTypeName;
+    }
+
+    public void setLineTypeName(String lineTypeName) {
+        this.lineTypeName = lineTypeName;
     }
 }

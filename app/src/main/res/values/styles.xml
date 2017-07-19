@@ -100,7 +100,7 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
-        <!--<item name="android:background">@drawable/firstimg</item>-->
+        <item name="android:background">@drawable/start</item>
     </style>
 
 </resources>

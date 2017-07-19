@@ -47,6 +47,7 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.jinjiang.roadmaintenance.R;
 import com.jinjiang.roadmaintenance.data.EventTypeGrid;
 import com.jinjiang.roadmaintenance.data.MapData;
+import com.jinjiang.roadmaintenance.data.RateList;
 import com.jinjiang.roadmaintenance.data.RoadType;
 import com.jinjiang.roadmaintenance.data.UserInfo;
 import com.jinjiang.roadmaintenance.model.LoacationListener;
@@ -55,7 +56,9 @@ import com.jinjiang.roadmaintenance.model.NetWorkRequest;
 import com.jinjiang.roadmaintenance.model.UIDataListener;
 import com.jinjiang.roadmaintenance.ui.activity.EventAddActivity;
 import com.jinjiang.roadmaintenance.ui.activity.LoginActivity;
+import com.jinjiang.roadmaintenance.ui.activity.RateDetailsActivity;
 import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
+import com.jinjiang.roadmaintenance.ui.view.EventinfoDialog;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
 import com.jinjiang.roadmaintenance.utils.Uri;
@@ -109,7 +112,7 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
     private GeoCoder mSearch;
     private String address;
     private int userRole;
-    private int[] state = new int[]{0,0,0,0};
+    private int[] state = new int[]{0, 0, 0, 0};
     private ArrayList<EventTypeGrid> mGridlist;
     private ArrayList<MapData> mPointList;
     private CommonAdapter<EventTypeGrid> gridAdapter;
@@ -223,12 +226,12 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
         JSONObject object = new JSONObject();
         object.put("roadName", roadName);
         StringBuffer buffer = new StringBuffer();
-        for (int i:state){
-            if (i!=0){
-                if (buffer.length()==0){
-                    buffer.append(""+i);
-                }else {
-                    buffer.append(","+i);
+        for (int i : state) {
+            if (i != 0) {
+                if (buffer.length() == 0) {
+                    buffer.append("" + i);
+                } else {
+                    buffer.append("," + i);
                 }
             }
         }
@@ -257,38 +260,38 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 if (position == 0) {
-                    if (state[0]==0){
-                        state[0]=2001;
+                    if (state[0] == 0) {
+                        state[0] = 2001;
                         mGridlist.get(0).setImg(R.drawable.state_shenpi2);
-                    }else {
-                        state[0]=0;
+                    } else {
+                        state[0] = 0;
                         mGridlist.get(0).setImg(R.drawable.state_shenpi1);
                     }
                     getMapdata("", "");
                 } else if (position == 1) {
-                    if (state[1]==0){
-                        state[1]=2002;
+                    if (state[1] == 0) {
+                        state[1] = 2002;
                         mGridlist.get(1).setImg(R.drawable.state_zhengzai2);
-                    }else {
-                        state[1]=0;
+                    } else {
+                        state[1] = 0;
                         mGridlist.get(1).setImg(R.drawable.state_zhengzai1);
                     }
                     getMapdata("", "");
                 } else if (position == 2) {
-                    if (state[2]==0){
-                        state[2]=2003;
+                    if (state[2] == 0) {
+                        state[2] = 2003;
                         mGridlist.get(2).setImg(R.drawable.state_dengdai2);
-                    }else {
-                        state[2]=0;
+                    } else {
+                        state[2] = 0;
                         mGridlist.get(2).setImg(R.drawable.state_dengdai1);
                     }
                     getMapdata("", "");
                 } else if (position == 3) {
-                    if (state[3]==0){
-                        state[3]=2004;
+                    if (state[3] == 0) {
+                        state[3] = 2004;
                         mGridlist.get(3).setImg(R.drawable.state_wancheng2);
-                    }else {
-                        state[3]=0;
+                    } else {
+                        state[3] = 0;
                         mGridlist.get(3).setImg(R.drawable.state_wancheng1);
                     }
                     getMapdata("", "");
@@ -333,7 +336,7 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
             @Override
             public void onMapLongClick(LatLng latLng) {
                 if (userRole == 5 || userRole == 6) {
-                    if (mBaiduMap != null&&marker_dot!=null)
+                    if (mBaiduMap != null && marker_dot != null)
                         marker_dot.remove();
 
                     MarkerOptions option = new MarkerOptions()
@@ -341,7 +344,7 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
                             .icon(bitmapDescriptor_location);
                     marker_dot = (Marker) mBaiduMap.addOverlay(option);
                     Bundle bundle = new Bundle();
-                    bundle.putString("LatLng","");
+                    bundle.putString("LatLng", "");
                     marker_dot.setExtraInfo(bundle);
                 }
             }
@@ -355,11 +358,32 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
                     if (bundle.containsKey("LatLng")) {
                         if (mDialog != null)
                             mDialog.show();
-
                         mEventCenpt = marker.getPosition();
+                        mSearch.reverseGeoCode(new ReverseGeoCodeOption()
+                                .location(marker.getPosition()));
+                    } else if (bundle.containsKey("info")) {
+                        final MapData info = (MapData) marker.getExtraInfo().get("info");
+                        EventinfoDialog dialog = new EventinfoDialog(getActivity());
+                        dialog.setroadname(info.getRoadName());
+                        dialog.settypeStr(info.getOrderTypeName());
+                        dialog.setwayStr(info.getLineTypeName());
+                        dialog.setdiseaseStr(info.getDiseaseNames());
+                        dialog.setareaStr(info.getArea() + "㎡");
+                        dialog.setstateStr(info.getOrderStatusName());
+//                        dialog.settimeStr(info.get);
+                        dialog.setYesOnclickListener(new EventinfoDialog.onYesOnclickListener() {
+                            @Override
+                            public void onYesClick() {
+                                RateList.RowsBean row = new RateList.RowsBean();
+                                row.setTaskId(info.getTaskId());
+                                row.setWorkOrderId(info.getWorkOrderId());
+                                Intent intent = new Intent(getActivity(), RateDetailsActivity.class);
+                                intent.putExtra("Row", row);
+                                startActivity(intent);
+                            }
+                        });
+                        dialog.show();
                     }
-                    mSearch.reverseGeoCode(new ReverseGeoCodeOption()
-                            .location(marker.getPosition()));
                 }
                 return true;
             }
@@ -556,6 +580,9 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
                                     .icon(icon4);
                         }
                         Marker marker = (Marker) mBaiduMap.addOverlay(option);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("info", d);
+                        marker.setExtraInfo(bundle);
                     }
                 }
             }
