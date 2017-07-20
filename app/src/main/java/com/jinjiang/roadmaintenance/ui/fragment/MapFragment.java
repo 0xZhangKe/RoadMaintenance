@@ -81,7 +81,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 
 
 /**
- * 桌面
+ * 地图
  */
 public class MapFragment extends Fragment implements LoacationListener, UIDataListener {
     private static MapFragment fragment;
