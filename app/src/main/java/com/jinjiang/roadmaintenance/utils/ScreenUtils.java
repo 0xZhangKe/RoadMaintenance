@@ -34,21 +34,27 @@ public class ScreenUtils {
 
     public static String getRoad(String str) {
         String road = "";
-        if (!str.contains("路")){
+        if (!str.contains("路")&& !str.contains("大道")) {
             return str;
         }
-        if (str.contains("镇")){
-            road = str.substring(str.indexOf("镇")+1,str.lastIndexOf("路")+1);
-        }else if (str.contains("县")){
-            road = str.substring(str.indexOf("县")+1,str.lastIndexOf("路")+1);
-        }else if (str.contains("区")){
-            road = str.substring(str.indexOf("区")+1,str.lastIndexOf("路")+1);
-        }else if (str.contains("市")){
-            road = str.substring(str.indexOf("市")+1,str.lastIndexOf("路")+1);
-        }else if (str.contains("省")){
-            road = str.substring(str.indexOf("省")+1,str.lastIndexOf("路")+1);
-        }else {
-            return str;
+        int end = 0;
+        if (str.contains("路")) {
+            end = str.lastIndexOf("路") + 1;
+        } else if (str.contains("大道")) {
+            end = str.lastIndexOf("大道") + 2;
+        }
+        if (str.contains("镇")) {
+            road = str.substring(str.indexOf("镇") + 1, end);
+        } else if (str.contains("县")) {
+            road = str.substring(str.indexOf("县") + 1, end);
+        } else if (str.contains("区")) {
+            road = str.substring(str.indexOf("区") + 1, end);
+        } else if (str.contains("市")) {
+            road = str.substring(str.indexOf("市") + 1, end);
+        } else if (str.contains("省")) {
+            road = str.substring(str.indexOf("省") + 1, end);
+        } else {
+            road = str.substring(0, end);
         }
 
         return road;
@@ -56,14 +62,15 @@ public class ScreenUtils {
 
     /**
      * 将2017-05-12 3:45:20格式转换为2017-05-12
+     *
      * @param date
      * @return
      */
-    public static String getStrDate(String date){
+    public static String getStrDate(String date) {
         String str = "";
         if (date.substring(date.lastIndexOf("-") + 1).length() >= 3) {
             str = date.substring(0, date.lastIndexOf("-") + 3);
-        }else {
+        } else {
             return date;
         }
 

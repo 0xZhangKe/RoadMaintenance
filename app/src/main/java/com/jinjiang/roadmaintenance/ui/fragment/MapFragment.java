@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -56,11 +57,13 @@ import com.jinjiang.roadmaintenance.model.NetWorkRequest;
 import com.jinjiang.roadmaintenance.model.UIDataListener;
 import com.jinjiang.roadmaintenance.ui.activity.EventAddActivity;
 import com.jinjiang.roadmaintenance.ui.activity.LoginActivity;
+import com.jinjiang.roadmaintenance.ui.activity.MainActivity;
 import com.jinjiang.roadmaintenance.ui.activity.RateDetailsActivity;
 import com.jinjiang.roadmaintenance.ui.view.DialogProgress;
 import com.jinjiang.roadmaintenance.ui.view.EventinfoDialog;
 import com.jinjiang.roadmaintenance.ui.view.myToast;
 import com.jinjiang.roadmaintenance.utils.ACache;
+import com.jinjiang.roadmaintenance.utils.PermissionUtil;
 import com.jinjiang.roadmaintenance.utils.Uri;
 import com.zhy.adapter.abslistview.CommonAdapter;
 import com.zhy.adapter.abslistview.ViewHolder;
@@ -78,7 +81,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 
 
 /**
- * 桌面
+ * 地图
  */
 public class MapFragment extends Fragment implements LoacationListener, UIDataListener {
     private static MapFragment fragment;
@@ -112,7 +115,7 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
     private GeoCoder mSearch;
     private String address;
     private int userRole;
-    private int[] state = new int[]{0, 0, 0, 0};
+    private int[] state = new int[]{2001, 2002, 2003, 0};
     private ArrayList<EventTypeGrid> mGridlist;
     private ArrayList<MapData> mPointList;
     private CommonAdapter<EventTypeGrid> gridAdapter;
@@ -243,9 +246,9 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
     private void initData() {
         mGridlist = new ArrayList<>();
 //        mGridlist.add(new EventTypeGrid(R.drawable.state_quabbu2, "全部工单"));
-        mGridlist.add(new EventTypeGrid(R.drawable.state_shenpi1, "待审批"));
-        mGridlist.add(new EventTypeGrid(R.drawable.state_zhengzai1, "维修中"));
-        mGridlist.add(new EventTypeGrid(R.drawable.state_dengdai1, "待验收"));
+        mGridlist.add(new EventTypeGrid(R.drawable.state_shenpi2, "待审批"));
+        mGridlist.add(new EventTypeGrid(R.drawable.state_zhengzai2, "维修中"));
+        mGridlist.add(new EventTypeGrid(R.drawable.state_dengdai2, "待验收"));
         mGridlist.add(new EventTypeGrid(R.drawable.state_wancheng1, "已完成"));
         gridAdapter = new CommonAdapter<EventTypeGrid>(getActivity(), R.layout.item_map_grid, mGridlist) {
             @Override
@@ -297,6 +300,10 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
                     getMapdata("", "");
                 }
                 gridAdapter.notifyDataSetChanged();
+                if (state[0] + state[1] + state[2] + state[3] == 0) {
+                    mShadow.setVisibility(View.GONE);
+                    mEventType_ll.setVisibility(View.GONE);
+                }
             }
         });
         initBaiduMap();
@@ -447,14 +454,28 @@ public class MapFragment extends Fragment implements LoacationListener, UIDataLi
                             .location(myCenpt));
                     mEventCenpt = myCenpt;
                 } else {
-                    showToast("未能定位到当前位置！");
+                    if (PermissionUtil.isLacksOfPermission(PermissionUtil.PERMISSION[1]) ||
+                            PermissionUtil.isLacksOfPermission(PermissionUtil.PERMISSION[2])
+                            ) {
+                        ActivityCompat.requestPermissions(getActivity(), PermissionUtil.PERMISSION, 0x12);
+                    }else {
+                        locationModel = new LoacationModel(getActivity(), this, 3000);
+                        showToast("未能定位到当前位置！");
+                    }
                 }
                 break;
             case R.id.map_mylocation:
                 if (myCenpt != null) {
                     setbaiduCenter(myCenpt, 9);
                 } else {
-                    myToast.toast(getActivity(), "正在定位中...");
+                    if (PermissionUtil.isLacksOfPermission(PermissionUtil.PERMISSION[1]) ||
+                            PermissionUtil.isLacksOfPermission(PermissionUtil.PERMISSION[2])
+                            ) {
+                        ActivityCompat.requestPermissions(getActivity(), PermissionUtil.PERMISSION, 0x12);
+                    }else {
+                        locationModel = new LoacationModel(getActivity(), this, 3000);
+                        showToast("正在定位中...");
+                    }
                 }
                 break;
             case R.id.map_shadow:

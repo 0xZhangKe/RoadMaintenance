@@ -100,7 +100,7 @@ public class PlanActivity extends BaseActivity implements UIDataListener {
             if (data != null) {
                 mPlanList = JSON.parseObject(data.toString(), new TypeReference<ArrayList<Plan>>() {
                 });
-                if (mPlanList != null && mPlanList.size() > 0) {
+                if (mPlanList != null && mPlanList.size() >=0) {
                     Plan plan = new Plan();
                     plan.setFunName("其他");
                     plan.setId("0");

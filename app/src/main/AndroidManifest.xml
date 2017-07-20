@@ -90,7 +90,8 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity android:name=".ui.activity.ImgshowActivity" />
-        <activity android:name=".ui.activity.modifyPswActivity"></activity>
+        <activity android:name=".ui.activity.modifyPswActivity" />
+        <activity android:name=".ui.activity.ModifyPhoneActivity"></activity>
     </application>
 
 </manifest>

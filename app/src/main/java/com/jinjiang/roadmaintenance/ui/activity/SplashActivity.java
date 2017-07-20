@@ -27,7 +27,7 @@ public class SplashActivity extends BaseActivity {
     private static final int GO_LOGIN = 1001;
     private static final int GO_HOME = 1002;
     // 延迟3秒
-    private static final long SPLASH_DELAY_MILLIS = 3;
+    private static final long SPLASH_DELAY_MILLIS = 0;
     private ACache mAcache;
     private UserInfo userInfo;
     /**
@@ -72,6 +72,7 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     protected void setAnim() {
+
     }
 
     @Override
@@ -112,8 +113,9 @@ public class SplashActivity extends BaseActivity {
      */
     private void goLogin() {
         Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-        SplashActivity.this.startActivity(intent);
-        SplashActivity.this.finish();
+        startActivity(intent);
+        finish();
+        overridePendingTransition(0, R.anim.base_alpha);
     }
 
     /**
@@ -121,7 +123,8 @@ public class SplashActivity extends BaseActivity {
      */
     private void goHome() {
         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-        SplashActivity.this.startActivity(intent);
-        SplashActivity.this.finish();
+        startActivity(intent);
+        finish();
+        overridePendingTransition(0, R.anim.base_alpha);
     }
 }

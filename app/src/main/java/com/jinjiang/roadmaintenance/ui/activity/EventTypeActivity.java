@@ -68,6 +68,7 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
     private ArrayList<EventAttr> mEventAttrList;
     private OptionPicker picker_Type;
     private int eventTypeposition;
+    private String roadType = "1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +93,10 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
             startActivity(new Intent(EventTypeActivity.this, LoginActivity.class));
             EventTypeActivity.this.finish();
         }
+        Intent intent = getIntent();
+        if (intent.hasExtra("roadtype")){
+            roadType = intent.getStringExtra("roadtype");
+        }
     }
 
     @Override
@@ -99,7 +104,7 @@ public class EventTypeActivity extends BaseActivity implements UIDataListener {
         Map map = new HashMap();
         map.put("userId", userInfo.getUserId());
         map.put("appSid", userInfo.getAppSid());
-        map.put("orderType", "1");
+        map.put("orderType", roadType);
         request.doPostRequest(0, true, Uri.getDiseaseType, map);
 
         mValue3.setOnFocusChangeListener(new View.OnFocusChangeListener() {
